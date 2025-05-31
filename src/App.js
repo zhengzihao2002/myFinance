@@ -1804,30 +1804,49 @@ const RecordExpensePage = () => {
   };
 
   const [searchTerm, setSearchTerm] = React.useState("");
-const [suggestions, setSuggestions] = React.useState([]);
+  const [suggestions, setSuggestions] = React.useState([]);
+  // Add this state near your other search-related states:
+  const [highlightedIndex, setHighlightedIndex] = React.useState(-1);
 
-const handleSearchChange = (e) => {
-  const value = e.target.value;
-  setSearchTerm(value);
-  if (value.trim() === "") {
-    setSuggestions([]);
-  } else {
-    // Filter categories (case-insensitive)
-    const filtered = categories.filter(cat =>
-      cat.toLowerCase().includes(value.toLowerCase())
-    );
-    setSuggestions(filtered);
-  }
-};
+  // Modify your handleSearchChange so that it resets highlightedIndex:
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    setHighlightedIndex(-1); // reset when user types
+    if (value.trim() === "") {
+      setSuggestions([]);
+    } else {
+      const filtered = categories.filter(cat =>
+        cat.toLowerCase().startsWith(value.toLowerCase())
+      );
+      setSuggestions(filtered);
+    }
+  };
 
-const handleSearchKeyDown = (e) => {
-  if (e.key === "Enter" && suggestions.length > 0) {
-    // Automatically select the closest match (the first suggestion)
-    setCategory(suggestions[0]);
-    setSearchTerm("");
-    setSuggestions([]);
-  }
-};
+  // Update your handleSearchKeyDown handler:
+  const handleSearchKeyDown = (e) => {
+    if (e.key === "ArrowDown") {
+      // Move highlight down (stop at the last suggestion)
+      setHighlightedIndex(prev =>
+        prev < suggestions.length - 1 ? prev + 1 : prev
+      );
+    } else if (e.key === "ArrowUp") {
+      // Move highlight up; if none is highlighted then unhighlight
+      setHighlightedIndex(prev =>
+        prev > 0 ? prev - 1 : -1
+      );
+    } else if (e.key === "Enter") {
+      // If a suggestion is highlighted, select it; otherwise select the first suggestion
+      if (highlightedIndex >= 0 && highlightedIndex < suggestions.length) {
+        setCategory(suggestions[highlightedIndex]);
+      } else if (suggestions.length > 0) {
+        setCategory(suggestions[0]);
+      }
+      setSearchTerm("");
+      setSuggestions([]);
+      setHighlightedIndex(-1);
+    }
+  };
 
   return (
     <div class="body">
@@ -1908,11 +1927,17 @@ const handleSearchKeyDown = (e) => {
                   {suggestions.slice(0, 5).map((sugg, index) => (
                     <li
                       key={index}
-                      style={{ padding: "8px", cursor: "pointer" }}
+                      style={{
+                        padding: "8px",
+                        cursor: "pointer",
+                        backgroundColor: index === highlightedIndex ? "#f0f0f0" : "transparent"
+                      }}
+                      // Use onMouseDown rather than onClick to ensure selection happens before input blur.
                       onMouseDown={() => {
                         setCategory(sugg);
                         setSearchTerm("");
                         setSuggestions([]);
+                        setHighlightedIndex(-1);
                       }}
                     >
                       {sugg}
@@ -1940,31 +1965,45 @@ const handleSearchKeyDown = (e) => {
         </div>
         <div className="form-group">
           <label>输入日期</label>
-          <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-            <div style={{ flex: "0 0 80%" }}>
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                style={{ width: "100%" }}
-              />
-            </div>
-            <div style={{ flex: "0 0 20%" }}>
-              <button
-                onClick={() => setDate(new Date().toISOString().slice(0, 10))}
-                style={{
-                  width: "100%",
-                  padding: "8px",
-                  backgroundColor: "#ccc",
-                  color: "black",
-                  border: "1px solid #999",
-                  borderRadius: "4px",
-                  cursor: "pointer"
-                }}
-              >
-                Today
-              </button>
-            </div>
+          <div style={{ display: "flex", gap: "10px", alignItems: "stretch" }}>
+          <div style={{ flex: "0 0 80%" }}>
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              style={{ width: "100%", height: "42px", boxSizing: "border-box" }}
+            />
+          </div>
+          <div style={{ flex: "0 0 20%" }}>
+            <button
+              onClick={() => setDate(new Date().toISOString().slice(0, 10))}
+              style={{
+                width: "100%",
+                height: "42px",
+                marginTop:"8px",
+                padding: "10px 16px",
+                backgroundColor: "#f9f9f9",
+                color: "#333",
+                border: "none",
+                borderRadius: "12px",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                cursor: "pointer",
+                fontSize: "16px",
+                transition: "background-color 0.2s ease, box-shadow 0.2s ease",
+                boxSizing: "border-box"
+              }}
+              onMouseOver={(e) => {
+                e.target.style.backgroundColor = "#eaeaea";
+                e.target.style.boxShadow = "0 4px 6px rgba(0,0,0,0.15)";
+              }}
+              onMouseOut={(e) => {
+                e.target.style.backgroundColor = "#f9f9f9";
+                e.target.style.boxShadow = "0 1px 3px rgba(0,0,0,0.1)";
+              }}
+            >
+              Today
+            </button>
+          </div>
           </div>
         </div>
         <div className="button-group">
@@ -2520,14 +2559,15 @@ const ShowExpensePage = () => {
         // Add individual expenses here if desired
         expenses.forEach((exp) =>
           finalExpenses.push({
-            category: categoriesTranslation[exp.category] || exp.category,
+            category: /*categoriesTranslation[exp.category] ||*/ exp.category,
             amount: parseFloat(exp.amount).toFixed(2),
             date: exp.date,
             description: exp.description || "",
             actions: "yes",
           })
         );
-
+        console.log(expenses);
+        
         // ----------------------------------------------------
       }); // <— end of Object.entries  forEach
 

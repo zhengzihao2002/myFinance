@@ -78,21 +78,7 @@
   margin-bottom: 20px;
 }
 
-.action-btn {
-  padding: 15px 30px;
-  font-size: 18px;
-  border: none;
-  border-radius: 5px;
-  background-color: #4CAF50;
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  width: 200px;
-}
 
-.action-btn:hover {
-  background-color: #45a049;
-}
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
