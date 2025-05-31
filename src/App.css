@@ -572,27 +572,39 @@ input[type="number"] {
 }
 
 /* Action Buttons */
-.expense-display .action-btn {
-  padding: 5px 10px;
-  font-size: 14px;
+.expense-page .button-group > .action-btn:first-child {
+  background-color: #333; /* Neutral dark gray */
+  color: #fff;
   border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  background-color: #4CAF50;
-  color: white;
-  width: 80px; /* Fixed width to ensure consistency */
+  border-radius: 10px;
+  padding: 15px 30px;
+  font-size: 18px;
+  font-weight: 600;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  width: auto;
 }
-
-/* Action Buttons Container */
-.expense-display .table-row > div:last-child {
-  display: flex;
-  justify-content: center; /* Center action buttons */
-  gap: 10px; /* Add space between buttons */
+.expense-page .button-group > .action-btn:first-child:hover {
+  background-color: #444;
+  transform: scale(1.02);
 }
-
-/* Hover Effect for Action Buttons */
-.expense-display .action-btn:hover {
-  background-color: #45a049;
+/* Modern Quit Button (the .action-btn inside the Link in .button-group) */
+.expense-page .button-group > a > .action-btn {
+  background-color: #fff;
+  color: #333;
+  border: 2px solid #333;
+  border-radius: 10px;
+  padding: 15px 30px;
+  font-size: 18px;
+  font-weight: 600;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+  width: auto;
+}
+.expense-page .button-group > a > .action-btn:hover {
+  background-color: #333;
+  color: #fff;
+  transform: scale(1.02);
 }
 
 
