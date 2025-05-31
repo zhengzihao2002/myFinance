@@ -6,6 +6,8 @@ import "./App.css";
 import "./font.css"
 
 
+
+
 // List of categories
 let categories = [];
 let categoriesTranslation = {};
@@ -46,6 +48,8 @@ const years = ["2023", "2024"];
 const displayTypes = ["Category Sum", "List all Category Expenses", "List all Expenses by Date"];
 
 
+
+
 function createId(dateStr) {
   // Parse the date string into a Date object
   const date = new Date(dateStr);
@@ -79,6 +83,30 @@ function createId(dateStr) {
 
 
 const HomePage = () => {
+  // Inside your App component (after your other useEffect hooks), add:
+  useEffect(() => {
+    // Fetch the settings.json file
+    fetch("/settings.json")
+      .then((response) => response.json())
+      .then((settings) => {
+        if (settings.clickEffect) {
+          const audio = new Audio(`/soundEffects/${settings.clickEffect}`);
+          const handleClick = (e) => {
+            // Check for left mouse clicks (button === 0)
+            if (e.button === 0) {
+              // Reset time for quick successive clicks
+              audio.currentTime = 0;
+              audio.play();
+            }
+          };
+          document.addEventListener("click", handleClick);
+          // Cleanup on unmount
+          return () => document.removeEventListener("click", handleClick);
+        }
+      })
+      .catch((error) => console.error("Error loading settings:", error));
+  }, []);
+  
   const { data } = useContext(DataContext); // Access global expense data from context
   const [isModalOpenCategory, setIsModalOpenCategory] = useState(false);
   const [modalContentCategory, setModalContentCategory] = useState("");
@@ -2007,11 +2035,11 @@ const RecordExpensePage = () => {
           </div>
         </div>
         <div className="button-group">
-          <button className="action-btn" onClick={handleSave}>
+          <button className="action-btn1" onClick={handleSave}>
             保存
           </button>
           <Link to="/">
-            <button className="action-btn">退出</button>
+            <button className="action-btn1">退出</button>
           </Link>
         </div>
       </div>
