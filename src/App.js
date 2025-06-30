@@ -11,7 +11,7 @@ import "./font.css"
 // List of categories
 let categories = [];
 let categoriesTranslation = {};
-
+let language = null;
 
 
 // This function will load categories data from the JSON file
@@ -83,7 +83,7 @@ function createId(dateStr) {
 
 
 const HomePage = () => {
-  // Inside your App component (after your other useEffect hooks), add:
+  // Sound Effects
   useEffect(() => {
     // Fetch the settings.json file
     fetch("/settings.json")
@@ -106,7 +106,7 @@ const HomePage = () => {
       })
       .catch((error) => console.error("Error loading settings:", error));
   }, []);
-  
+
   const { data } = useContext(DataContext); // Access global expense data from context
   const [isModalOpenCategory, setIsModalOpenCategory] = useState(false);
   const [modalContentCategory, setModalContentCategory] = useState("");
@@ -588,14 +588,7 @@ const HomePage = () => {
 
   
   // Helper function to get total amounts for a given month
-  // const getMonthlyTotal = (records, month) => {
-  //   if (!records || !Array.isArray(records)) return 0;
-    
-  //   return records
-  //     .filter((record) => record.date.substring(5,7) === month)
-  //     .reduce((total, record) => total + (record.amount || 0), 0);
-  // };
-  function getMonthlyTotal(records, month) {  
+  function getMonthlyTotal(records, month,year) {  
     
     
     if (!records || !Array.isArray(records)) {  
@@ -603,7 +596,7 @@ const HomePage = () => {
     }  
 
     var filteredRecords = records.filter(function(record) {          
-        return Number(record.date.substring(5, 7)) === month;  
+        return Number(record.date.substring(5, 7)) === month && Number(record.date.substring(0, 4)) === year;  
     });  
     
 
@@ -612,23 +605,29 @@ const HomePage = () => {
     }, 0);  
     
     return total;  
-}
+  }
 
 
   // Get current date (+1 cuz not index but actual month no)
   const now = new Date();
-  const lastMonth = (now.getMonth() - 1 < 0 ? 11 : now.getMonth() - 1)+1;
-  const monthBeforeLast = (lastMonth - 1 <= 0 ? 12 : lastMonth - 1);
+  const lastMonth = now.getMonth(); // 0-based: 0=Jan, 11=Dec
+  const monthBeforeLast = lastMonth - 1 < 0 ? 11 : lastMonth - 1;
   
   
-  
+  const lastMonthYear = lastMonth === 0 ? currentYear - 1 : currentYear;
+  const monthBeforeLastYear = lastMonth === 0 ? currentYear - 1 : (lastMonth - 1 < 0 ? currentYear - 1 : currentYear);
+  console.log(123123,lastMonth,lastMonthYear,monthBeforeLast,monthBeforeLastYear);
+   
+
 
   // Calculate total expenses and income
-  const lastMonthExpenses = Number(getMonthlyTotal(data.expenses, lastMonth)) || 0;
-  const prevMonthExpenses = Number(getMonthlyTotal(data.expenses, monthBeforeLast)) || 0;
-  const lastMonthIncome = Number(getMonthlyTotal(data.income, lastMonth)) || 0;
-  const prevMonthIncome = Number(getMonthlyTotal(data.income, monthBeforeLast)) || 0;
+  // lastMonth and monthBeforeLast are 0-based, but your function expects 1-based months
+  const lastMonthExpenses = Number(getMonthlyTotal(data.expenses, lastMonth , lastMonthYear)) || 0;
+  const prevMonthExpenses = Number(getMonthlyTotal(data.expenses, monthBeforeLast , monthBeforeLastYear)) || 0;
+  const lastMonthIncome = Number(getMonthlyTotal(data.income, lastMonth , lastMonthYear)) || 0;
+  const prevMonthIncome = Number(getMonthlyTotal(data.income, monthBeforeLast, monthBeforeLastYear)) || 0;
 
+  
   
 
   // Function to calculate percentage change
@@ -1010,7 +1009,7 @@ const HomePage = () => {
                   >
                     <option value="">请选择</option>
                     {timeRangeTopLeft === "按月显示" &&
-                      [...Array(12).keys()].map((month) => {
+                      [...Array(new Date().getMonth() + 1).keys()].map((month) => {
                         const monthName = new Date(0, month).toLocaleString("default", { month: "long" });
                         return (
                           <option key={month} value={monthName}>
@@ -1019,11 +1018,15 @@ const HomePage = () => {
                         );
                       })}
                     {timeRangeTopLeft === "按季度显示" &&
-                      ["Q1", "Q2", "Q3", "Q4"].map((quarter) => (
-                        <option key={quarter} value={quarter}>
-                          {quarter}
-                        </option>
-                      ))}
+                      (() => {
+                        const currentQuarter = Math.floor(new Date().getMonth() / 3) + 1;
+                        return Array.from({ length: currentQuarter }, (_, i) => `Q${i + 1}`).map((quarter) => (
+                          <option key={quarter} value={quarter}>
+                            {quarter}
+                          </option>
+                        ));
+                      })()
+                    }
                     {timeRangeTopLeft === "按年显示" &&
                       availableYears.map((year) => (
                         <option key={year} value={year}>
@@ -1248,19 +1251,24 @@ const HomePage = () => {
                 >
                   <option value="">请选择</option>
                   {timeRange === "按月显示" &&
-                    [...Array(12).keys()].map((month) => {
-                      const monthName = new Date(0, month).toLocaleString("default", { month: "long" });
-                      return (
-                        <option key={month} value={monthName}>
-                          {monthName}
-                        </option>)
-                      })}
-                  {timeRange === "按季度显示" &&
-                    ["Q1", "Q2", "Q3", "Q4"].map((quarter) => (
+                  [...Array(new Date().getMonth() + 1).keys()].map((month) => {
+                    const monthName = new Date(0, month).toLocaleString("default", { month: "long" });
+                    return (
+                      <option key={month} value={monthName}>
+                        {monthName}
+                      </option>
+                    );
+                  })}
+                {timeRange === "按季度显示" &&
+                  (() => {
+                    const currentQuarter = Math.floor(new Date().getMonth() / 3) + 1;
+                    return Array.from({ length: currentQuarter }, (_, i) => `Q${i + 1}`).map((quarter) => (
                       <option key={quarter} value={quarter}>
                         {quarter}
                       </option>
-                    ))}
+                    ));
+                  })()
+                }
                   {timeRange === "按年显示" &&
                     availableYears.map((year) => (
                       <option key={year} value={year}>
@@ -1364,6 +1372,15 @@ const HomePage = () => {
             <button className="action-btn" onClick={() => openModalOther("其他设置")}>
               其他设置
             </button>
+          </div>
+
+          <div className="button-group">
+            <Link to="/checkPrepay">
+              <button className="action-btn1">查看预定付款</button>
+            </Link>
+            <Link to="/checkBudget">
+              <button className="action-btn1">财务规划</button>
+            </Link>
           </div>
         </div>
 
@@ -1584,39 +1601,64 @@ const HomePage = () => {
               {/* Section 1: Add Category */}
               <div style={{ marginBottom: "20px" }}>
                 <h3>添加类别</h3>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <input
-                    type="text"
-                    id="add-category-input"
-                    placeholder="输入新类别"
-                    style={{
-                      padding: "8px",
-                      width: "70%",
-                      border: "1px solid #ccc",
-                      borderRadius: "4px",
-                    }}
-                  />
-                  <button
-                    onClick={() => {
-                      const newCategory = document.getElementById("add-category-input").value;
-                      if (newCategory.trim() === "") {
-                        alert("请输入有效的类别名称！");
-                      } else {
-                        alert(`添加的类别: ${newCategory}`);
-                      }
-                    }}
-                    style={{
-                      padding: "8px 16px",
-                      backgroundColor: "#4CAF50",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "4px",
-                      cursor: "pointer",
-                    }}
-                  >
-                    添加
-                  </button>
-                </div>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "10px" }}>
+                <input
+                  type="text"
+                  id="add-category-input-en"
+                  placeholder="English"
+                  style={{
+                    padding: "8px",
+                    width: "100%",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                  }}
+                />
+                <input
+                  type="text"
+                  id="add-category-input-zh"
+                  placeholder="中文"
+                  style={{
+                    padding: "8px",
+                    width: "100%",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                  }}
+                />
+                <button
+                  onClick={async () => {
+                    const en = document.getElementById("add-category-input-en").value.trim();
+                    const zh = document.getElementById("add-category-input-zh").value.trim();
+                    if (!en || !zh) {
+                      alert("请输入英文和中文类别名称！");
+                      return;
+                    }
+                    // Send to backend
+                    const res = await fetch("http://localhost:5001/api/add-category", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ en, zh }),
+                    });
+                    if (res.ok) {
+                      alert(`添加的类别: ${en} / ${zh}`);
+                      document.getElementById("add-category-input-en").value = "";
+                      document.getElementById("add-category-input-zh").value = "";
+                    } else {
+                      alert("添加失败，请重试！");
+                    }
+                  }}
+                  style={{
+                    padding: "8px 16px",
+                    backgroundColor: "#4CAF50",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                    width: "100%",
+                  }}
+                >
+                  添加
+                </button>
+              </div>
               </div>
 
               {/* Section 2: Delete Categories */}
@@ -1638,33 +1680,45 @@ const HomePage = () => {
                   ))}
                 </div>
                 <button
-                  onClick={() => {
-                    const selectedCategories = categories.filter((_, index) =>
-                      document.getElementById(`delete-category-${index}`).checked
-                    );
+                onClick={async () => {
+                  const selectedCategories = categories.filter((_, index) =>
+                    document.getElementById(`delete-category-${index}`).checked
+                  );
 
-                    if (selectedCategories.includes("Other")) {
-                      alert("Other 无法被删除。请检查您的选项！");
-                      return;
-                    }
+                  if (selectedCategories.includes("Other")) {
+                    alert("Other 无法被删除。请检查您的选项！");
+                    return;
+                  }
 
-                    if (selectedCategories.length === 0) {
-                      alert("请选择要删除的类别！");
-                    } else {
+                  if (selectedCategories.length === 0) {
+                    alert("请选择要删除的类别！");
+                  } else {
+                    // Send to backend to delete
+                    const res = await fetch("http://localhost:5001/api/delete-categories", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ categoriesToDelete: selectedCategories }),
+                    });
+                    if (res.ok) {
                       alert(`删除的类别: ${selectedCategories.join(", ")}`);
+                      // Optionally reload categories here
+                      loadCategoriesData();
+                    } else {
+                      alert("删除失败，请重试！");
                     }
-                  }}
-                  style={{
-                    padding: "8px 16px",
-                    backgroundColor: "#f44336",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                  }}
-                >
-                  删除
-                </button>
+                  }
+                }}
+                style={{
+                  padding: "8px 16px",
+                  backgroundColor: "#f44336",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                }}
+              >
+                删除
+              </button>
               </div>
             </div>
             <div className="modal-footer">
@@ -1879,7 +1933,7 @@ const RecordExpensePage = () => {
   return (
     <div class="body">
       <div className="expense-page">
-        <h1>记录 支出</h1>
+        <h1 className="zcool-kuaile-regular" style={{ fontSize: "60px" }}>记录 支出</h1>
         <div className="form-group">
           <label>选择分类</label>
           <div style={{ display: "flex", gap: "10px" }}>
@@ -2047,6 +2101,42 @@ const RecordExpensePage = () => {
   );
 };
 
+const PrepayPage = () => {
+
+
+  return (
+    <div class="body">
+      <div className="expense-page">
+        <h1 className="zcool-kuaile-regular" style={{ fontSize: "60px" }}>查看预定付款</h1>
+
+        <div className="button-group">
+          <Link to="/">
+            <button className="action-btn1">退出</button>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const BudgetPage = () => {
+
+
+  return (
+    <div class="body">
+      <div className="expense-page">
+        <h1 className="zcool-kuaile-regular" style={{ fontSize: "60px" }}>财务规划</h1>
+
+        <div className="button-group">
+          <Link to="/">
+            <button className="action-btn1">退出</button>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 
 const RecordIncomePage = () => {
   const [preTaxAmount, setPreTaxAmount] = React.useState("");
@@ -2153,7 +2243,7 @@ const RecordIncomePage = () => {
   return (
     <div className="body">
       <div className="income-page">
-        <h1>记录 收入</h1>
+        <h1 className="zcool-kuaile-regular" style={{ fontSize: "60px" }}>记录 收入</h1>
         <div className="form-group">
           <label>请输入 税前 总额</label>
           <input
@@ -2177,20 +2267,56 @@ const RecordIncomePage = () => {
             onChange={(e) => setNotes(e.target.value)}
           />
         </div>
-        <div className="form-group">
+        
+       <div className="form-group">
           <label>输入日期</label>
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-          />
+          <div style={{ display: "flex", gap: "10px", alignItems: "stretch" }}>
+          <div style={{ flex: "0 0 80%" }}>
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              style={{ width: "100%", height: "42px", boxSizing: "border-box" }}
+            />
+          </div>
+          <div style={{ flex: "0 0 20%" }}>
+            <button
+              onClick={() => setDate(new Date().toISOString().slice(0, 10))}
+              style={{
+                width: "100%",
+                height: "42px",
+                marginTop:"8px",
+                padding: "10px 16px",
+                backgroundColor: "#f9f9f9",
+                color: "#333",
+                border: "none",
+                borderRadius: "12px",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                cursor: "pointer",
+                fontSize: "16px",
+                transition: "background-color 0.2s ease, box-shadow 0.2s ease",
+                boxSizing: "border-box"
+              }}
+              onMouseOver={(e) => {
+                e.target.style.backgroundColor = "#eaeaea";
+                e.target.style.boxShadow = "0 4px 6px rgba(0,0,0,0.15)";
+              }}
+              onMouseOut={(e) => {
+                e.target.style.backgroundColor = "#f9f9f9";
+                e.target.style.boxShadow = "0 1px 3px rgba(0,0,0,0.1)";
+              }}
+            >
+              Today
+            </button>
+          </div>
+          </div>
         </div>
         <div className="button-group">
-          <button className="action-btn" onClick={handleSave}>
+          <button className="action-btn1" onClick={handleSave}>
             保存
           </button>
           <Link to="/">
-            <button className="action-btn">退出</button>
+            <button className="action-btn1">退出</button>
           </Link>
         </div>
       </div>
@@ -2518,7 +2644,7 @@ const ShowExpensePage = () => {
     /* ---------- LIST-ALL-CATEGORY EXPENSES MODE ---------- */
     if (showType === "List all Category Expenses") {
       let categoryExpenses = {};
-
+      
       // 1) Bucket every expense into its category
       data.expenses.forEach((expense) => {
         const expenseDate = expense.date;
@@ -2561,44 +2687,39 @@ const ShowExpensePage = () => {
       });
       categoryExpenses = sortedData;
       
+      
       /* ---------- Build the final, flattened table ---------- */
       let finalExpenses = [];
       let totalExpenses = 0;
 
       Object.entries(categoryExpenses).forEach(([category, expenses]) => {
-        // Category subtotal
+        // Category subtotal: calculate total for this category
         const categoryTotal = expenses.reduce(
           (sum, expense) => sum + parseFloat(expense.amount),
           0
         );
         totalExpenses += categoryTotal;
 
-        // Title row for this category
+        // Title row for this category (id is set to null or you may choose an identifier)
         finalExpenses.push({
-          category: `${
-            categoriesTranslation[category] || category
-          }  总消费: $${categoryTotal.toFixed(2)}`,
+          id: null,
+          category: `${categoriesTranslation[category] || category}  总消费: $${categoryTotal.toFixed(2)}`,
           amount: "",
           date: "",
           description: "",
           actions: null,
         });
 
-        // Add individual expenses here if desired
+        // For each expense, include all attributes by spreading exp; override amount formatting if needed.
         expenses.forEach((exp) =>
           finalExpenses.push({
-            category: /*categoriesTranslation[exp.category] ||*/ exp.category,
+            ...exp, // preserve all attributes (including id)
             amount: parseFloat(exp.amount).toFixed(2),
-            date: exp.date,
             description: exp.description || "",
             actions: "yes",
           })
         );
-        console.log(expenses);
-        
-        // ----------------------------------------------------
-      }); // <— end of Object.entries  forEach
-
+      });
       console.log("FINAL:", finalExpenses);
 
       const totalExpensesRow = {
@@ -2765,7 +2886,79 @@ const ShowExpensePage = () => {
     // Close dialogs after saving
     closeDialogs();
   };
-  
+
+  // Tooltip for description
+  useEffect(() => {
+    let currentTooltip = null;
+
+    const adjustTooltipPosition = (e) => {
+      if (currentTooltip) {
+        let x = e.clientX + 10;
+        let y = e.clientY + 10;
+        
+        // Use getBoundingClientRect to measure tooltip dimensions
+        const tooltipRect = currentTooltip.getBoundingClientRect();
+        
+        // If the tooltip would overflow to the right, adjust x
+        if (x + tooltipRect.width > window.innerWidth) {
+          x = window.innerWidth - tooltipRect.width - 10;
+        }
+        
+        // If the tooltip would overflow to the bottom, position it above the mouse
+        if (y + tooltipRect.height > window.innerHeight) {
+          y = e.clientY - tooltipRect.height - 10;
+        }
+        
+        currentTooltip.style.left = x + "px";
+        currentTooltip.style.top = y + "px";
+      }
+    };
+
+    const handleMouseMove = (e) => {
+      adjustTooltipPosition(e);
+    };
+
+    const handleMouseOver = (e) => {
+      if (e.target.classList.contains("description")) {
+        // Only show tooltip if text is actually truncated
+        const el = e.target;
+        // For single-line ellipsis (white-space: nowrap)
+        const isOverflowing = el.scrollWidth > el.clientWidth;
+        // For multi-line ellipsis (white-space: normal, overflow-y)
+        // const isOverflowing = el.scrollHeight > el.clientHeight;
+
+        if (!isOverflowing) return;
+
+        const descText = el.getAttribute("data-fulltext");
+        if (!descText) return;
+        currentTooltip = document.createElement("div");
+        currentTooltip.className = "description-tooltip";
+        currentTooltip.innerText = descText;
+        document.body.appendChild(currentTooltip);
+        adjustTooltipPosition(e);
+      }
+    };
+
+    const handleMouseOut = (e) => {
+      if (e.target.classList.contains("description") && currentTooltip) {
+        document.body.removeChild(currentTooltip);
+        currentTooltip = null;
+      }
+    };
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseover", handleMouseOver);
+    document.addEventListener("mouseout", handleMouseOut);
+
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseover", handleMouseOver);
+      document.removeEventListener("mouseout", handleMouseOut);
+    };
+  }, []);
+
+
+
   return (
     <div className="modify-expense-container">
       {/* Header Section */}
@@ -3138,12 +3331,15 @@ const ShowExpensePage = () => {
 
 
 
-              <div>{expense.description}</div>
+              <div className="description" data-fulltext={expense.description}>
+                {expense.description}
+              </div>
+
               <div>
               {expense.actions !== null && (
                 <>
                   <button className="action-btn" onClick={() => handleModifyClick(expense)}>
-                    修改
+                    修改 
                   </button>
                   <button className="action-btn" onClick={() => handleDeleteClick(expense)}>
                     删除
@@ -4302,6 +4498,9 @@ const App = () => {
 
           <Route path="/showExpense" element={<ShowExpensePage />} />
           <Route path="/showIncome" element={<ShowIncomePage />} />
+
+          <Route path="/checkPrepay" element={<PrepayPage />} />
+          <Route path="/checkBudget" element={<BudgetPage />} />
         </Routes>
       </Router>
     </DataContext.Provider>
