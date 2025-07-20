@@ -16,7 +16,20 @@
   font-weight: 400;
   font-style: normal;
 }
-
+body {
+  /* background-color: #1C1C1E; Apple dark mode background */
+  /* color: #FFFFFF; Optional: set text color to white */
+}
+body,
+.left-box,
+.right-box,
+.bottom-box,
+.flip-container .front,
+.flip-container .back {
+  transition-property: background-color;
+  transition-duration: 1.5s;
+  transition-timing-function: ease;
+}
 
 /* homepage */
 .panel_title{
@@ -28,7 +41,7 @@
   /* 18 before change*/
 }
 .panel_selector_size{
-  font-size: 15px;/* None before change*/
+  font-size: 20px;/* None before change*/
 
   width: 100%;
   margin-top:5px;
@@ -37,6 +50,49 @@
 .panel_font_size_enlarged{
   font-size: 28px;/* 18 before change*/
 }
+.icon-arrow-up2::before,
+.icon-arrow-down2::before {
+  display: inline-block;
+  height: 100%;
+  width: 100%;
+  line-height: 31px;
+  vertical-align: middle;
+  text-align: center;
+  font-size: 1em; /* Or adjust as needed */
+  content: ''; /* Icon font will set the content */
+}
+[class^="icon-button"] {
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+  background-color: transparent;
+  border: none;
+  border-radius: 50%;
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.icon-button2 {
+  bottom: 50px;
+  left: 5px;
+}
+
+[class^="icon-button"] span {
+  font-size: 20px;
+  line-height: 1;
+  vertical-align: middle;
+  color: black; /* Default icon color */
+  transition: color 0.3s ease;
+}
+
+[class^="icon-button"]:hover {
+  background-color: rgba(0, 0, 0, 0.5); /* Darker tint on hover */
+}
+
+[class^="icon-button"]:hover span {
+  color: white; /* Turn icon white on hover */
+}
+
 
 
 
@@ -64,6 +120,20 @@
   transition: background-color 0.2s ease, box-shadow 0.2s ease;
   box-sizing: border-box;
 }
+
+/*modal*/
+.modal-title{
+  margin-bottom: 20px;
+}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -96,6 +166,7 @@
 .left-box,
 .right-box,
 .bottom-box {
+  /* background-color: rgba(248, 248, 248, 0.8); */
   background-color: #f8f8f8;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -119,6 +190,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  
 }
 
 .button-box {
@@ -191,6 +263,10 @@
   max-width: 90%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   overflow: hidden;
+  height:70%;
+
+  display: flex;
+  flex-direction: column;
 }
 
 .homepage-container .modal-header {
@@ -200,6 +276,8 @@
   text-align: center;
   font-size: 18px;
   font-weight: bold;
+
+  flex-shrink: 0;
 }
 
 .homepage-container .modal-body {
@@ -207,39 +285,87 @@
   text-align: center;
   font-size: 16px;
   color: #555;
-  max-height: 50vh;      /* Limit height of body */
+  /* max-height: 50vh;      Limit height of body */
   overflow-y: auto;      /* Scroll only body if content is too long */
+  
+  flex:1;
+}
+.homepage-container .modal-tabs {
+  /* tab holder */
+  display: flex;
+  background-color: #0B10191A;
+  border-bottom: 1px solid #ccc;
 }
 
+.homepage-container .modal-tab {
+  /* selected tab */
+  padding: 10px 20px;
+  cursor: pointer;
+  background-color: #ddd;
+  border: 1px solid #ccc;
+  border-bottom: none;
+  margin-right: 5px;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  font-weight: bold;
+  color: #333;
+}
+
+.homepage-container .modal-tab.active {
+  background-color: white;
+  border-bottom: 1px solid white; /* visually remove the border */
+}
+
+
 .homepage-container .modal-footer {
-  display: flex;
-  justify-content: space-between;
+  /* display: flex;*/
+  /* justify-content: space-between; */ 
   padding: 10px 20px;
   background-color: #f1f1f1;
   border-top: 1px solid #ddd;
+  text-align: center;
+
+  flex-shrink: 0;
 }
 
 .homepage-container .modal-footer .modal-btn {
+  background-color: rgba(255, 255, 255, 0.1); 
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(4px);
+  
   padding: 10px 20px;
   font-size: 14px;
   border-radius: 5px;
-  border-radius: 5px;
   cursor: pointer;
   
-  border: 2px solid #333;
+  /* border: 2px solid #333; */
   transition: background-color 0.3s ease;
-}
-/* Green background on hover for the first button */
-.homepage-container .modal-footer .modal-btn:first-child:hover {
-  background-color: #4CAF50;
-  color:#fff;
+
+
 }
 
+.homepage-container .modal-footer .modal-btn:hover {
+  /* background-color: rgba(45,190,171,0.1);            */
+  background-color: rgba(51,109,244,0.2);
+  backdrop-filter: blur(8px);                    /* 毛玻璃效果 */
+  -webkit-backdrop-filter: blur(8px);            /* Safari 支持 */
+  border: 1px solid rgba(255, 255, 255, 0.15);    /* 柔和白边 */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);        /* 柔和黑色阴影 */
+  /* color:white; */
+}
+
+
+/* Green background on hover for the first button
+.homepage-container .modal-footer .modal-btn:first-child:hover {
+  background-color: #87b3ff;
+  color:#fff;
+} */
+
 /* Red background on hover for the last button */
-.homepage-container .modal-footer .modal-btn:last-child:hover {
+/* .homepage-container .modal-footer .modal-btn:last-child:hover {
   background-color: #F44336;
   color:#fff;
-}
+} */
 
 
 
@@ -428,6 +554,8 @@ h1 {
   position: relative;
   overflow: hidden;
   z-index: 1;
+
+  box-sizing: border-box;
 }
 .action-btn1:hover {
   /* background-color: #444; */
@@ -483,10 +611,11 @@ h1 {
 }
 .h-nobold{font-weight: normal;}
 .positive{
-  color:green;
+  /* color:green; */
+  color: #28a864;
 }
 .negative{
-  color:red;
+  color:#FF2800;
 }
 
 
@@ -523,7 +652,7 @@ h1 {
 
 label {
   /* font-size: 18px; */
-  margin-bottom: 8px;
+  /* margin-bottom: 8px; */
   display: block;
 }
 
@@ -1119,6 +1248,9 @@ input[type="number"] {
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
+    /* background-color: rgba(248, 248, 248, 0.8); */
+  background-color: #f8f8f8;;
+
 }
 
 F/* ---------------- SLIDE MODE (Now using exact offset) ---------------- */
@@ -1160,10 +1292,14 @@ F/* ---------------- SLIDE MODE (Now using exact offset) ---------------- */
 }
 
 /* Enable smooth transition after page loads */
-.flip-container.ready-to-flip .front, 
+.flip-container.ready-to-flip .front,
 .flip-container.ready-to-flip .back {
-  transition: transform 1s ease-in-out;
+  transition:
+    transform 1s ease-in-out,
+    background-color 1.5s ease;
+  backface-visibility: hidden;
 }
+
 
 /* BACK PANEL STYLES (Preserving Your Layout) */
 .back {
@@ -1177,7 +1313,6 @@ F/* ---------------- SLIDE MODE (Now using exact offset) ---------------- */
 
 /* Your existing styles for front panel */
 .flip-container .front {
-  background-color: #f8f8f8;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 100%;
@@ -1194,7 +1329,7 @@ F/* ---------------- SLIDE MODE (Now using exact offset) ---------------- */
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f8f9fa;
+  /* background-color: #f8f9fa; */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   border-radius: 10px;
@@ -1235,16 +1370,20 @@ F/* ---------------- SLIDE MODE (Now using exact offset) ---------------- */
 }
 
 .adjust-btn {
-  background-color: #4caf50;
-  color: white;
+  /* background-color: #4caf50; */
+  /* color: white; */
   padding: 8px 16px;
-  border: none;
+  /* border: none; */
+    border: 2px solid #333 ;
+
   border-radius: 5px;
   cursor: pointer;
   font-size: 14px;
+  transition: background-color 0.2s ease;
 }
 
 .adjust-btn:hover {
-  background-color: #45a049;
+  /* background-color: #45a049; */
+  background-color: rgba(0, 0, 0, 0.3);
 }
 
