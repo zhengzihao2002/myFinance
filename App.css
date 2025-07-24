@@ -759,7 +759,9 @@ label {
   /* margin-bottom: 8px; */
   display: block;
 }
-
+.expense-page label,.income-page label{
+  font-size: 20px;
+}
 .expense-page select,
 .expense-page input,
 .expense-page textarea,
@@ -768,15 +770,39 @@ label {
 .income-page textarea{
   width: 100%;
   padding: 12px;
-  font-size: 16px;
+  /* font-size: 16px; */
   margin-top: 8px;
   border-radius: 5px;
   border: 1px solid #ccc;
+  font-size: 20px;
+}
+.expense-page textarea,.income-page textarea{
+  min-height: 150px;
+}
+@keyframes breathe-shadow {
+  0% {
+    box-shadow: 0 0 0 0.3rem rgba(0, 123, 255, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 0 0.5rem rgba(0, 123, 255, 0.4);
+  }
+  100% {
+    box-shadow: 0 0 0 0.3rem rgba(0, 123, 255, 0.25);
+  }
 }
 
-textarea {
-  min-height: 100px;
+.expense-page select:focus,
+.expense-page input:focus,
+.expense-page textarea:focus,
+.income-page select:focus,
+.income-page input:focus,
+.income-page textarea:focus {
+  outline: none;
+  border: 2px solid #80bdff;
+  animation: breathe-shadow 2.4s ease-in-out infinite;
 }
+
+
 
 .modal-container button {
   width: 48%;
