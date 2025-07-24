@@ -996,39 +996,60 @@ const HomePage = () => {
 
   const [activeTab, setActiveTab] = useState("add")
 
+  const [showButtons, setShowButtons] = useState(true);
+  let inactivityTimer = useRef(null);
+  useEffect(() => {
+    const handleMouseMove = () => {
+      setShowButtons(true);
+
+      clearTimeout(inactivityTimer.current);
+      inactivityTimer.current = setTimeout(() => {
+        setShowButtons(false);
+      }, 6000); // 6 seconds
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      clearTimeout(inactivityTimer.current);
+    };
+  }, []);
+
+
 
 
   
 
   return (
     <div className="homepage-container">
-      <button className="icon-button" onClick={(e) => {
-        e.stopPropagation();
-        setMaskNumbers(prev => !prev);
-      }}>
+      <button
+        className={`icon-button ${!showButtons ? "icon-fade-out" : ""}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          setMaskNumbers((prev) => !prev);
+        }}
+      >
         <span
           id="privacy-icon"
-          className={
-            maskNumbers
-              ? "icon-eye-blocked "
-              : "icon-eye "
-          }
+          className={maskNumbers ? "icon-eye-blocked" : "icon-eye"}
         ></span>
       </button>
-      <button className="icon-button2" onClick={(e) => {
-        e.stopPropagation();
-        const newDaylight = !daylight;  // Toggling daylight state
-        setDayLight(newDaylight);  // Update state
-        changeLightMode(newDaylight);  // Pass the updated state to changeLightMode
-      }}>
+
+      <button
+        className={`icon-button2 ${!showButtons ? "icon-fade-out" : ""}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          const newDaylight = !daylight;
+          setDayLight(newDaylight);
+          changeLightMode(newDaylight);
+        }}
+      >
         <span
-          className={
-            daylight
-              ? "icon-brightness-contrast"
-              : "icon-sun"
-          }
+          className={daylight ? "icon-brightness-contrast" : "icon-sun"}
         ></span>
-</button>
+      </button>
+
 
 
       <div className="homepage-left">
@@ -1428,12 +1449,12 @@ const HomePage = () => {
           <div
             className="title-section panel_title"
             style={{
-              flex: "0 0 15%", // Takes 15% of height
+              // flex: "0 0 15%", // Takes 15% of height
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
               marginBottom: "10px",
-              // backgroundColor:"lightskyblue" // for testing purposes
+              // backgroundColor:"lightskyblue", // for testing purposes
               position:"absolute",
               top:"30px",
             }}
@@ -1445,14 +1466,16 @@ const HomePage = () => {
           <div
             className="content-section"
             style={{
-              flex: "0 0 75%", // Takes 75% of height
+              //flex: "0 0 75%", // Takes 75% of height
+              height: "100%", // Ensures it fills the remaining space
               display: "flex",
-              gap: "20px",
+              // gap: "20px",
               padding: "20px",
               width:"100%",
+              marginTop:"50px",
               // overflow:"hidden",
-              position:"absolute",
-              top:"10px",
+              // position:"absolute",
+              // top:"10px",
               // backgroundColor: "lightgreen", // Make background transparent
             }}
           >
@@ -2435,9 +2458,9 @@ const PrepayPage = () => {
               <div className="expense-display">
                 {/* Table Header */}
                 <div className="table-header">
-                  <div>编号</div>
+                  <div>时间段</div> {/*每月11号*/}
                   <div>类别</div>
-                  <div>日期</div>
+                  <div>下个日期</div>
                   <div>金额</div>
                   <div>描述</div>
                   <div>操作</div>
