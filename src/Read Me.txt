@@ -1,0 +1,6 @@
+Download Font
+Unzip
+Put fonts folder in your src
+We need style.css, but copy code into font.css in src
+We need selection.json
+Paste like icon-spinner2 into classname

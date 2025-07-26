@@ -114,6 +114,8 @@ const HomePage = () => {
   const [modalContentOther, setModalContentOther] = useState("");
   const [isModalOpenMiscellaneous, setIsModalOpenMiscellaneous] = useState(false);
   const [modalContentMiscellaneous, setModalContentMiscellaneous] = useState("");
+  const [maskNumbers, setMaskNumbers] = useState(true);
+  const [daylight, setDayLight] = useState(true);
 
   const openModalCategory = (content) => {
     setModalContentCategory(content);
@@ -166,10 +168,9 @@ const HomePage = () => {
   const [chartData, setChartData] = useState([["Expenses", "Dollars"]]);
   const [chartTitle, setChartTitle] = useState("支出概览 - 全部显示");
   const currentYear = new Date().getFullYear(); // Get the current year
-
-  const options = {
-    //title: chartTitle,
-    //pieHole: 0.4, // Creates a Donut Chart. Does not do anything when is3D is enabled
+  let options = {
+    // title: timeRange,
+    pieHole: 0.4, // Creates a Donut Chart. Does not do anything when is3D is enabled
     is3D: true, // Enables 3D view
     // pieStartAngle: 100, // Rotates the chart
     sliceVisibilityThreshold: 0.02, // Hides slices smaller than 0.1% (0.001)
@@ -179,23 +180,54 @@ const HomePage = () => {
       alignment: "bottom",
       textStyle: {
         color: "#233238",
-        fontSize: 14,
+        fontSize: 22,
       },
     },
+    tooltip: {
+      // trigger: "selection", // Only show tooltip when a slice is clicked
+      textStyle: {
+        fontSize: 14, // Set your desired tooltip font size here
+        color: "#233238", // Optional: tooltip text color
+        bold: true, 
+      },
+      showColorCode: true, // Optional: show color box in tooltip
+    },
     // colors: [
-    //   "#FF5733", // Red
-    //   "#33FF57", // Green
-    //   "#3357FF", // Blue
-    //   "#FF33A1", // Pink
-    //   "#FF8C00", // Orange
-    //   "#9B30FF", // Purple
-    //   "#00CED1", // Turquoise
-    //   "#FFD700", // Yellow
-    //   "#8B4513", // Brown
-    //   "#ADFF2F", // Green-Yellow
-    //   "#FF1493", // Deep Pink
-    //   "#00BFFF", // Deep Sky Blue
+    //   "#4B5563", // Slate Gray
+    //   "#2563EB", // Blue
+    //   "#059669", // Emerald
+    //   "#F59E42", // Amber
+    //   "#D97706", // Orange
+    //   "#A21CAF", // Purple
+    //   "#DC2626", // Red
+    //   "#0EA5E9", // Sky Blue
+    //   "#7C3AED", // Violet
+    //   "#F43F5E", // Rose
+    //   "#10B981", // Green
+    //   "#FBBF24", // Yellow
     // ],
+    colors: [
+      "#8AD1C2", // Mint
+      "#9F8AD1", // Lavender
+      "#D18A99", // Rose
+      "#BCD18A", // Olive
+      "#D1C28A", // Sand
+      "#8AC6D1", // Light Teal
+      "#8AAAD1", // Soft Blue
+      "#D1A88A", // Peach
+      "#A3D18A", // Light Green
+      "#D18ABF", // Pinkish Lavender
+      "#B1D18A", // Light Olive
+      "#8AD1A0", // Light Mint
+      "#D1B78A", // Tan
+      "#8A98D1", // Periwinkle
+      "#D18A8A", // Soft Coral
+      "#A88AD1", // Soft Purple
+      "#8AD1B8", // Aqua
+      "#C2D18A", // Light Chartreuse
+      "#8AD1C9", // Pale Cyan
+      "#D18AC2", // Pastel Magenta
+    ],
     backgroundColor: 'transparent', // Set the background color here
   };
 
@@ -616,7 +648,6 @@ const HomePage = () => {
   
   const lastMonthYear = lastMonth === 0 ? currentYear - 1 : currentYear;
   const monthBeforeLastYear = lastMonth === 0 ? currentYear - 1 : (lastMonth - 1 < 0 ? currentYear - 1 : currentYear);
-  console.log(123123,lastMonth,lastMonthYear,monthBeforeLast,monthBeforeLastYear);
    
 
 
@@ -627,6 +658,9 @@ const HomePage = () => {
   const lastMonthIncome = Number(getMonthlyTotal(data.income, lastMonth , lastMonthYear)) || 0;
   const prevMonthIncome = Number(getMonthlyTotal(data.income, monthBeforeLast, monthBeforeLastYear)) || 0;
 
+  console.log("上个月支出",data.expenses.filter(function(record) {          
+        return Number(record.date.substring(5, 7)) === lastMonth && Number(record.date.substring(0, 4)) === lastMonthYear;  
+    }));
   
   
 
@@ -637,16 +671,19 @@ const HomePage = () => {
     const isIncrease = change > 0;
     const color = isExpense
       ? isIncrease
-        ? "red"
-        : "green"
+        ? "#FF2800"
+        : "#28a864"
       : isIncrease
-      ? "green"
-      : "red";
+      ? "#28a864"
+      : "#FF2800";
     const arrow = isIncrease ? "↑" : "↓";
+    const arrowClass = isIncrease ? "icon-arrow-up2" : "icon-arrow-down2";
 
     return (
-      <span style={{ color, fontWeight: "bold" }}>
-        {arrow} {Math.abs(change).toFixed(1)}%
+      <span style={{ color, fontWeight: "bold",height: "31px",
+                    lineHeight: "31px",display: "inline-block",
+                    overflow: "hidden",}}>
+        <span className={arrowClass} style={{height: "31px",lineHeight: "31px",display: "inline-block",  }}></span> {Math.abs(change).toFixed(1)}%
       </span>
     );
   };
@@ -665,14 +702,15 @@ const HomePage = () => {
   let highestDecrease = 0;
   let lowestCategoryChange = null;
 
-  function categoryTotals(records, month) {  
+  function categoryTotals(records, month,year) {  
       var totals = {};  
 
       for (var i = 0; i < records.length; i++) {  
           var record = records[i];  
           var recordMonth = Number(record.date.substring(5,7));
+          var recordyear = Number(record.date.substring(0,4));
 
-          if (recordMonth === month) {  
+          if (recordMonth === month && recordyear === year) {  
               if (!totals[record.category]) {  
                   totals[record.category] = 0;  
               }  
@@ -684,8 +722,11 @@ const HomePage = () => {
   }
 
   // Get category totals for last month and the month before
-  var lastMonthCategories = categoryTotals(data.expenses, lastMonth);  
-  var prevMonthCategories = categoryTotals(data.expenses, monthBeforeLast);  
+  var lastMonthCategories = categoryTotals(data.expenses, lastMonth,currentYear);  
+  var prevMonthCategories = categoryTotals(data.expenses, monthBeforeLast,currentYear); 
+  
+  
+  
 
   // Filter out categories that don't exceed 100 in both months
   var filteredCategories = Object.keys(lastMonthCategories).filter(function(category) {  
@@ -725,7 +766,7 @@ const HomePage = () => {
 
   function TransactionDetails({ transaction }) {
     if (!transaction) {
-      return <p style={{ textAlign: "center", fontSize: "18px", color: "gray" }}>未找到交易</p>;
+      return <p className="panel_font_size" style={{ textAlign: "center", color: "gray" }}>未找到交易</p>;
     }
   
     return (
@@ -919,10 +960,61 @@ const HomePage = () => {
   // }, [animationType, dragStartY]);
 
 
+  const maskDollar = (str) => {
+    if (!maskNumbers) return str;
+
+
+    // return String(str).replace(/\$[0-9,.]+/g, (match) => {
+    //   return "$" + "*".repeat(match.length - 1);
+    // });
+
+
+    if (!maskNumbers) return str;
+    // Always output $*******.** (or whatever max length you want)
+    // Count the length of the original string (excluding $)
+    return "$" + "•".repeat(8);
+  };
+  const changeLightMode = (newDaylight) => {
+    if (!newDaylight) {
+      // Dark Mode
+      document.body.style.backgroundColor = "rgba(28, 28, 30, 0.9)"; // Softer dark background
+
+      document.querySelectorAll(".left-box, .right-box, .bottom-box, .flip-container .front, .flip-container .back").forEach(el => {
+        el.style.backgroundColor = "rgba(119, 119, 119, 0.8)";
+      });
+    } else {
+      // Light Mode
+      document.body.style.backgroundColor = "";
+      document.querySelectorAll(".left-box, .right-box, .bottom-box, .flip-container .front, .flip-container .back").forEach(el => {
+        el.style.backgroundColor = "#f8f8f8";
+      });
+    }
+  };
 
 
 
 
+  const [activeTab, setActiveTab] = useState("add")
+
+  const [showButtons, setShowButtons] = useState(true);
+  let inactivityTimer = useRef(null);
+  useEffect(() => {
+    const handleMouseMove = () => {
+      setShowButtons(true);
+
+      clearTimeout(inactivityTimer.current);
+      inactivityTimer.current = setTimeout(() => {
+        setShowButtons(false);
+      }, 6000); // 6 seconds
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      clearTimeout(inactivityTimer.current);
+    };
+  }, []);
 
 
 
@@ -931,6 +1023,35 @@ const HomePage = () => {
 
   return (
     <div className="homepage-container">
+      <button
+        className={`icon-button ${!showButtons ? "icon-fade-out" : ""}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          setMaskNumbers((prev) => !prev);
+        }}
+      >
+        <span
+          id="privacy-icon"
+          className={maskNumbers ? "icon-eye-blocked" : "icon-eye"}
+        ></span>
+      </button>
+
+      <button
+        className={`icon-button2 ${!showButtons ? "icon-fade-out" : ""}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          const newDaylight = !daylight;
+          setDayLight(newDaylight);
+          changeLightMode(newDaylight);
+        }}
+      >
+        <span
+          className={daylight ? "icon-brightness-contrast" : "icon-sun"}
+        ></span>
+      </button>
+
+
+
       <div className="homepage-left">
         <div className="top-boxes">
           {/* Filter Option + Sub Option combo boxes , and total income + expense of that , and a 净利润 of that */}
@@ -946,9 +1067,8 @@ const HomePage = () => {
           >
             {/* Title */}
             <div
+              className="panel_title"
               style={{
-                fontWeight: "bold",
-                fontSize: "24px",
                 marginBottom: "20px",
                 textAlign: "center",
               }}
@@ -969,20 +1089,16 @@ const HomePage = () => {
                 }}
               >
                 {/* 时间段 Combo Box */}
-                <label style={{ width: "100%" }}>
+                <label className="panel_font_size" style={{ width: "100%" }}>
                   时间段:
                   <select
+                    className="panel_selector_size"
                     value={timeRangeTopLeft}
                     onChange={(e) => {
                       const newValue = e.target.value;
                       setTimeRangeTopLeft(newValue);
                       setSubOptionTopLeft(""); // Reset sub-option when time range changes
                       handleAutoSelectTopLeft(newValue); // Automatically select the current option
-                    }}
-                    style={{
-                      width: "100%",
-                      marginTop: "5px",
-                      padding: "5px",
                     }}
                   >
                     <option value="按月显示">按月显示</option>
@@ -995,17 +1111,13 @@ const HomePage = () => {
                 </label>
 
                 {/* 子选项 Combo Box */}
-                <label style={{ width: "100%" }}>
+                <label className="panel_font_size"  style={{ width: "100%" }}>
                   子选项:
                   <select
+                    className="panel_selector_size"
                     value={subOptionTopLeft}
                     onChange={(e) => setSubOptionTopLeft(e.target.value)}
                     disabled={["前3个月", "前6个月", "前12个月"].includes(timeRangeTopLeft)}
-                    style={{
-                      width: "100%",
-                      marginTop: "5px",
-                      padding: "5px",
-                    }}
                   >
                     <option value="">请选择</option>
                     {timeRangeTopLeft === "按月显示" &&
@@ -1086,26 +1198,38 @@ const HomePage = () => {
                   return (
                     <>
                       <div>
-                        <span style={{ fontWeight: "bold", fontSize: "18px" }}>{period} 总收入: </span>
-                        <span style={{ color: "green", fontSize: "20px" }}>
-                          ${totalIncome.toFixed(2)}
-                        </span>
-                      </div>
-                      <div>
-                        <span style={{ fontWeight: "bold", fontSize: "18px" }}>{period} 总支出: </span>
-                        <span style={{ color: "red", fontSize: "20px" }}>
-                          ${totalExpenses.toFixed(2)}
-                        </span>
-                      </div>
-                      <div>
-                        <span style={{ fontWeight: "bold", fontSize: "18px" }}>{period} 净利润: </span>
+                        <span className="panel_font_size" style={{ fontWeight: "bold" }}>{period} 总收入: </span>
                         <span
-                          style={{
-                            color: netProfit > 0 ? "green" : "red",
-                            fontSize: "20px",
-                          }}
+                          className={`panel_font_size_enlarged ${
+                            !maskNumbers ? "positive" : ""
+                          }`}
                         >
-                          {netProfit.toFixed(2)<0?"-$"+Math.abs(netProfit.toFixed(2)):"$"+netProfit.toFixed(2)}
+                          {/* ${totalIncome.toFixed(2)} */}
+                          {maskDollar(`$${totalIncome.toFixed(2)}`)}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="panel_font_size" style={{ fontWeight: "bold" }}>{period} 总支出: </span>
+                        <span
+                          className={`panel_font_size_enlarged ${
+                            !maskNumbers ? "negative" : ""
+                          }`}
+                        >
+                          {/* ${totalExpenses.toFixed(2)} */}
+                          {maskDollar(`$${totalExpenses.toFixed(2)}`)}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="panel_font_size" style={{ fontWeight: "bold" }}>{period} 净利润: </span>
+                        <span
+                          className={`panel_font_size_enlarged ${
+                            !maskNumbers ? (netProfit > 0 ? "positive" : "negative") : ""
+                          }`}
+                        >
+                          {/* {netProfit.toFixed(2)<0?"-$"+Math.abs(netProfit.toFixed(2)):"$"+netProfit.toFixed(2)} */}
+                          {maskDollar(netProfit.toFixed(2) < 0 
+                          ? "-$" + Math.abs(netProfit).toFixed(2) 
+                          : "$" + netProfit.toFixed(2))}
                           
                         </span>
                       </div>
@@ -1130,9 +1254,8 @@ const HomePage = () => {
           >
             {/* Title */}
             <div
+            className="panel_title"
               style={{
-                fontWeight: "bold",
-                fontSize: "24px",
                 marginBottom: "20px",
                 textAlign: "center",
               }}
@@ -1143,41 +1266,197 @@ const HomePage = () => {
             {/* Content */}
             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", width: "100%" }}>
               {/* Expenses */}
-              <div style={{ fontSize: "18px", marginBottom: "10px" }}>
-                <strong>支出:</strong> ${lastMonthExpenses.toFixed(2)} {expenseChange}
+              <div className="panel_font_size" style={{ marginBottom: "10px", minHeight: "31px" }}>
+                <strong
+                  style={{
+                    display: "inline-block",
+                    height: "31px",
+                    lineHeight: "31px",
+                    verticalAlign: "middle",
+                    // Optionally add minWidth if you want all titles to align
+                    marginRight:"15px",
+                  }}
+                >
+                  支出:  
+                </strong>
+                <span
+                  style={{
+                    display: "inline-block",
+                    minWidth: "90px",
+                    height: "31px",
+                    lineHeight: "31px",
+                    letterSpacing: "1px",
+                    verticalAlign: "middle",
+                    overflow: "hidden",
+                    whiteSpace: "nowrap"
+                  }}
+                >
+                  {maskDollar(`$${lastMonthExpenses.toFixed(2)}`)}
+                </span>
+                <span
+                  style={{
+                    display: "inline-block",
+                    minWidth: "60px",
+                    height: "31px",
+                    lineHeight: "31px",
+                    verticalAlign: "middle",
+                    overflow: "hidden",
+                    whiteSpace: "nowrap"
+                  }}
+                >
+                  {maskNumbers ? "•••••" : expenseChange}
+                </span>
               </div>
 
               {/* Income */}
-              <div style={{ fontSize: "18px", marginBottom: "10px" }}>
-                <strong>收入:</strong> ${lastMonthIncome.toFixed(2)} {incomeChange}
+              <div className="panel_font_size" style={{ marginBottom: "10px", minHeight: "31px" }}>
+                <strong
+                  style={{
+                    display: "inline-block",
+                    height: "31px",
+                    lineHeight: "31px",
+                    verticalAlign: "middle",
+                    // Optionally add minWidth if you want all titles to align
+                    marginRight:"15px",
+                  }}
+                >
+                  收入:
+                </strong>
+                <span
+                  style={{
+                    display: "inline-block",
+                    minWidth: "90px",
+                    height: "31px",
+                    lineHeight: "31px",
+                    letterSpacing: "1px",
+                    verticalAlign: "middle",
+                    overflow: "hidden",
+                    whiteSpace: "nowrap"
+                  }}
+                >
+                  {maskDollar(`$${lastMonthIncome.toFixed(2)}`)}
+                </span>
+                <span
+                  style={{
+                    display: "inline-block",
+                    minWidth: "60px",
+                    height: "31px",
+                    lineHeight: "31px",
+                    verticalAlign: "middle",
+                    overflow: "hidden",
+                    whiteSpace: "nowrap"
+                  }}
+                >
+                  {maskNumbers ? "•••••" : incomeChange}
+                </span>
               </div>
 
               {/* Highest Category Increase */}
-              <div style={{ fontSize: "18px", marginBottom: "10px" }}>
-                <strong>最大支出增长类别:</strong> {categoriesTranslation[highestCategory]} {highestCategoryChange}
+              <div className="panel_font_size" style={{ marginBottom: "10px", minHeight: "31px" }}>
+                <strong
+                  style={{
+                    display: "inline-block",
+                    height: "31px",
+                    lineHeight: "31px",
+                    verticalAlign: "middle",
+                    // Optionally add minWidth if you want all titles to align
+                  }}
+                >
+                  最大支出增长类别:
+                </strong>
+                <span
+                  style={{
+                    display: "inline-block",
+                    minWidth: "80px",
+                    height: "31px",
+                    lineHeight: "31px",
+                    textAlign: "center",
+                    verticalAlign: "middle",
+                    overflow: "hidden",
+                    whiteSpace: "nowrap"
+                  }}
+                >
+                  {maskNumbers ? "•••••" : (categoriesTranslation[highestCategory] || highestCategory)}
+                </span>
+                <span
+                  style={{
+                    display: "inline-block",
+                    minWidth: "60px",
+                    height: "31px",
+                    lineHeight: "31px",
+                    textAlign: "left",
+                    verticalAlign: "middle",
+                    overflow: "hidden",
+                    whiteSpace: "nowrap"
+                  }}
+                >
+                  {maskNumbers ? "•••••" : highestCategoryChange}
+                </span>
               </div>
 
               {/* Highest Category Decrease */}
-              <div style={{ fontSize: "18px", marginBottom: "10px" }}>
-                <strong>最大支出下降类别:</strong> {lowestCategory!="无"?categoriesTranslation[lowestCategory]:"暂无（消费超过100刀的）最大下降类别"} {lowestCategoryChange}
+              <div className="panel_font_size" style={{ marginBottom: "10px", minHeight: "31px" }}>
+                <strong
+                  style={{
+                    display: "inline-block",
+                    height: "31px",
+                    lineHeight: "31px",
+                    verticalAlign: "middle",
+                  }}
+                >
+                  最大支出下降类别:
+                </strong>
+                <span
+                  style={{
+                    display: "inline-block",
+                    minWidth: "80px",
+                    height: "31px",
+                    lineHeight: "31px",
+                    textAlign: "center",
+                    verticalAlign: "middle",
+                    overflow: "hidden",
+                    whiteSpace: "nowrap"
+                  }}
+                >
+                  {maskNumbers
+                    ? "•••••"
+                    : (lowestCategory !== "无"
+                        ? (categoriesTranslation[lowestCategory] || lowestCategory)
+                        : "暂无（消费超过100刀的）最大下降类别")}
+                </span>
+                <span
+                  style={{
+                    display: "inline-block",
+                    minWidth: "60px",
+                    height: "31px",
+                    lineHeight: "31px",
+                    textAlign: "left",
+                    verticalAlign: "middle",
+                    overflow: "hidden",
+                    whiteSpace: "nowrap"
+                  }}
+                >
+                  {maskNumbers ? "•••••" : lowestCategoryChange}
+                </span>
               </div>
             </div>
           </div>
 
           {/* <div className="right-box">Compare last month to the month before that of income and expense,of each up or down by how many percent and showing the total in dollars. OR which category has gone up highest in percent, if not all has gone down</div> */}
         </div>
-        <div className="bottom-box" style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+        <div className="bottom-box" style={{ display: "flex", flexDirection: "column", height: "100%",position:"relative" }}>
           {/* Title Section */}
           <div
-            className="title-section"
+            className="title-section panel_title"
             style={{
-              flex: "0 0 15%", // Takes 15% of height
+              // flex: "0 0 15%", // Takes 15% of height
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              fontSize: "24px",
-              fontWeight: "bold",
               marginBottom: "10px",
+              // backgroundColor:"lightskyblue", // for testing purposes
+              position:"absolute",
+              top:"30px",
             }}
           >
             支出概览 ({["按月显示", "按季度显示", "按年显示"].includes(timeRange) ? subOption || "未选择" : timeRange})
@@ -1187,13 +1466,17 @@ const HomePage = () => {
           <div
             className="content-section"
             style={{
-              flex: "0 0 75%", // Takes 75% of height
+              //flex: "0 0 75%", // Takes 75% of height
+              height: "100%", // Ensures it fills the remaining space
               display: "flex",
-              gap: "20px",
+              // gap: "20px",
               padding: "20px",
               width:"100%",
-              overflow:"visible",
-              position:"relative"
+              marginTop:"50px",
+              // overflow:"hidden",
+              // position:"absolute",
+              // top:"10px",
+              // backgroundColor: "lightgreen", // Make background transparent
             }}
           >
             {/* Left Side: Filters and Button */}
@@ -1205,24 +1488,23 @@ const HomePage = () => {
                 flexDirection: "column",
                 gap: "15px",
                 justifyContent: "flex-start", // Aligns items at the top
+                justifyContent: "center",
                 alignItems: "flex-start", // Left-aligned horizontally
+                overflow: "hidden", // Prevents overflow
+                position: "relative",
               }}
             >
               {/* 时间段 Combo Box */}
-              <label style={{ width: "100%", fontSize: "16px" }}>
+              <label className="panel_font_size" style={{ width: "100%" }}>
                 时间段:
                 <select
+                  className="panel_selector_size"
                   value={timeRange}
                   onChange={(e) => {
                     const newValue = e.target.value;
                     setTimeRange(newValue);
                     setSubOption(""); // Reset sub-option when time range changes
                     handleAutoSelectBottom(newValue); // Automatically select the current option
-                  }}
-                  style={{
-                    width: "100%",
-                    marginTop: "5px",
-                    padding: "8px",
                   }}
                 >
                   <option value="全部显示">全部显示</option>
@@ -1235,19 +1517,15 @@ const HomePage = () => {
               </label>
 
               {/* 子选项 Combo Box */}
-              <label style={{ width: "100%", fontSize: "16px" }}>
+              <label className="panel_font_size" style={{ width: "100%" }}>
                 子选项:
                 <select
+                  className="panel_selector_size"
                   value={subOption}
                   onChange={(e) => {
                     setSubOption(e.target.value);
                   }}
                   disabled={["前3个月", "前6个月", "全部显示"].includes(timeRange)}
-                  style={{
-                    width: "100%",
-                    marginTop: "5px",
-                    padding: "8px",
-                  }}
                 >
                   <option value="">请选择</option>
                   {timeRange === "按月显示" &&
@@ -1312,14 +1590,15 @@ const HomePage = () => {
               className="chart-container"
               style={{
                 flex: "0 0 80%", // Takes 70% of width
+                flex: "1", // Let this take up the remaining space
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
+                // position:"absolute",
+                // right:"10px",
+                // top:"-70px",
+                backgroundColor:"transparent",
                 overflow:"visible",
-                position:"absolute",
-                right:"10px",
-                top:"-70px",
-                backgroundColor:"transparent"
               }}
             >
               <Chart
@@ -1344,53 +1623,93 @@ const HomePage = () => {
         <div className="front">
           <div style={{ marginBottom: "40px" }}>
             <h2 className="zcool-qingke-huangyou-regular" style={{ fontSize: "50px" }}>
-              记账本 v2.0 内测版
+              记账本 v2.1.0
             </h2>
           </div>
           <div className="button-group">
             <Link to="/recordExpense">
-              <button className="action-btn">记录 支出</button>
+              <button className="action-btn1">记录 支出</button>
             </Link>
             <Link to="/recordIncome">
-              <button className="action-btn">记录 收入</button>
+              <button className="action-btn1">记录 收入</button>
             </Link>
           </div>
 
           <div className="button-group">
             <Link to="/showExpense">
-              <button className="action-btn">显示支出明细</button>
+              <button className="action-btn1">显示支出明细</button>
             </Link>
             <Link to="/showIncome">
-              <button className="action-btn">显示收入明细</button>
+              <button className="action-btn1">显示收入明细</button>
             </Link>
           </div>
 
           <div className="button-group">
-            <button className="action-btn" onClick={() => openModalCategory("类别设置")}>
+            <button className="action-btn1" onClick={() => openModalCategory("类别设置")}>
               类别设置
             </button>
-            <button className="action-btn" onClick={() => openModalOther("其他设置")}>
+            <button className="action-btn1" onClick={() => openModalOther("其他设置")}>
               其他设置
             </button>
           </div>
 
           <div className="button-group">
             <Link to="/checkPrepay">
-              <button className="action-btn1">查看预定付款</button>
+              <button className="action-btn1">查看预付款</button>
             </Link>
             <Link to="/checkBudget">
               <button className="action-btn1">财务规划</button>
             </Link>
           </div>
+
+          {/* <div className="button-group">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent parent click handler
+                  setMaskNumbers((prev) => !prev);
+                }}
+                className="action-btn1"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding:"10px 30px"
+                }}
+              >
+                <span
+                  style={{
+                    marginRight: "15px",
+                    fontSize: "18px",
+                    lineHeight: 1,
+                  }}
+                >
+                  隐私按钮
+                </span>
+                <span
+                  id="privacy-icon"
+                  className={
+                    maskNumbers
+                      ? "icon-eye panel_font_size_enlarged"
+                      : "icon-eye-blocked panel_font_size_enlarged"
+                  }
+                  style={{
+                    fontSize: "28px",
+                    lineHeight: 1,
+                    verticalAlign: "middle",
+                  }}
+                ></span>
+              </button>
+
+          </div> */}
         </div>
 
         {/* Back Side */}
         <div className="back">
-          <h2 className="zcool-qingke-huangyou-regular" style={{ fontSize: "40px" }}>
-            总金额
+          <h2 className="zcool-qingke-huangyou-regular" style={{ fontSize: "40px",marginBottom:"30px" }}>
+            总余额
           </h2>
-          <p style={{ fontSize: "30px", fontWeight: "bold" }}>
-            ${totalChecking !== null ? totalChecking.toFixed(2) : "加载中..."}
+          <p style={{ fontSize: "50px", fontWeight: "bold" }}>
+            {maskDollar(totalChecking !== null ? `$${totalChecking.toFixed(2)}` : "加载中...")}
           </p>
 
           {/* Adjustment Section */}
@@ -1407,7 +1726,7 @@ const HomePage = () => {
                 alignItems: "center", // Center both sections horizontally
               }}
             >
-              {/* 手动增减 Section */}
+              {/* 增减 Section */}
               <div
                 className="horizontal-group"
                 style={{
@@ -1416,8 +1735,20 @@ const HomePage = () => {
                   gap: "10px",
                 }}
               >
-                <h3 style={{ fontSize: "18px" }}>手动增减:</h3>
-
+                <span
+                  style={{
+                    fontSize: "18px",
+                    fontWeight: "bold",
+                    display: "inline-block",
+                    whiteSpace: "nowrap",
+                    lineHeight: "1",
+                    letterSpacing: "normal",
+                    fontFamily: "inherit",
+                    verticalAlign: "middle"
+                  }}
+                >
+                  增减:
+                </span>
                 <label style={{ display: "flex", alignItems: "center", fontSize: "20px" }}>
                   <input
                     type="radio"
@@ -1468,11 +1799,11 @@ const HomePage = () => {
                     width: "120px",
                   }}
                 >
-                  确认调整
+                  确认
                 </button>
               </div>
 
-              {/* 手动更改 Section (Centered) */}
+              {/* 调整 Section (Centered) */}
               <div
                 className="manual-adjust-group"
                 style={{
@@ -1483,7 +1814,7 @@ const HomePage = () => {
                   width: "100%", // Ensure full width for centering effect
                 }}
               >
-                <h3 style={{ fontSize: "18px" }}>手动更改:</h3>
+                <h3 style={{ fontSize: "18px" }}>调整至:</h3>
 
                 <input
                   type="number"
@@ -1512,7 +1843,7 @@ const HomePage = () => {
                     width: "120px",
                   }}
                 >
-                  确认更改
+                  确认调整
                 </button>
               </div>
             </div>
@@ -1572,7 +1903,10 @@ const HomePage = () => {
                         {isExpense ? "-" : isIncome ? "+" : isManual && parseFloat(amount) > 0 ? "+" : "-"}
                         ${Math.abs(parseFloat(amount)).toFixed(2)}
                       </span>
-                      <span style={{ width: "23%" }}>${parseFloat(balance).toFixed(2)}</span>
+                      <span style={{ width: "23%" }}>
+                        {/* ${parseFloat(balance).toFixed(2)} */}
+                        {maskDollar(`$${parseFloat(balance).toFixed(2)}`)}
+                      </span>
                       <a
                         onClick={() => category === "Manual" ? null : openModalMiscellaneous(id_no)}
                         id={id_no}
@@ -1597,76 +1931,97 @@ const HomePage = () => {
             <div className="modal-header">
               <h2>{modalContentCategory}</h2>
             </div>
+            <div className="modal-tabs">
+              <div
+                className={`modal-tab ${activeTab === "add" ? "active" : ""}`}
+                onClick={() => setActiveTab("add")}
+              >
+                添加类别
+              </div>
+              <div
+                className={`modal-tab ${activeTab === "delete" ? "active" : ""}`}
+                onClick={() => setActiveTab("delete")}
+              >
+                删除类别
+              </div>
+            </div>
             <div className="modal-body">
-              {/* Section 1: Add Category */}
-              <div style={{ marginBottom: "20px" }}>
-                <h3>添加类别</h3>
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "10px" }}>
-                <input
-                  type="text"
-                  id="add-category-input-en"
-                  placeholder="English"
-                  style={{
-                    padding: "8px",
-                    width: "100%",
-                    border: "1px solid #ccc",
-                    borderRadius: "4px",
-                  }}
-                />
-                <input
-                  type="text"
-                  id="add-category-input-zh"
-                  placeholder="中文"
-                  style={{
-                    padding: "8px",
-                    width: "100%",
-                    border: "1px solid #ccc",
-                    borderRadius: "4px",
-                  }}
-                />
-                <button
-                  onClick={async () => {
-                    const en = document.getElementById("add-category-input-en").value.trim();
-                    const zh = document.getElementById("add-category-input-zh").value.trim();
-                    if (!en || !zh) {
-                      alert("请输入英文和中文类别名称！");
-                      return;
-                    }
-                    // Send to backend
-                    const res = await fetch("http://localhost:5001/api/add-category", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ en, zh }),
-                    });
-                    if (res.ok) {
-                      alert(`添加的类别: ${en} / ${zh}`);
-                      document.getElementById("add-category-input-en").value = "";
-                      document.getElementById("add-category-input-zh").value = "";
-                    } else {
-                      alert("添加失败，请重试！");
-                    }
-                  }}
-                  style={{
-                    padding: "8px 16px",
-                    backgroundColor: "#4CAF50",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    width: "100%",
-                  }}
-                >
-                  添加
-                </button>
-              </div>
-              </div>
-
-              {/* Section 2: Delete Categories */}
-              <div>
-                <h3>删除</h3>
+              {activeTab === "add" && (
                 <div style={{ marginBottom: "20px" }}>
+                  <h2 className="modal-title">添加类别</h2>
+                  {/* 添加类别内容 */}
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "10px" }}>
+                    <p>请输入新类别 英文名</p>
+                    <input
+                      type="text"
+                      id="add-category-input-en"
+                      placeholder="English"
+                      style={{
+                        padding: "8px",
+                        width: "100%",
+                        border: "1px solid #ccc",
+                        borderRadius: "4px",
+                        marginBottom:"30px",
+                      }}
+                    />
+                    <p>请输入新类别 中文名</p>
+                    <input
+                      type="text"
+                      id="add-category-input-zh"
+                      placeholder="中文"
+                      style={{
+                        padding: "8px",
+                        width: "100%",
+                        border: "1px solid #ccc",
+                        borderRadius: "4px",
+                        marginBottom:"30px",
+                      }}
+                    />
+                    <button
+                      onClick={async () => {
+                        const en = document.getElementById("add-category-input-en").value.trim();
+                        const zh = document.getElementById("add-category-input-zh").value.trim();
+                        if (!en || !zh) {
+                          alert("请输入英文和中文类别名称！");
+                          return;
+                        }
+                        // Send to backend
+                        const res = await fetch("http://localhost:5001/api/add-category", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ en, zh }),
+                        });
+                        if (res.ok) {
+                          alert(`添加的类别: ${en} / ${zh}`);
+                          document.getElementById("add-category-input-en").value = "";
+                          document.getElementById("add-category-input-zh").value = "";
+                        } else {
+                          alert("添加失败，请重试！");
+                        }
+                      }}
+                      style={{
+                        padding: "8px 16px",
+                        backgroundColor: "#4CAF50",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "4px",
+                        cursor: "pointer",
+                        width: "100%",
+                      }}
+                    >
+                      添加
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === "delete" && (
+                <div>
+                  <h3 className="modal-title">删除</h3>
+                  {/* 删除类别内容 */}
+                  <div style={{ marginBottom: "20px" }}>
                   {categories.map((category, index) => (
-                    <div key={index} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <div key={index} style={{ display: "flex", alignItems: "center", gap: "10px",marginBottom:"10px"}}>
                       <input
                         type="checkbox"
                         id={`delete-category-${index}`}
@@ -1680,53 +2035,54 @@ const HomePage = () => {
                   ))}
                 </div>
                 <button
-                onClick={async () => {
-                  const selectedCategories = categories.filter((_, index) =>
-                    document.getElementById(`delete-category-${index}`).checked
-                  );
+                  onClick={async () => {
+                    const selectedCategories = categories.filter((_, index) =>
+                      document.getElementById(`delete-category-${index}`).checked
+                    );
 
-                  if (selectedCategories.includes("Other")) {
-                    alert("Other 无法被删除。请检查您的选项！");
-                    return;
-                  }
-
-                  if (selectedCategories.length === 0) {
-                    alert("请选择要删除的类别！");
-                  } else {
-                    // Send to backend to delete
-                    const res = await fetch("http://localhost:5001/api/delete-categories", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ categoriesToDelete: selectedCategories }),
-                    });
-                    if (res.ok) {
-                      alert(`删除的类别: ${selectedCategories.join(", ")}`);
-                      // Optionally reload categories here
-                      loadCategoriesData();
-                    } else {
-                      alert("删除失败，请重试！");
+                    if (selectedCategories.includes("Other")) {
+                      alert("Other 无法被删除。请检查您的选项！");
+                      return;
                     }
-                  }
-                }}
-                style={{
-                  padding: "8px 16px",
-                  backgroundColor: "#f44336",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                }}
-              >
-                删除
-              </button>
-              </div>
+
+                    if (selectedCategories.length === 0) {
+                      alert("请选择要删除的类别！");
+                    } else {
+                      // Send to backend to delete
+                      const res = await fetch("http://localhost:5001/api/delete-categories", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ categoriesToDelete: selectedCategories }),
+                      });
+                      if (res.ok) {
+                        alert(`删除的类别: ${selectedCategories.join(", ")}`);
+                        // Optionally reload categories here
+                        loadCategoriesData();
+                      } else {
+                        alert("删除失败，请重试！");
+                      }
+                    }
+                  }}
+                  style={{
+                    padding: "8px 16px",
+                    backgroundColor: "#f44336",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                  }}
+                >
+                  删除
+                </button>
+                </div>
+              )}
             </div>
-            <div className="modal-footer">
-              <button className="modal-btn" onClick={closeModalCategory}>
+            <div style={{padding:"0"}} className="modal-footer">
+              {/* <button className="modal-btn" onClick={closeModalCategory}>
                 保存
-              </button>
-              <button className="modal-btn" onClick={closeModalCategory}>
-                退出
+              </button> */}
+              <button style={{height:"100%",width:"100%",padding:"20px"}} className="modal-btn" onClick={closeModalCategory}>
+                关闭
               </button>
             </div>
           </div>
@@ -1766,11 +2122,14 @@ const HomePage = () => {
               <TransactionDetails transaction={findTransactionById(data, modalContentMiscellaneous)} />
             </div>
             <div className="modal-footer">
-              <button className="modal-btn" onClick={closeModalMiscellaneous}>
+              {/* <button className="modal-btn" onClick={closeModalMiscellaneous}>
                 保存
               </button>
               <button className="modal-btn" onClick={closeModalMiscellaneous}>
                 退出
+              </button> */}
+              <button style={{height:"100%",width:"100%",padding:"20px"}} className="modal-btn" onClick={closeModalMiscellaneous}>
+                关闭
               </button>
             </div>
           </div>
@@ -1905,7 +2264,6 @@ const RecordExpensePage = () => {
     }
   };
 
-  // Update your handleSearchKeyDown handler:
   const handleSearchKeyDown = (e) => {
     if (e.key === "ArrowDown") {
       // Move highlight down (stop at the last suggestion)
@@ -1930,10 +2288,27 @@ const RecordExpensePage = () => {
     }
   };
 
+  // Hit Enter would move from one text box to next
+  const handleEnterFocusNext = (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    const form = e.target.form || document;
+    const focusable = Array.from(
+      form.querySelectorAll('input, select, textarea')
+    ).filter(el => !el.disabled && el.type !== 'hidden');
+    
+    const index = focusable.indexOf(e.target);
+    if (index > -1 && index < focusable.length - 1) {
+      focusable[index + 1].focus();
+    }
+  }
+};
+
+
   return (
     <div class="body">
       <div className="expense-page">
-        <h1 className="zcool-kuaile-regular" style={{ fontSize: "60px" }}>记录 支出</h1>
+        <h1 style={{ fontSize: "60px" }}>记录 支出</h1>
         <div className="form-group">
           <label>选择分类</label>
           <div style={{ display: "flex", gap: "10px" }}>
@@ -1942,6 +2317,7 @@ const RecordExpensePage = () => {
               style={{ width: "50%" }}
               value={category}
               onChange={(e) => setCategory(e.target.value)}
+              onKeyDown={handleEnterFocusNext}
             >
               <option value="">请选择...</option>
               {categories.map((cat, index) => (
@@ -1957,7 +2333,10 @@ const RecordExpensePage = () => {
                 placeholder="搜索分类"
                 value={searchTerm}
                 onChange={handleSearchChange}
-                onKeyDown={handleSearchKeyDown}
+                onKeyDown={(e) => {
+                  handleSearchKeyDown(e);  // Find our leibie
+                  handleEnterFocusNext(e); // Move to next field if just Enter
+                }}
                 style={{ width: "100%", paddingRight: "30px" }} // extra space for the icon
               />
               <button
@@ -2036,6 +2415,7 @@ const RecordExpensePage = () => {
             type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
+            onKeyDown={handleEnterFocusNext}
           />
         </div>
         <div className="form-group">
@@ -2043,6 +2423,7 @@ const RecordExpensePage = () => {
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+            onKeyDown={handleEnterFocusNext}
           />
         </div>
         <div className="form-group">
@@ -2059,21 +2440,6 @@ const RecordExpensePage = () => {
           <div style={{ flex: "0 0 20%" }}>
             <button
               onClick={() => setDate(new Date().toISOString().slice(0, 10))}
-              style={{
-                width: "100%",
-                height: "42px",
-                marginTop:"8px",
-                padding: "10px 16px",
-                backgroundColor: "#f9f9f9",
-                color: "#333",
-                border: "none",
-                borderRadius: "12px",
-                boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-                cursor: "pointer",
-                fontSize: "16px",
-                transition: "background-color 0.2s ease, box-shadow 0.2s ease",
-                boxSizing: "border-box"
-              }}
               onMouseOver={(e) => {
                 e.target.style.backgroundColor = "#eaeaea";
                 e.target.style.boxShadow = "0 4px 6px rgba(0,0,0,0.15)";
@@ -2082,6 +2448,7 @@ const RecordExpensePage = () => {
                 e.target.style.backgroundColor = "#f9f9f9";
                 e.target.style.boxShadow = "0 1px 3px rgba(0,0,0,0.1)";
               }}
+              className="today-btn"
             >
               Today
             </button>
@@ -2103,11 +2470,27 @@ const RecordExpensePage = () => {
 
 const PrepayPage = () => {
 
-
+  /* all prepay scheduled here, can be canceled, can be modified. every time run app, we need to run all prepay first to see anything due*/
+  
   return (
     <div class="body">
-      <div className="expense-page">
-        <h1 className="zcool-kuaile-regular" style={{ fontSize: "60px" }}>查看预定付款</h1>
+      <div className="expense-page page_bigger">
+        <h1 className="h-nobold" style={{ fontSize: "60px"}}>查看预付款</h1>
+        
+              <div className="expense-display">
+                {/* Table Header */}
+                <div className="table-header">
+                  <div>时间段</div> {/*每月11号*/}
+                  <div>类别</div>
+                  <div>下个日期</div>
+                  <div>金额</div>
+                  <div>描述</div>
+                  <div>操作</div>
+                </div>
+
+                {/* Expense Rows */}
+                <div className="table-body"></div>
+              </div>
 
         <div className="button-group">
           <Link to="/">
@@ -2117,15 +2500,509 @@ const PrepayPage = () => {
       </div>
     </div>
   );
+  // return (
+  //   <div className="modify-expense-container">
+  //     {/* Header Section */}
+  //     <div className="modify-expense-header">
+  //       <div className="header-left">
+  //         <h2>支出明细</h2>
+  //       </div>
+  //       <div className="header-right">
+  //         <button
+  //           className="sort-btn"
+  //           onClick={() => setSortDialogVisible(true)}
+  //         >
+  //           排序
+  //         </button>
+  //         <Link to="/">
+  //           <button className="exit-btn">退出</button>
+  //         </Link>
+  //       </div>
+  //     </div>
+
+  //     {/* Sort Dialog */}
+  //     {isSortDialogVisible && (
+  //       <div className="modal-overlay">
+  //         <div className="sort-dialog">
+  //           <div className="dialog-content">
+  //             <h3>排序选项</h3>
+
+  //             {/* 各种选项 */}
+  //             <div className="dialog-body">
+  //               {/* Row for Time Range */}
+  //               <div className="row">
+  //                 <label htmlFor="filter-combo" className="inline-label">
+  //                   时间范围
+  //                 </label>
+  //                 <select
+  //                   id="filter-combo"
+  //                   value={filterOption}
+  //                   onChange={(e) => {
+  //                     const newFilterOption = e.target.value;
+  //                     setFilterOption(newFilterOption);
+
+  //                     // Update `subOption` etc with a default based on the new `filterOption`
+  //                     // no need to update sortType since if unclicked default ascending, exactly which default radio is, once click desc, state updates.
+  //                     if (newFilterOption == "按月显示") {
+  //                       const currentMonth = new Date().toLocaleString("default", { month: "long" });
+                        
+  //                       setSubOption(currentMonth); // Default to "一月" for months, backend ONLY
+  //                       setShowType("Category sum")
+  //                     } else if (newFilterOption == "按季度显示") {
+  //                       setSubOption("Q1"); // Default to "Q1" for quarters
+  //                       setShowType("Category sum")
+  //                     } else if (newFilterOption == "按年份显示") {
+  //                       setSubOption(years[0]?.toString() || ""); // Default to the first year or empty
+  //                       setShowType("Category sum")
+  //                     }else if(newFilterOption == "前3个月" ||newFilterOption == "前12个月"||newFilterOption == "前6个月" ){
+  //                       setSubOption("");
+  //                       setShowType("Category sum")
+  //                     } else {
+  //                       setSubOption(""); // Clear `subOption` for other cases
+  //                       setShowType("")
+  //                     }
+
+  //                     if (autoApplyChanges) {
+  //                       setAppliedFilters({
+  //                         filterOption: newFilterOption,
+  //                         subOption: subOption, // Update this to reflect the new `subOption`
+  //                         amountThreshold,
+  //                         showAboveThreshold,
+  //                         showType
+  //                       });
+  //                     }
+  //                   }}
+  //                   className="filter-combo"
+  //                 >
+  //                   <option value="显示全部">显示全部</option>
+  //                   <option value="按月显示">按月显示</option>
+  //                   <option value="按季度显示">按季度显示</option>
+  //                   <option value="按年份显示">按年份显示</option>
+  //                   <option value="前3个月">前3个月</option>
+  //                   <option value="前12个月">前12个月</option>
+  //                   <option value="前6个月">前6个月</option>
+  //                 </select>
+
+  //               </div>
+                
+
+  //               {/* Sub Option for Time Range */}
+  //               <div className="row">
+  //                 <label htmlFor="sub-option-combo" className="inline-label">
+  //                   子选项
+  //                 </label>
+  //                 <select
+  //                   id="sub-option-combo"
+  //                   value={subOption}
+  //                   onChange={(e) => {
+  //                     setSubOption(e.target.value);
+  //                     if (autoApplyChanges) {
+  //                       setAppliedFilters({
+  //                         filterOption,
+  //                         subOption: e.target.value,
+  //                         amountThreshold,
+  //                         showAboveThreshold,
+  //                         showType
+  //                       });
+  //                     }
+  //                   }}
+  //                   className="filter-combo"
+  //                   disabled={filterOption == "前3个月" || filterOption == "前12个月" || filterOption == "前6个月"|| filterOption == "显示全部"}
+  //                 >
+  //                   {filterOption == "按月显示" && (
+  //                     <>
+  //                       <option value="一月">一月</option>
+  //                       <option value="二月">二月</option>
+  //                       <option value="三月">三月</option>
+  //                       <option value="四月">四月</option>
+  //                       <option value="五月">五月</option>
+  //                       <option value="六月">六月</option>
+  //                       <option value="七月">七月</option>
+  //                       <option value="八月">八月</option>
+  //                       <option value="九月">九月</option>
+  //                       <option value="十月">十月</option>
+  //                       <option value="十一月">十一月</option>
+  //                       <option value="十二月">十二月</option>
+  //                     </>
+  //                   )}
+  //                   {filterOption == "按季度显示" && (
+  //                     <>
+  //                       <option value="Q1">Q1</option>
+  //                       <option value="Q2">Q2</option>
+  //                       <option value="Q3">Q3</option>
+  //                       <option value="Q4">Q4</option>
+  //                     </>
+  //                   )}
+  //                   {filterOption == "按年份显示" && years.map((year) => (
+  //                     <option value={year} key={year}>
+  //                       {year}
+  //                     </option>
+  //                   ))}
+  //                 </select>
+  //               </div>
+
+  //               {/* Row for Show Type */}
+  //               <div className="row">
+  //                 <label htmlFor="show-type-combo" className="inline-label">
+  //                   显示类型
+  //                 </label>
+  //                 <select
+  //                   id="show-type-combo"
+  //                   value={showType}
+  //                   onChange={(e) => {
+  //                     setShowType(e.target.value);
+  //                     if (autoApplyChanges) {
+  //                       setAppliedFilters({
+  //                         filterOption,
+  //                         subOption,
+  //                         amountThreshold,
+  //                         showAboveThreshold,
+  //                         showType: e.target.value
+  //                       });
+  //                     }
+  //                   }}
+  //                   className="filter-combo"
+  //                   disabled={filterOption == "显示全部"}
+  //                 >
+  //                   {filterOption !="显示全部" && (
+  //                     <>
+  //                     <option value="Category sum">类别总和</option>
+  //                     <option value="List all Category Expenses">列出所有类别支出</option>
+  //                     <option value="List all Expenses by Date">按日期列出所有支出</option>
+  //                     </>
+  //                   )}
+                    
+  //                 </select>
+  //               </div>
+
+  //               {/* Row for Sort Type */}
+  //               <div className="row">
+  //                 <label className="inline-label">显示类型</label>
+
+  //                 <div>
+  //                   <label style={{ display: "inline-flex", alignItems: "center", marginRight: "10px" }}>
+  //                     <input
+  //                       type="radio"
+  //                       name="sortType"
+  //                       style={{ height: "20px", width: "20px", marginRight: "5px" }}
+  //                       value="ascending"
+  //                       checked={sortType === "ascending"}
+  //                       onChange={(e) => {
+  //                         setSortType(e.target.value);
+  //                         console.log("Selected Order: ", e.target.value);
+  //                         if (autoApplyChanges) {
+  //                           setAppliedFilters({
+  //                             filterOption,
+  //                             subOption,
+  //                             amountThreshold,
+  //                             showAboveThreshold,
+  //                             showType,
+  //                             sortType: e.target.value,
+  //                           });
+  //                         }
+  //                       }}
+  //                     />
+  //                     升序
+  //                   </label>
+
+  //                   <label style={{ display: "inline-flex", alignItems: "center", marginRight: "10px" }}>
+  //                     <input
+  //                       type="radio"
+  //                       name="sortType"
+  //                       value="descending"
+  //                       style={{ height: "20px", width: "20px", marginRight: "5px" }}
+  //                       checked={sortType === "descending"}
+  //                       onChange={(e) => {
+  //                         setSortType(e.target.value);
+  //                         console.log("Selected Order: ", e.target.value);
+  //                         if (autoApplyChanges) {
+  //                           setAppliedFilters({
+  //                             filterOption,
+  //                             subOption,
+  //                             amountThreshold,
+  //                             showAboveThreshold,
+  //                             showType,
+  //                             sortType: e.target.value,
+  //                           });
+  //                         }
+  //                       }}
+  //                     />
+  //                     降序
+  //                   </label>
+  //                 </div>
+  //               </div>
+
+
+  //               {/* Row for Checkbox and Textbox */}
+  //               <div className="row">
+  //                 <input
+  //                   type="checkbox"
+  //                   id="amount-checkbox"
+  //                   checked={showAboveThreshold}
+  //                   onChange={(e) => {
+  //                     setShowAboveThreshold(e.target.checked);
+  //                     if (autoApplyChanges) {
+  //                       setAppliedFilters({
+  //                         filterOption,
+  //                         subOption,
+  //                         amountThreshold,
+  //                         showAboveThreshold: e.target.checked,
+  //                         showType
+  //                       });
+  //                     }
+  //                   }}
+  //                   disabled={!amountThreshold || isNaN(amountThreshold)}
+  //                   className="amount-checkbox"
+  //                 />
+  //                 <label htmlFor="amount-checkbox" className="inline-label">
+  //                   仅显示金额超过
+  //                 </label>
+  //                 <input
+  //                   type="text"
+  //                   value={amountThreshold}
+  //                   onChange={(e) => {
+  //                     setAmountThreshold(e.target.value);
+  //                     if (autoApplyChanges) {
+  //                       setAppliedFilters({
+  //                         filterOption,
+  //                         subOption,
+  //                         amountThreshold: e.target.value,
+  //                         showAboveThreshold,
+  //                         showType
+  //                       });
+  //                     }
+  //                   }}
+  //                   placeholder="金额"
+  //                   className="amount-input"
+  //                 />
+  //                 <label>块</label>
+  //               </div>
+
+                
+
+  //             </div>
+
+  //             {/* Row for "直接显示" */}
+  //             <div className="row">
+  //                 <input
+  //                   type="checkbox"
+  //                   id="auto-apply-checkbox"
+  //                   checked={autoApplyChanges}
+  //                   onChange={(e) => {
+  //                     setAutoApplyChanges(e.target.checked);
+  //                     if (e.target.checked) {
+  //                       setAppliedFilters({ filterOption, amountThreshold, showAboveThreshold });
+  //                     }
+  //                   }}
+  //                   className="auto-apply-checkbox"
+  //                   disabled
+  //                 />
+  //                 <label htmlFor="auto-apply-checkbox" className="inline-label">
+  //                   直接显示
+  //                 </label>
+  //             </div>
+              
+
+  //             {/* 保存退出按钮 */}
+  //             <div className="dialog-actions">
+  //               {!autoApplyChanges && (
+  //                 <button className="save-btn" onClick={handleSaveFilters}>
+  //                   保存
+  //                 </button>
+  //               )}
+  //               <button
+  //                 className="exit-btn"
+  //                 onClick={() => setSortDialogVisible(false)}
+  //               >
+  //                 退出
+  //               </button>
+  //             </div>
+  //           </div>
+  //         </div>
+  //       </div>
+  //     )}
+
+  //     {/* Expense Display Section */}
+      // <div className="expense-display">
+      //   {/* Table Header */}
+      //   <div className="table-header">
+      //     <div>编号</div>
+      //     <div>类别</div>
+      //     <div>日期</div>
+      //     <div>金额</div>
+      //     <div>描述</div>
+      //     <div>操作</div>
+      //   </div>
+
+      //   {/* Expense Rows */}
+      //   <div className="table-body">
+      //     {filterExpenses().map((expense, index) => (
+      //       <div className="table-row" key={index}
+      //         data-has-actions={expense.actions !== null ? "true" : undefined}
+      //       >
+      //         {/* Hide index for Category sum */}
+      //         <div>
+      //           {appliedFilters.showType === "Category sum" || appliedFilters.showType === "List all Category Expenses" 
+      //             ? "" 
+      //             : (index + 1)}
+      //         </div>
+      //         <div 
+      //           style={{
+      //             ...(
+      //               appliedFilters.showType === "List all Category Expenses" && expense.actions == null 
+      //               ? { overflow: "visible", fontWeight: "bold", fontSize: "25px" } 
+      //               : {}
+      //             ),
+      //             color: (
+      //               expense.category && // Ensure category is defined
+      //               (expense.category.startsWith("总共消费") || expense.category.startsWith("Total Expenses"))
+      //             ) ? "red" : ""
+      //           }}
+      //         >
+      //           {categoriesTranslation[expense.category]||expense.category}
+      //         </div>
+
+
+      //         <div>{expense.date}</div>
+
+      //         {/* Only show amount if it's not the empty rows */}
+      //         <div>
+      //           {(appliedFilters.showType === "List all Category Expenses" && expense.actions !== null && categories.includes(expense.category)) || (expense.category !== "" && appliedFilters.showType === "Category sum")||(appliedFilters.showType === "List all Expenses by Date")||(appliedFilters.filterOption === "显示全部")
+      //             ? `$${expense.amount}` 
+      //             : ("")}
+      //         </div>
+
+
+
+      //         <div className="description" data-fulltext={expense.description}>
+      //           {expense.description}
+      //         </div>
+
+      //         <div>
+      //         {expense.actions !== null && (
+      //           <>
+      //             <button className="action-btn" onClick={() => handleModifyClick(expense)}>
+      //               修改 
+      //             </button>
+      //             <button className="action-btn" onClick={() => handleDeleteClick(expense)}>
+      //               删除
+      //             </button>
+      //           </>
+      //         )}
+      //         </div>
+      //       </div>
+      //     ))}
+      //   </div>
+      // </div>
+
+  //     <div className="popups_modify_delete">
+  //       {/* Modify Dialog */}
+  //       {isModifyDialogVisible && selectedExpense && (
+  //         <div className="modal-overlay">
+  //           <div className="modal-dialog">
+  //             <h3>修改支出</h3>
+  //             <p>
+  //               确认要修改支出吗？（编号：{selectedExpense.id}）
+  //             </p>
+              
+  //             <div className="form-group">
+  //               <label>类别</label>
+  //               <select
+  //                 id="category_select"
+  //                 defaultValue={selectedExpense.category} // Set the default value here
+  //               >
+  //                 {categories.map((category) => (
+  //                   <option key={category} value={category}>{category}</option>
+  //                 ))}
+  //               </select>
+  //             </div>
+
+  //             <div className="form-group">
+  //               <label>日期</label>
+  //               <input
+  //                 id="date_input"
+  //                 type="date"
+  //                 defaultValue={selectedExpense.date} // Set the default value here
+  //               />
+  //             </div>
+
+  //             <div className="form-group">
+  //               <label>金额</label>
+  //               <input
+  //                 id="amount_input"
+  //                 type="text"
+  //                 defaultValue={selectedExpense.amount} // Set the default value here
+  //               />
+  //             </div>
+
+  //             <div className="form-group">
+  //               <label>描述</label>
+  //               <textarea
+  //                 id="description_input"
+  //                 defaultValue={selectedExpense.description} // Set the default value here
+  //               />
+  //             </div>
+
+  //             <div className="dialog-actions">
+  //               <button
+  //                 className="confirm-btn"
+  //                 onClick={handleSaveChanges} // Only save when clicked
+  //               >
+  //                 保存
+  //             </button>
+  //               <button className="exit-btn" onClick={closeDialogs}>
+  //                 退出
+  //               </button>
+  //             </div>
+  //           </div>
+  //         </div>
+  //       )}
+
+
+
+  //       {/* Delete Dialog */}
+  //       {isDeleteDialogVisible && selectedExpense && (
+  //         <div className="modal-overlay">
+  //           <div className="modal-dialog">
+  //             <h3>删除支出</h3>
+  //             <p>
+  //               确认要删除支出吗？（编号：{selectedExpense.id} 类别：
+  //               {selectedExpense.category} 日期：{selectedExpense.date} 金额：
+  //               {selectedExpense.amount} 描述：{selectedExpense.description}）
+  //             </p>
+  //             <div className="dialog-actions">
+  //               <button 
+  //                 className="confirm-btn" 
+  //                 onClick={() => {
+  //                   // Call deleteExpense function
+  //                   deleteExpense(selectedExpense); // Pass selectedIncome or selectedExpense, depending on the context
+
+  //                   // Close the dialog after the income has been deleted
+  //                   closeDialogs();
+  //                 }}
+  //               >
+  //                 确认
+  //               </button>
+  //               <button className="exit-btn" onClick={closeDialogs}>
+  //                 退出
+  //               </button>
+  //             </div>
+  //           </div>
+  //         </div>
+  //       )}
+  //     </div>
+
+  //   </div>
+  // );
 };
 
 const BudgetPage = () => {
-
+  /* shows budget  */
 
   return (
     <div class="body">
-      <div className="expense-page">
-        <h1 className="zcool-kuaile-regular" style={{ fontSize: "60px" }}>财务规划</h1>
+      <div className="expense-page page_bigger">
+        <h1 className="h-nobold" style={{ fontSize: "60px" }}>财务规划</h1>
 
         <div className="button-group">
           <Link to="/">
@@ -2240,16 +3117,34 @@ const RecordIncomePage = () => {
     navigate("/");
   };
 
+  const handleEnterFocusNext = (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    const form = e.target.form || document;
+    const focusable = Array.from(
+      form.querySelectorAll('input, select, textarea')
+    ).filter(el => !el.disabled && el.type !== 'hidden');
+    
+    const index = focusable.indexOf(e.target);
+    if (index > -1 && index < focusable.length - 1) {
+      focusable[index + 1].focus();
+    }
+  }
+};
+
+
   return (
     <div className="body">
       <div className="income-page">
-        <h1 className="zcool-kuaile-regular" style={{ fontSize: "60px" }}>记录 收入</h1>
+        <h1 className="" style={{ fontSize: "60px" }}>记录 收入</h1>
         <div className="form-group">
           <label>请输入 税前 总额</label>
           <input
             type="number"
             value={preTaxAmount}
             onChange={(e) => setPreTaxAmount(e.target.value)}
+            onKeyDown={handleEnterFocusNext}
+
           />
         </div>
         <div className="form-group">
@@ -2258,6 +3153,7 @@ const RecordIncomePage = () => {
             type="number"
             value={postTaxAmount}
             onChange={(e) => setPostTaxAmount(e.target.value)}
+            onKeyDown={handleEnterFocusNext}
           />
         </div>
         <div className="form-group">
@@ -2265,6 +3161,7 @@ const RecordIncomePage = () => {
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
+            onKeyDown={handleEnterFocusNext}
           />
         </div>
         
@@ -2277,26 +3174,13 @@ const RecordIncomePage = () => {
               value={date}
               onChange={(e) => setDate(e.target.value)}
               style={{ width: "100%", height: "42px", boxSizing: "border-box" }}
+              onKeyDown={handleEnterFocusNext}
             />
           </div>
           <div style={{ flex: "0 0 20%" }}>
             <button
+              className="today-btn"
               onClick={() => setDate(new Date().toISOString().slice(0, 10))}
-              style={{
-                width: "100%",
-                height: "42px",
-                marginTop:"8px",
-                padding: "10px 16px",
-                backgroundColor: "#f9f9f9",
-                color: "#333",
-                border: "none",
-                borderRadius: "12px",
-                boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-                cursor: "pointer",
-                fontSize: "16px",
-                transition: "background-color 0.2s ease, box-shadow 0.2s ease",
-                boxSizing: "border-box"
-              }}
               onMouseOver={(e) => {
                 e.target.style.backgroundColor = "#eaeaea";
                 e.target.style.boxShadow = "0 4px 6px rgba(0,0,0,0.15)";
@@ -2474,7 +3358,7 @@ const ShowExpensePage = () => {
           filterOption == "前12个月" || 
           filterOption === "前6个月"
         ) {
-          // TODO: might have bugs on time periods
+
           const monthsToSubtract = filterOption == "前3个月" ? 3 
                         : filterOption == "前6个月" ? 6 
                         :12;
@@ -3296,7 +4180,9 @@ const ShowExpensePage = () => {
         {/* Expense Rows */}
         <div className="table-body">
           {filterExpenses().map((expense, index) => (
-            <div className="table-row" key={index}>
+            <div className="table-row" key={index}
+              data-has-actions={expense.actions !== null ? "true" : undefined}
+            >
               {/* Hide index for Category sum */}
               <div>
                 {appliedFilters.showType === "Category sum" || appliedFilters.showType === "List all Category Expenses" 
@@ -3620,6 +4506,9 @@ const ShowIncomePage = () => {
     const totalAfterTax = filteredIncomes.reduce((sum, income) => {
         return sum + parseFloat(income.after_tax || 0);
     }, 0).toFixed(2);
+    const totalBeforeTax = filteredIncomes.reduce((sum, income) => {
+        return sum + parseFloat(income.before_tax || 0);
+    }, 0).toFixed(2);
 
     // Add the title row with the total after-tax income
     const titleRow = {
@@ -3629,12 +4518,23 @@ const ShowIncomePage = () => {
         description: null,
         tax_percentage: null,
         id: null,
-        actions: "none",  // Add actions as "none"
+        actions: null,  // Add actions as "none"
+        type: "total_before_tax"
+    };
+    const endingRow = {
+        date: `${"年收入（税前）"}: $${totalBeforeTax}`,  
+        before_tax: null,
+        after_tax: null,
+        description: null,
+        tax_percentage: null,
+        id: null,
+        actions: null,  // Add actions as "none"
+        type: "total_after_tax"
     };
 
     // Return the updated array with the title row at the top
-    return [titleRow, ...filteredIncomes];
-};
+    return [titleRow, ...filteredIncomes,endingRow];
+  };
 
 
 
@@ -3786,6 +4686,76 @@ const ShowIncomePage = () => {
     // Close dialogs after saving
     closeDialogs();
   };
+
+  // Tooltip for description
+  useEffect(() => {
+    let currentTooltip = null;
+
+    const adjustTooltipPosition = (e) => {
+      if (currentTooltip) {
+        let x = e.clientX + 10;
+        let y = e.clientY + 10;
+        
+        // Use getBoundingClientRect to measure tooltip dimensions
+        const tooltipRect = currentTooltip.getBoundingClientRect();
+        
+        // If the tooltip would overflow to the right, adjust x
+        if (x + tooltipRect.width > window.innerWidth) {
+          x = window.innerWidth - tooltipRect.width - 10;
+        }
+        
+        // If the tooltip would overflow to the bottom, position it above the mouse
+        if (y + tooltipRect.height > window.innerHeight) {
+          y = e.clientY - tooltipRect.height - 10;
+        }
+        
+        currentTooltip.style.left = x + "px";
+        currentTooltip.style.top = y + "px";
+      }
+    };
+
+    const handleMouseMove = (e) => {
+      adjustTooltipPosition(e);
+    };
+
+    const handleMouseOver = (e) => {
+      if (e.target.classList.contains("description")) {
+        // Only show tooltip if text is actually truncated
+        const el = e.target;
+        // For single-line ellipsis (white-space: nowrap)
+        const isOverflowing = el.scrollWidth > el.clientWidth;
+        // For multi-line ellipsis (white-space: normal, overflow-y)
+        // const isOverflowing = el.scrollHeight > el.clientHeight;
+
+        if (!isOverflowing) return;
+
+        const descText = el.getAttribute("data-fulltext");
+        if (!descText) return;
+        currentTooltip = document.createElement("div");
+        currentTooltip.className = "description-tooltip";
+        currentTooltip.innerText = descText;
+        document.body.appendChild(currentTooltip);
+        adjustTooltipPosition(e);
+      }
+    };
+
+    const handleMouseOut = (e) => {
+      if (e.target.classList.contains("description") && currentTooltip) {
+        document.body.removeChild(currentTooltip);
+        currentTooltip = null;
+      }
+    };
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseover", handleMouseOver);
+    document.addEventListener("mouseout", handleMouseOut);
+
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseover", handleMouseOver);
+      document.removeEventListener("mouseout", handleMouseOut);
+    };
+  }, []);
   
   return (
     <div className="modify-income-container">
@@ -4121,21 +5091,23 @@ const ShowIncomePage = () => {
         {/* Income Rows */}
         <div className="table-body">
           {filterIncome().map((income, index) => (
-            <div className="table-row" key={index}>
+            <div className="table-row" key={index}
+              data-has-actions={income.actions !== null ? "true" : undefined}
+            >
               {/* Show index only if actions is not "none" */}
-              <div>{income.actions !== "none" ? index : ""}</div> {/* Adjust index calculation */}
+              <div>{income.actions !== null ? index : ""}</div> {/* Adjust index calculation */}
 
               {/* Title Row (Date) with custom styles only if actions is "none" */}
               <div
                 style={{
-                  ...(income.actions === "none" && {
+                  ...(income.actions === null && {
                     overflow: "visible",
                     fontWeight: "bold",
                     fontSize: "25px",
                   }),
                 }}
               >
-                {income.actions === "none" && income.date && income.date.includes("$") ? (
+                {income.actions === null && income.type=="total_before_tax" && income.date && income.date.includes("$") ? (
                   <>
                     <span style={{ color: "red" }}>
                       {income.date.split("$")[0]} {/* Text before the dollar sign */}
@@ -4146,7 +5118,7 @@ const ShowIncomePage = () => {
                   </>
                 ) : (
                   // Apply only the red color if actions is not "none"
-                  <span style={{ color: income.actions === "none" ? "red" : "inherit" }}>
+                  <span style={{ color: income.actions === null&& income.type=="total_before_tax" ? "red" : "inherit" }}>
                     {income.date}
                   </span>
                 )}
@@ -4155,13 +5127,14 @@ const ShowIncomePage = () => {
 
 
               {/* Display empty rows for all other fields if actions is "none" */}
-              <div>{income.actions === "none" ? "" : `$${income.before_tax}`}</div>
-              <div>{income.actions === "none" ? "" : `$${income.after_tax}`}</div>
-              <div>{income.actions === "none" ? "" : (Math.ceil(income.tax_percentage * 100) / 100).toFixed(2) + "%"}</div>
-              <div>{income.actions === "none" ? "" : income.description}</div>
-
+              <div>{income.actions === null ? "" : `$${income.before_tax}`}</div>
+              <div>{income.actions === null ? "" : `$${income.after_tax}`}</div>
+              <div>{income.actions === null ? "" : (Math.ceil(income.tax_percentage * 100) / 100).toFixed(2) + "%"}</div>
+                <div className="description" data-fulltext={income.description}>
+                  {income.description}
+                </div>
               <div>
-                {income.actions !== "none" && (
+                {income.actions !== null && (
                   <>
                     <button className="action-btn" onClick={() => handleModifyClick(income)}>
                       修改
