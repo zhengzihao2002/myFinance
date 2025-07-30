@@ -17,10 +17,9 @@ let language = null;
 // This function will load categories data from the JSON file
 const loadCategoriesData = async () => {
   try {
-    const response = await fetch('/categories.json');
+    const response = await fetch('http://localhost:5001/api/get-categories');
     const data = await response.json();
 
-    // Ensure the data is valid and not empty
     if (!data || Object.keys(data).length === 0) {
       console.warn('Categories data is empty. Using default category "Other".');
       categories = ['Other'];
@@ -34,11 +33,11 @@ const loadCategoriesData = async () => {
     console.log('Loaded Categories Translations:', categoriesTranslation);
   } catch (error) {
     console.error('Error loading categories data:', error);
-    // Handle fetch failure by setting default category
     categories = ['Other'];
     categoriesTranslation = { Other: 'Other' };
   }
 };
+
 
 
 const timePeriods = ["按月显示", "按季显示", "按年显示", "前3个月"];
@@ -85,27 +84,24 @@ function createId(dateStr) {
 const HomePage = () => {
   // Sound Effects
   useEffect(() => {
-    // Fetch the settings.json file
-    fetch("/settings.json")
+    fetch("http://localhost:5001/api/get-settings")
       .then((response) => response.json())
       .then((settings) => {
         if (settings.clickEffect) {
           const audio = new Audio(`/soundEffects/${settings.clickEffect}`);
           const handleClick = (e) => {
-            // Check for left mouse clicks (button === 0)
             if (e.button === 0) {
-              // Reset time for quick successive clicks
               audio.currentTime = 0;
               audio.play();
             }
           };
           document.addEventListener("click", handleClick);
-          // Cleanup on unmount
           return () => document.removeEventListener("click", handleClick);
         }
       })
       .catch((error) => console.error("Error loading settings:", error));
   }, []);
+
 
   const { data } = useContext(DataContext); // Access global expense data from context
   const [isModalOpenCategory, setIsModalOpenCategory] = useState(false);
@@ -437,29 +433,31 @@ const HomePage = () => {
   useEffect(() => {
     const fetchTotalChecking = async () => {
       try {
-        const response = await fetch("/recentTransactions.json");
+        const response = await fetch("http://localhost:5001/api/get-total-checking")
         const data = await response.json();
-        setTotalChecking(data.Checking || 0);
+        setTotalChecking(data.checking || 0);
       } catch (error) {
-        console.error("Error fetching recentTransactions.json:", error);
+        console.error("Error fetching total checking:", error);
       }
     };
     fetchTotalChecking();
   }, []);
 
-  // Fetch the total amount from recentTransactions.json
+
+  // Fetch the recent transactions from recentTransactions.json
   useEffect(() => {
     const fetchRecentTransactions = async () => {
       try {
-        const response = await fetch("/recentTransactions.json");
+        const response = await fetch("http://localhost:5001/api/get-checking-recent100")
         const data = await response.json();
-        setLast100Transactions(data.CheckingRecent100||[])
+        setLast100Transactions(data.recent100 || []);
       } catch (error) {
-        console.error("Error fetching recentTransactions.json:", error);
+        console.error("Error fetching recent transactions:", error);
       }
     };
     fetchRecentTransactions();
   }, []);
+
 
   // Load flip status from localStorage on page load
   useEffect(() => {
@@ -854,13 +852,14 @@ const HomePage = () => {
   const [animationType, setAnimationType] = useState(""); // Flip,Slide,Drag
   // get the animation type from settings file
   useEffect(() => {
-    fetch("/settings.json")
+    fetch("http://localhost:5001/api/get-settings")
       .then((response) => response.json())
       .then((data) => {
-        setAnimationType(data.animationType || "flip"); // Default to slide if no value found
+        setAnimationType(data.animationType || "flip"); // Default to flip
       })
       .catch((error) => console.error("Failed to load settings:", error));
   }, []);
+
   // const [dragStartY, setDragStartY] = useState(null);
   // //let [dragDistance, setDragDistance] = useState(0);
   // const dragDistance = useRef(0);
@@ -972,7 +971,7 @@ const HomePage = () => {
     if (!maskNumbers) return str;
     // Always output $*******.** (or whatever max length you want)
     // Count the length of the original string (excluding $)
-    return "$" + "•".repeat(8);
+    return "$" + "•".repeat(15);
   };
   const changeLightMode = (newDaylight) => {
     if (!newDaylight) {
@@ -1085,7 +1084,7 @@ const HomePage = () => {
                   flexDirection: "column",
                   alignItems: "flex-start",
                   gap: "15px", // Adds vertical space between items
-                  width: "45%", // Allocates space for both sections
+                  width: "40%", // Allocates space for both sections
                 }}
               >
                 {/* 时间段 Combo Box */}
@@ -1158,7 +1157,7 @@ const HomePage = () => {
                   justifyContent: "center", // Centers content vertically within the container
                   gap: "15px", // Adds vertical spacing between items
                   fontSize: "16px",
-                  width: "45%", // Allocates space for this section
+                  width: "55%", // Allocates space for this section
                   height: "100%", // Ensures it stretches to fill parent container's height
                 }}
               >
@@ -1186,8 +1185,7 @@ const HomePage = () => {
                   const filteredExpenses = data.expenses.filter((expense) =>
                     isDateInRange(expense.date, timeRangeTopLeft, subOptionTopLeft)
                   );
-                  
-                  
+
                   const totalExpenses = filteredExpenses.reduce(
                     (sum, expense) => sum + parseFloat(expense.amount),
                     0
@@ -1197,8 +1195,20 @@ const HomePage = () => {
 
                   return (
                     <>
-                      <div>
-                        <span className="panel_font_size" style={{ fontWeight: "bold" }}>{period} 总收入: </span>
+                      <div
+                        style={{
+                          display: "flex", // Force horizontal layout
+                          flexDirection: "row", // Ensure content stays side by side
+                          alignItems: "center", // Vertically center items
+                          gap: "8px", // Space between label and number
+                          whiteSpace: "nowrap", // Prevent line wrapping
+                          overflow: "hidden", // Hide overflow
+                          textOverflow: "ellipsis", // Show ellipsis if overflow
+                        }}
+                      >
+                        <span className="panel_font_size" style={{ fontWeight: "bold" }}>
+                          {period} 总收入:{" "}
+                        </span>
                         <span
                           className={`panel_font_size_enlarged ${
                             !maskNumbers ? "positive" : ""
@@ -1208,8 +1218,21 @@ const HomePage = () => {
                           {maskDollar(`$${totalIncome.toFixed(2)}`)}
                         </span>
                       </div>
-                      <div>
-                        <span className="panel_font_size" style={{ fontWeight: "bold" }}>{period} 总支出: </span>
+
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: "8px",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        <span className="panel_font_size" style={{ fontWeight: "bold" }}>
+                          {period} 总支出:{" "}
+                        </span>
                         <span
                           className={`panel_font_size_enlarged ${
                             !maskNumbers ? "negative" : ""
@@ -1219,24 +1242,39 @@ const HomePage = () => {
                           {maskDollar(`$${totalExpenses.toFixed(2)}`)}
                         </span>
                       </div>
-                      <div>
-                        <span className="panel_font_size" style={{ fontWeight: "bold" }}>{period} 净利润: </span>
+
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: "8px",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        <span className="panel_font_size" style={{ fontWeight: "bold" }}>
+                          {period} 净利润:{" "}
+                        </span>
                         <span
                           className={`panel_font_size_enlarged ${
                             !maskNumbers ? (netProfit > 0 ? "positive" : "negative") : ""
                           }`}
                         >
                           {/* {netProfit.toFixed(2)<0?"-$"+Math.abs(netProfit.toFixed(2)):"$"+netProfit.toFixed(2)} */}
-                          {maskDollar(netProfit.toFixed(2) < 0 
-                          ? "-$" + Math.abs(netProfit).toFixed(2) 
-                          : "$" + netProfit.toFixed(2))}
-                          
+                          {maskDollar(
+                            netProfit.toFixed(2) < 0
+                              ? "-$" + Math.abs(netProfit).toFixed(2)
+                              : "$" + netProfit.toFixed(2)
+                          )}
                         </span>
                       </div>
                     </>
                   );
                 })()}
               </div>
+
 
             </div>
           </div>
@@ -2202,21 +2240,22 @@ const RecordExpensePage = () => {
   useEffect(() => {
     const fetchTotalChecking = async () => {
       try {
-        const response = await fetch("/recentTransactions.json");
+        const response = await fetch("http://localhost:5001/api/get-total-checking")
         const data = await response.json();
-        setTotalChecking(data.Checking || 0);
+        setTotalChecking(data.checking || 0);
       } catch (error) {
-        console.error("Error fetching recentTransactions.json:", error);
+        console.error("Error fetching total checking:", error);
       }
     };
     fetchTotalChecking();
   }, []);
+
+
   
 
   const handleSave = () => {
     if (!category || !amount || !description || !date) {
       alert("Please fill in all fields before saving.");
-      console.log(data.expenses[data.expenses.length-1]," not saved ",data.expenses.length);
       return;
     }
 
@@ -2290,19 +2329,19 @@ const RecordExpensePage = () => {
 
   // Hit Enter would move from one text box to next
   const handleEnterFocusNext = (e) => {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    const form = e.target.form || document;
-    const focusable = Array.from(
-      form.querySelectorAll('input, select, textarea')
-    ).filter(el => !el.disabled && el.type !== 'hidden');
-    
-    const index = focusable.indexOf(e.target);
-    if (index > -1 && index < focusable.length - 1) {
-      focusable[index + 1].focus();
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      const form = e.target.form || document;
+      const focusable = Array.from(
+        form.querySelectorAll('input, select, textarea')
+      ).filter(el => !el.disabled && el.type !== 'hidden');
+      
+      const index = focusable.indexOf(e.target);
+      if (index > -1 && index < focusable.length - 1) {
+        focusable[index + 1].focus();
+      }
     }
-  }
-};
+  };
 
 
   return (
@@ -2469,531 +2508,648 @@ const RecordExpensePage = () => {
 };
 
 const PrepayPage = () => {
+  // 暂存 States: May contain clicked but not saved (means we don't want)
+  const [filterOption, setFilterOption] = useState(""); // Combo box value, default all will be set in a usestate hook below somewhere, above return
+  const [subOption, setSubOption] = useState(""); // Sub combo box value
+  const [amountThreshold, setAmountThreshold] = useState(""); // Text box value
+  const [showAboveThreshold, setShowAboveThreshold] = useState(false); // Checkbox value
+  const [sortType,setSortType] = useState("")
+  const [showType, setShowType] = useState(""); // Display type combo box value
+  const [isSortDialogVisible, setSortDialogVisible] = useState(false); // Dialog visibility
+  const [isModifyDialogVisible, setModifyDialogVisible] = useState(false);
+  const [isDeleteDialogVisible, setDeleteDialogVisible] = useState(false);
+  const [selectedExpense, setSelectedExpense] = useState(null);
+
+  // the saved state, state we actually want and render
+  const [appliedFilters, setAppliedFilters] = useState({
+    filterOption: "",
+    subOption: "",
+    amountThreshold: "",
+    showAboveThreshold: false,
+    showType: ""
+  });
+
+
+
+
+
+
+  const [isAddDialogVisible, setAddDialogVisible] = useState(false);
+  const [frequencyNumber, setFrequencyNumber] = useState(1);
+  const [frequencyMode, setFrequencyMode] = useState("每"); // "每" or "单次"
+  const [frequencyUnit, setFrequencyUnit] = useState("天");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [nextDate, setNextDate] = useState("");
+  const [amount, setAmount] = useState("");
+  const [description, setDescription] = useState("");
+
+
+
+
+
+  const [searchTerm, setSearchTerm] = React.useState("");
+  const [suggestions, setSuggestions] = React.useState([]);
+  // Add this state near your other search-related states:
+  const [highlightedIndex, setHighlightedIndex] = React.useState(-1);
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    setHighlightedIndex(-1); // reset when user types
+    if (value.trim() === "") {
+      setSuggestions([]);
+    } else {
+      const filtered = categories.filter(cat =>
+        cat.toLowerCase().startsWith(value.toLowerCase())
+      );
+      setSuggestions(filtered);
+    }
+  };
+  const handleSearchKeyDown = (e) => {
+    if (e.key === "ArrowDown") {
+      setHighlightedIndex((prev) =>
+        prev < suggestions.length - 1 ? prev + 1 : prev
+      );
+    } else if (e.key === "ArrowUp") {
+      setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : -1));
+    } else if (e.key === "Enter") {
+      if (highlightedIndex >= 0 && highlightedIndex < suggestions.length) {
+        setSelectedCategory(suggestions[highlightedIndex]);
+      } else if (suggestions.length > 0) {
+        setSelectedCategory(suggestions[0]);
+      }
+      setSearchTerm("");
+      setSuggestions([]);
+      setHighlightedIndex(-1);
+    }
+  };
+  // Hit Enter would move from one text box to next
+  const handleEnterFocusNext = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      const form = e.target.form || document;
+      const focusable = Array.from(
+        form.querySelectorAll('input, select, textarea')
+      ).filter(el => !el.disabled && el.type !== 'hidden');
+      
+      const index = focusable.indexOf(e.target);
+      if (index > -1 && index < focusable.length - 1) {
+        focusable[index + 1].focus();
+      }
+    }
+  };
+
+
+  // const { data, addPrepay } = useContext(DataContext);
+  const handleSave = async (frequencyMode,frequencyNumber,frequencyUnit,selectedCategory,nextDate,amount,description) => {
+    if (
+      !frequencyMode ||
+      (frequencyMode === "每" && (!frequencyNumber || !frequencyUnit)) ||
+      !selectedCategory ||
+      !description ||
+      !nextDate ||
+      !amount
+    ) {
+      alert("Please fill in all fields before saving.");
+      return;
+    }
+
+
+    // Ensure the amount has two decimal places
+    const formattedAmount = parseFloat(amount).toFixed(2);
+    const newPrepay = 
+      {
+        category: selectedCategory,
+        amount: formattedAmount,
+        description: description,
+        date: nextDate,
+        frequencyMode: frequencyMode,
+        frequencyNumber: frequencyNumber,
+        frequencyUnit: frequencyUnit,
+      }
+    
+    // alert(
+    //   `Prepay Saved!\n\nDetails:\nCategory: ${selectedCategory}\nAmount: ${amount}\nDescription: ${description}\nDate: ${nextDate}\nFrequency: ${frequencyNumber} ${frequencyUnit} ${frequencyMode}`
+    // );
+
+
+
+    // Send another request to update CheckingRecent100
+    const requestId = uuidv4(); // Generate a unique request ID
+    const newPrepayReponse = await fetch("http://localhost:5001/api/add-prepay", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ newPrepay,requestId }),
+    });
+    if (newPrepayReponse.ok) {
+      console.log("预付款添加成功");
+    } else {
+      alert("预付款添加失败，请稍后再试");
+    }
+    
+    showCheckmark()
+    // navigate("/");
+  };
+  const [showCheckmarkOnly, setShowCheckmarkOnly] = useState(false);
+  const showCheckmark = () => {
+  setShowCheckmarkOnly(true);
+  setTimeout(() => {
+    setAddDialogVisible(false);
+    setShowCheckmarkOnly(false); // Reset for next time
+  }, 2000);
+};
+
+
 
   /* all prepay scheduled here, can be canceled, can be modified. every time run app, we need to run all prepay first to see anything due*/
   
-  return (
-    <div class="body">
-      <div className="expense-page page_bigger">
-        <h1 className="h-nobold" style={{ fontSize: "60px"}}>查看预付款</h1>
-        
-              <div className="expense-display">
-                {/* Table Header */}
-                <div className="table-header">
-                  <div>时间段</div> {/*每月11号*/}
-                  <div>类别</div>
-                  <div>下个日期</div>
-                  <div>金额</div>
-                  <div>描述</div>
-                  <div>操作</div>
-                </div>
-
-                {/* Expense Rows */}
-                <div className="table-body"></div>
-              </div>
-
-        <div className="button-group">
-          <Link to="/">
-            <button className="action-btn1">退出</button>
-          </Link>
-        </div>
-      </div>
-    </div>
-  );
   // return (
-  //   <div className="modify-expense-container">
-  //     {/* Header Section */}
-  //     <div className="modify-expense-header">
-  //       <div className="header-left">
-  //         <h2>支出明细</h2>
-  //       </div>
-  //       <div className="header-right">
-  //         <button
-  //           className="sort-btn"
-  //           onClick={() => setSortDialogVisible(true)}
-  //         >
-  //           排序
-  //         </button>
+    
+  //   <div class="body">
+  //     <div className="expense-page page_bigger">
+  //       <h1 className="h-nobold" style={{ fontSize: "60px"}}>查看预付款</h1>
+        
+        // <div className="expense-display">
+        //   {/* Table Header */}
+        //   <div className="table-header">
+        //     <div>时间段</div> {/*每月11号*/}
+        //     <div>类别</div>
+        //     <div>下个日期</div>
+        //     <div>金额</div>
+        //     <div>描述</div>
+        //     <div>操作</div>
+        //   </div>
+
+        //   {/* Expense Rows */}
+        //   <div className="table-body"></div>
+        // </div>
+
+  //       <div className="button-group">
   //         <Link to="/">
-  //           <button className="exit-btn">退出</button>
+  //           <button className="action-btn1">退出</button>
   //         </Link>
   //       </div>
   //     </div>
-
-  //     {/* Sort Dialog */}
-  //     {isSortDialogVisible && (
-  //       <div className="modal-overlay">
-  //         <div className="sort-dialog">
-  //           <div className="dialog-content">
-  //             <h3>排序选项</h3>
-
-  //             {/* 各种选项 */}
-  //             <div className="dialog-body">
-  //               {/* Row for Time Range */}
-  //               <div className="row">
-  //                 <label htmlFor="filter-combo" className="inline-label">
-  //                   时间范围
-  //                 </label>
-  //                 <select
-  //                   id="filter-combo"
-  //                   value={filterOption}
-  //                   onChange={(e) => {
-  //                     const newFilterOption = e.target.value;
-  //                     setFilterOption(newFilterOption);
-
-  //                     // Update `subOption` etc with a default based on the new `filterOption`
-  //                     // no need to update sortType since if unclicked default ascending, exactly which default radio is, once click desc, state updates.
-  //                     if (newFilterOption == "按月显示") {
-  //                       const currentMonth = new Date().toLocaleString("default", { month: "long" });
-                        
-  //                       setSubOption(currentMonth); // Default to "一月" for months, backend ONLY
-  //                       setShowType("Category sum")
-  //                     } else if (newFilterOption == "按季度显示") {
-  //                       setSubOption("Q1"); // Default to "Q1" for quarters
-  //                       setShowType("Category sum")
-  //                     } else if (newFilterOption == "按年份显示") {
-  //                       setSubOption(years[0]?.toString() || ""); // Default to the first year or empty
-  //                       setShowType("Category sum")
-  //                     }else if(newFilterOption == "前3个月" ||newFilterOption == "前12个月"||newFilterOption == "前6个月" ){
-  //                       setSubOption("");
-  //                       setShowType("Category sum")
-  //                     } else {
-  //                       setSubOption(""); // Clear `subOption` for other cases
-  //                       setShowType("")
-  //                     }
-
-  //                     if (autoApplyChanges) {
-  //                       setAppliedFilters({
-  //                         filterOption: newFilterOption,
-  //                         subOption: subOption, // Update this to reflect the new `subOption`
-  //                         amountThreshold,
-  //                         showAboveThreshold,
-  //                         showType
-  //                       });
-  //                     }
-  //                   }}
-  //                   className="filter-combo"
-  //                 >
-  //                   <option value="显示全部">显示全部</option>
-  //                   <option value="按月显示">按月显示</option>
-  //                   <option value="按季度显示">按季度显示</option>
-  //                   <option value="按年份显示">按年份显示</option>
-  //                   <option value="前3个月">前3个月</option>
-  //                   <option value="前12个月">前12个月</option>
-  //                   <option value="前6个月">前6个月</option>
-  //                 </select>
-
-  //               </div>
-                
-
-  //               {/* Sub Option for Time Range */}
-  //               <div className="row">
-  //                 <label htmlFor="sub-option-combo" className="inline-label">
-  //                   子选项
-  //                 </label>
-  //                 <select
-  //                   id="sub-option-combo"
-  //                   value={subOption}
-  //                   onChange={(e) => {
-  //                     setSubOption(e.target.value);
-  //                     if (autoApplyChanges) {
-  //                       setAppliedFilters({
-  //                         filterOption,
-  //                         subOption: e.target.value,
-  //                         amountThreshold,
-  //                         showAboveThreshold,
-  //                         showType
-  //                       });
-  //                     }
-  //                   }}
-  //                   className="filter-combo"
-  //                   disabled={filterOption == "前3个月" || filterOption == "前12个月" || filterOption == "前6个月"|| filterOption == "显示全部"}
-  //                 >
-  //                   {filterOption == "按月显示" && (
-  //                     <>
-  //                       <option value="一月">一月</option>
-  //                       <option value="二月">二月</option>
-  //                       <option value="三月">三月</option>
-  //                       <option value="四月">四月</option>
-  //                       <option value="五月">五月</option>
-  //                       <option value="六月">六月</option>
-  //                       <option value="七月">七月</option>
-  //                       <option value="八月">八月</option>
-  //                       <option value="九月">九月</option>
-  //                       <option value="十月">十月</option>
-  //                       <option value="十一月">十一月</option>
-  //                       <option value="十二月">十二月</option>
-  //                     </>
-  //                   )}
-  //                   {filterOption == "按季度显示" && (
-  //                     <>
-  //                       <option value="Q1">Q1</option>
-  //                       <option value="Q2">Q2</option>
-  //                       <option value="Q3">Q3</option>
-  //                       <option value="Q4">Q4</option>
-  //                     </>
-  //                   )}
-  //                   {filterOption == "按年份显示" && years.map((year) => (
-  //                     <option value={year} key={year}>
-  //                       {year}
-  //                     </option>
-  //                   ))}
-  //                 </select>
-  //               </div>
-
-  //               {/* Row for Show Type */}
-  //               <div className="row">
-  //                 <label htmlFor="show-type-combo" className="inline-label">
-  //                   显示类型
-  //                 </label>
-  //                 <select
-  //                   id="show-type-combo"
-  //                   value={showType}
-  //                   onChange={(e) => {
-  //                     setShowType(e.target.value);
-  //                     if (autoApplyChanges) {
-  //                       setAppliedFilters({
-  //                         filterOption,
-  //                         subOption,
-  //                         amountThreshold,
-  //                         showAboveThreshold,
-  //                         showType: e.target.value
-  //                       });
-  //                     }
-  //                   }}
-  //                   className="filter-combo"
-  //                   disabled={filterOption == "显示全部"}
-  //                 >
-  //                   {filterOption !="显示全部" && (
-  //                     <>
-  //                     <option value="Category sum">类别总和</option>
-  //                     <option value="List all Category Expenses">列出所有类别支出</option>
-  //                     <option value="List all Expenses by Date">按日期列出所有支出</option>
-  //                     </>
-  //                   )}
-                    
-  //                 </select>
-  //               </div>
-
-  //               {/* Row for Sort Type */}
-  //               <div className="row">
-  //                 <label className="inline-label">显示类型</label>
-
-  //                 <div>
-  //                   <label style={{ display: "inline-flex", alignItems: "center", marginRight: "10px" }}>
-  //                     <input
-  //                       type="radio"
-  //                       name="sortType"
-  //                       style={{ height: "20px", width: "20px", marginRight: "5px" }}
-  //                       value="ascending"
-  //                       checked={sortType === "ascending"}
-  //                       onChange={(e) => {
-  //                         setSortType(e.target.value);
-  //                         console.log("Selected Order: ", e.target.value);
-  //                         if (autoApplyChanges) {
-  //                           setAppliedFilters({
-  //                             filterOption,
-  //                             subOption,
-  //                             amountThreshold,
-  //                             showAboveThreshold,
-  //                             showType,
-  //                             sortType: e.target.value,
-  //                           });
-  //                         }
-  //                       }}
-  //                     />
-  //                     升序
-  //                   </label>
-
-  //                   <label style={{ display: "inline-flex", alignItems: "center", marginRight: "10px" }}>
-  //                     <input
-  //                       type="radio"
-  //                       name="sortType"
-  //                       value="descending"
-  //                       style={{ height: "20px", width: "20px", marginRight: "5px" }}
-  //                       checked={sortType === "descending"}
-  //                       onChange={(e) => {
-  //                         setSortType(e.target.value);
-  //                         console.log("Selected Order: ", e.target.value);
-  //                         if (autoApplyChanges) {
-  //                           setAppliedFilters({
-  //                             filterOption,
-  //                             subOption,
-  //                             amountThreshold,
-  //                             showAboveThreshold,
-  //                             showType,
-  //                             sortType: e.target.value,
-  //                           });
-  //                         }
-  //                       }}
-  //                     />
-  //                     降序
-  //                   </label>
-  //                 </div>
-  //               </div>
-
-
-  //               {/* Row for Checkbox and Textbox */}
-  //               <div className="row">
-  //                 <input
-  //                   type="checkbox"
-  //                   id="amount-checkbox"
-  //                   checked={showAboveThreshold}
-  //                   onChange={(e) => {
-  //                     setShowAboveThreshold(e.target.checked);
-  //                     if (autoApplyChanges) {
-  //                       setAppliedFilters({
-  //                         filterOption,
-  //                         subOption,
-  //                         amountThreshold,
-  //                         showAboveThreshold: e.target.checked,
-  //                         showType
-  //                       });
-  //                     }
-  //                   }}
-  //                   disabled={!amountThreshold || isNaN(amountThreshold)}
-  //                   className="amount-checkbox"
-  //                 />
-  //                 <label htmlFor="amount-checkbox" className="inline-label">
-  //                   仅显示金额超过
-  //                 </label>
-  //                 <input
-  //                   type="text"
-  //                   value={amountThreshold}
-  //                   onChange={(e) => {
-  //                     setAmountThreshold(e.target.value);
-  //                     if (autoApplyChanges) {
-  //                       setAppliedFilters({
-  //                         filterOption,
-  //                         subOption,
-  //                         amountThreshold: e.target.value,
-  //                         showAboveThreshold,
-  //                         showType
-  //                       });
-  //                     }
-  //                   }}
-  //                   placeholder="金额"
-  //                   className="amount-input"
-  //                 />
-  //                 <label>块</label>
-  //               </div>
-
-                
-
-  //             </div>
-
-  //             {/* Row for "直接显示" */}
-  //             <div className="row">
-  //                 <input
-  //                   type="checkbox"
-  //                   id="auto-apply-checkbox"
-  //                   checked={autoApplyChanges}
-  //                   onChange={(e) => {
-  //                     setAutoApplyChanges(e.target.checked);
-  //                     if (e.target.checked) {
-  //                       setAppliedFilters({ filterOption, amountThreshold, showAboveThreshold });
-  //                     }
-  //                   }}
-  //                   className="auto-apply-checkbox"
-  //                   disabled
-  //                 />
-  //                 <label htmlFor="auto-apply-checkbox" className="inline-label">
-  //                   直接显示
-  //                 </label>
-  //             </div>
-              
-
-  //             {/* 保存退出按钮 */}
-  //             <div className="dialog-actions">
-  //               {!autoApplyChanges && (
-  //                 <button className="save-btn" onClick={handleSaveFilters}>
-  //                   保存
-  //                 </button>
-  //               )}
-  //               <button
-  //                 className="exit-btn"
-  //                 onClick={() => setSortDialogVisible(false)}
-  //               >
-  //                 退出
-  //               </button>
-  //             </div>
-  //           </div>
-  //         </div>
-  //       </div>
-  //     )}
-
-  //     {/* Expense Display Section */}
-      // <div className="expense-display">
-      //   {/* Table Header */}
-      //   <div className="table-header">
-      //     <div>编号</div>
-      //     <div>类别</div>
-      //     <div>日期</div>
-      //     <div>金额</div>
-      //     <div>描述</div>
-      //     <div>操作</div>
-      //   </div>
-
-      //   {/* Expense Rows */}
-      //   <div className="table-body">
-      //     {filterExpenses().map((expense, index) => (
-      //       <div className="table-row" key={index}
-      //         data-has-actions={expense.actions !== null ? "true" : undefined}
-      //       >
-      //         {/* Hide index for Category sum */}
-      //         <div>
-      //           {appliedFilters.showType === "Category sum" || appliedFilters.showType === "List all Category Expenses" 
-      //             ? "" 
-      //             : (index + 1)}
-      //         </div>
-      //         <div 
-      //           style={{
-      //             ...(
-      //               appliedFilters.showType === "List all Category Expenses" && expense.actions == null 
-      //               ? { overflow: "visible", fontWeight: "bold", fontSize: "25px" } 
-      //               : {}
-      //             ),
-      //             color: (
-      //               expense.category && // Ensure category is defined
-      //               (expense.category.startsWith("总共消费") || expense.category.startsWith("Total Expenses"))
-      //             ) ? "red" : ""
-      //           }}
-      //         >
-      //           {categoriesTranslation[expense.category]||expense.category}
-      //         </div>
-
-
-      //         <div>{expense.date}</div>
-
-      //         {/* Only show amount if it's not the empty rows */}
-      //         <div>
-      //           {(appliedFilters.showType === "List all Category Expenses" && expense.actions !== null && categories.includes(expense.category)) || (expense.category !== "" && appliedFilters.showType === "Category sum")||(appliedFilters.showType === "List all Expenses by Date")||(appliedFilters.filterOption === "显示全部")
-      //             ? `$${expense.amount}` 
-      //             : ("")}
-      //         </div>
-
-
-
-      //         <div className="description" data-fulltext={expense.description}>
-      //           {expense.description}
-      //         </div>
-
-      //         <div>
-      //         {expense.actions !== null && (
-      //           <>
-      //             <button className="action-btn" onClick={() => handleModifyClick(expense)}>
-      //               修改 
-      //             </button>
-      //             <button className="action-btn" onClick={() => handleDeleteClick(expense)}>
-      //               删除
-      //             </button>
-      //           </>
-      //         )}
-      //         </div>
-      //       </div>
-      //     ))}
-      //   </div>
-      // </div>
-
-  //     <div className="popups_modify_delete">
-  //       {/* Modify Dialog */}
-  //       {isModifyDialogVisible && selectedExpense && (
-  //         <div className="modal-overlay">
-  //           <div className="modal-dialog">
-  //             <h3>修改支出</h3>
-  //             <p>
-  //               确认要修改支出吗？（编号：{selectedExpense.id}）
-  //             </p>
-              
-  //             <div className="form-group">
-  //               <label>类别</label>
-  //               <select
-  //                 id="category_select"
-  //                 defaultValue={selectedExpense.category} // Set the default value here
-  //               >
-  //                 {categories.map((category) => (
-  //                   <option key={category} value={category}>{category}</option>
-  //                 ))}
-  //               </select>
-  //             </div>
-
-  //             <div className="form-group">
-  //               <label>日期</label>
-  //               <input
-  //                 id="date_input"
-  //                 type="date"
-  //                 defaultValue={selectedExpense.date} // Set the default value here
-  //               />
-  //             </div>
-
-  //             <div className="form-group">
-  //               <label>金额</label>
-  //               <input
-  //                 id="amount_input"
-  //                 type="text"
-  //                 defaultValue={selectedExpense.amount} // Set the default value here
-  //               />
-  //             </div>
-
-  //             <div className="form-group">
-  //               <label>描述</label>
-  //               <textarea
-  //                 id="description_input"
-  //                 defaultValue={selectedExpense.description} // Set the default value here
-  //               />
-  //             </div>
-
-  //             <div className="dialog-actions">
-  //               <button
-  //                 className="confirm-btn"
-  //                 onClick={handleSaveChanges} // Only save when clicked
-  //               >
-  //                 保存
-  //             </button>
-  //               <button className="exit-btn" onClick={closeDialogs}>
-  //                 退出
-  //               </button>
-  //             </div>
-  //           </div>
-  //         </div>
-  //       )}
-
-
-
-  //       {/* Delete Dialog */}
-  //       {isDeleteDialogVisible && selectedExpense && (
-  //         <div className="modal-overlay">
-  //           <div className="modal-dialog">
-  //             <h3>删除支出</h3>
-  //             <p>
-  //               确认要删除支出吗？（编号：{selectedExpense.id} 类别：
-  //               {selectedExpense.category} 日期：{selectedExpense.date} 金额：
-  //               {selectedExpense.amount} 描述：{selectedExpense.description}）
-  //             </p>
-  //             <div className="dialog-actions">
-  //               <button 
-  //                 className="confirm-btn" 
-  //                 onClick={() => {
-  //                   // Call deleteExpense function
-  //                   deleteExpense(selectedExpense); // Pass selectedIncome or selectedExpense, depending on the context
-
-  //                   // Close the dialog after the income has been deleted
-  //                   closeDialogs();
-  //                 }}
-  //               >
-  //                 确认
-  //               </button>
-  //               <button className="exit-btn" onClick={closeDialogs}>
-  //                 退出
-  //               </button>
-  //             </div>
-  //           </div>
-  //         </div>
-  //       )}
-  //     </div>
-
   //   </div>
   // );
+  
+  return (
+    // 频率: 每月
+    // 类别: eg Car Related
+    // 下个日期: NA or eg 8/1/2025
+
+    <div className="modify-expense-container">
+      {/* Header Section */}
+      <div className="modify-expense-header">
+        <div className="header-left">
+          <h2>Scheduled Payments</h2>
+        </div>
+        <div className="header-right">
+          <button
+            onClick={() => setSortDialogVisible(true)}
+            className="sort-btn"
+          >
+            排序
+          </button>
+          <button
+            className="add-prepay-btn"
+            onClick={() => setAddDialogVisible(true)}
+          >
+            添加
+          </button>
+
+          <Link to="/">
+            <button className="exit-btn">退出</button>
+          </Link>
+        </div>
+      </div>
+
+      {/* Sort Dialog */}
+      {isSortDialogVisible && (
+        <div className="modal-overlay">
+          <div className="sort-dialog">
+            <div className="dialog-content">
+              <h3>排序选项</h3>
+
+              {/* 各种选项 */}
+              <div className="dialog-body">
+                {/* Row for Time Range */}
+                <div className="row">
+                  <label htmlFor="filter-combo" className="inline-label">
+                    时间范围
+                  </label>
+                  <select
+                    id="filter-combo"
+                    value={filterOption}
+                    onChange={(e) => {
+                      const newFilterOption = e.target.value;
+                      setFilterOption(newFilterOption);
+
+                      // Update `subOption` etc with a default based on the new `filterOption`
+                      // no need to update sortType since if unclicked default ascending, exactly which default radio is, once click desc, state updates.
+                      if (newFilterOption == "按月显示") {
+                        const currentMonth = new Date().toLocaleString("default", { month: "long" });
+                        
+                        setSubOption(currentMonth); // Default to "一月" for months, backend ONLY
+                        setShowType("Category sum")
+                      } else if (newFilterOption == "按季度显示") {
+                        setSubOption("Q1"); // Default to "Q1" for quarters
+                        setShowType("Category sum")
+                      } else if (newFilterOption == "按年份显示") {
+                        setSubOption(years[0]?.toString() || ""); // Default to the first year or empty
+                        setShowType("Category sum")
+                      }else if(newFilterOption == "前3个月" ||newFilterOption == "前12个月"||newFilterOption == "前6个月" ){
+                        setSubOption("");
+                        setShowType("Category sum")
+                      } else {
+                        setSubOption(""); // Clear `subOption` for other cases
+                        setShowType("")
+                      }
+                    }}
+                    className="filter-combo"
+                  >
+                    <option value="显示全部">显示全部</option>
+                    <option value="按月显示">按月显示</option>
+                    <option value="按季度显示">按季度显示</option>
+                    <option value="按年份显示">按年份显示</option>
+                    <option value="前3个月">前3个月</option>
+                    <option value="前12个月">前12个月</option>
+                    <option value="前6个月">前6个月</option>
+                  </select>
+
+                </div>
+                
+
+                {/* Sub Option for Time Range */}
+                <div className="row">
+                  <label htmlFor="sub-option-combo" className="inline-label">
+                    子选项
+                  </label>
+                  <select
+                    id="sub-option-combo"
+                    value={subOption}
+                    onChange={(e) => {
+                      setSubOption(e.target.value);
+                      
+                    }}
+                    className="filter-combo"
+                    disabled={filterOption == "前3个月" || filterOption == "前12个月" || filterOption == "前6个月"|| filterOption == "显示全部"}
+                  >
+                    {filterOption == "按月显示" && (
+                      <>
+                        <option value="一月">一月</option>
+                        <option value="二月">二月</option>
+                        <option value="三月">三月</option>
+                        <option value="四月">四月</option>
+                        <option value="五月">五月</option>
+                        <option value="六月">六月</option>
+                        <option value="七月">七月</option>
+                        <option value="八月">八月</option>
+                        <option value="九月">九月</option>
+                        <option value="十月">十月</option>
+                        <option value="十一月">十一月</option>
+                        <option value="十二月">十二月</option>
+                      </>
+                    )}
+                    {filterOption == "按季度显示" && (
+                      <>
+                        <option value="Q1">Q1</option>
+                        <option value="Q2">Q2</option>
+                        <option value="Q3">Q3</option>
+                        <option value="Q4">Q4</option>
+                      </>
+                    )}
+                    {filterOption == "按年份显示" && years.map((year) => (
+                      <option value={year} key={year}>
+                        {year}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Row for Show Type */}
+                <div className="row">
+                  <label htmlFor="show-type-combo" className="inline-label">
+                    显示类型
+                  </label>
+                  <select
+                    id="show-type-combo"
+                    value={showType}
+                    onChange={(e) => {
+                      setShowType(e.target.value);
+                      
+                    }}
+                    className="filter-combo"
+                    disabled={filterOption == "显示全部"}
+                  >
+                    {filterOption !="显示全部" && (
+                      <>
+                      <option value="Category sum">类别总和</option>
+                      <option value="List all Category Expenses">列出所有类别支出</option>
+                      <option value="List all Expenses by Date">按日期列出所有支出</option>
+                      </>
+                    )}
+                    
+                  </select>
+                </div>
+
+                {/* Row for Sort Type */}
+                <div className="row">
+                  <label className="inline-label">显示类型</label>
+
+                  <div>
+                    <label style={{ display: "inline-flex", alignItems: "center", marginRight: "10px" }}>
+                      <input
+                        type="radio"
+                        name="sortType"
+                        style={{ height: "20px", width: "20px", marginRight: "5px" }}
+                        value="ascending"
+                        checked={sortType === "ascending"}
+                        onChange={(e) => {
+                          setSortType(e.target.value);
+                          console.log("Selected Order: ", e.target.value);
+                         
+                        }}
+                      />
+                      升序
+                    </label>
+
+                    <label style={{ display: "inline-flex", alignItems: "center", marginRight: "10px" }}>
+                      <input
+                        type="radio"
+                        name="sortType"
+                        value="descending"
+                        style={{ height: "20px", width: "20px", marginRight: "5px" }}
+                        checked={sortType === "descending"}
+                        onChange={(e) => {
+                          setSortType(e.target.value);
+                          console.log("Selected Order: ", e.target.value);
+                          
+                        }}
+                      />
+                      降序
+                    </label>
+                  </div>
+                </div>
+
+                
+
+              </div>
+
+              
+              
+
+              {/* 保存退出按钮 */}
+              <div className="dialog-actions">
+                <button
+                  className="exit-btn"
+                  onClick={() => setSortDialogVisible(false)}
+                >
+                  退出
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isAddDialogVisible && (
+        <div className="modal-overlay">
+          
+
+          <div className="add-prepay-dialog">
+            {showCheckmarkOnly ? (
+              <svg className="checkmark" viewBox="0 0 52 52">
+                <path d="M14 27l10 10 18-20" />
+              </svg>
+            ) : (
+              <>
+                <h3>添加预付款</h3>
+                <div className="dialog-body">
+
+                  <div className="row">
+                    <label>频率:</label>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <select
+                        value={frequencyMode}
+                        onChange={(e) => {
+                          const mode = e.target.value;
+                          setFrequencyMode(mode);
+
+                          // ⛔️ If switched to 单次, clear the other two
+                          if (mode === "单次") {
+                            setFrequencyNumber("");
+                            setFrequencyUnit(""); // or default like "天"
+                          }
+                        }}
+                        onKeyDown={handleEnterFocusNext}
+                      >
+                        <option value="每">每</option>
+                        <option value="单次">单次</option>
+                      </select>
+
+                      {frequencyMode === "每" && (
+                        <>
+                          <input
+                            type="number"
+                            value={frequencyNumber}
+                            onChange={(e) => setFrequencyNumber(e.target.value)}
+                            style={{ width: "60px" }}
+                            onKeyDown={handleEnterFocusNext}
+                          />
+                          <select
+                            value={frequencyUnit}
+                            onChange={(e) => setFrequencyUnit(e.target.value)}
+                            onKeyDown={handleEnterFocusNext}
+                          >
+                            <option value="天">天</option>
+                            <option value="周">周</option>
+                            <option value="月">月</option>
+                            <option value="年">年</option>
+                          </select>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+
+
+                  <div className="row">
+                    <label>类别:</label>
+                    <div style={{ display: "flex", gap: "10px", width: "100%" }}>
+                      {/* Dropdown select */}
+                      <select
+                        className="styled-select"
+                        style={{ width: "50%" }}
+                        value={selectedCategory}
+                        onChange={(e) => setSelectedCategory(e.target.value)}
+                        onKeyDown={handleEnterFocusNext}
+                      >
+                        <option value="">--请选择--</option>
+                        {categories.map((cat, index) => (
+                          <option key={index} value={cat}>
+                            {cat}
+                          </option>
+                        ))}
+                      </select>
+
+                      {/* Search input + suggestions */}
+                      <div style={{ width: "50%", position: "relative" }}>
+                        <input
+                          type="text"
+                          placeholder="搜索分类"
+                          value={searchTerm}
+                          onChange={handleSearchChange}
+                          onKeyDown={(e) => {
+                            handleSearchKeyDown(e);
+                            // optionally: focus next if Enter is pressed
+                            handleEnterFocusNext(e);
+                          }}
+                          style={{ width: "100%", paddingRight: "30px" }}
+                        />
+                        <button
+                          onClick={() => {
+                            if (suggestions.length > 0) {
+                              setSelectedCategory(suggestions[0]);
+                              setSearchTerm("");
+                              setSuggestions([]);
+                            }
+                          }}
+                          style={{
+                            position: "absolute",
+                            right: "5px",
+                            top: "50%",
+                            transform: "translateY(-50%)",
+                            background: "transparent",
+                            border: "none",
+                            cursor: "pointer",
+                            fontSize: "18px",
+                          }}
+                        >
+                          🔍
+                        </button>
+                        {suggestions.length > 0 && (
+                          <ul
+                            style={{
+                              position: "absolute",
+                              top: "100%",
+                              left: 0,
+                              right: 0,
+                              background: "white",
+                              border: "1px solid #ccc",
+                              listStyle: "none",
+                              padding: 0,
+                              margin: 0,
+                              maxHeight: "150px",
+                              overflowY: "auto",
+                              zIndex: 100,
+                            }}
+                          >
+                            {suggestions.slice(0, 5).map((sugg, index) => (
+                              <li
+                                key={index}
+                                style={{
+                                  padding: "8px",
+                                  cursor: "pointer",
+                                  backgroundColor: index === highlightedIndex ? "#f0f0f0" : "transparent",
+                                }}
+                                onMouseDown={() => {
+                                  setSelectedCategory(sugg);
+                                  setSearchTerm("");
+                                  setSuggestions([]);
+                                  setHighlightedIndex(-1);
+                                }}
+                              >
+                                {sugg}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+
+                  <div className="row">
+                    <label>{frequencyMode === "每" ? "下个日期:" : "日期:"}</label>
+                    <input
+                      type="date"
+                      value={nextDate}
+                      onChange={(e) => setNextDate(e.target.value)}
+                      onKeyDown={handleEnterFocusNext}
+                    />
+                  </div>
+
+                  <div className="row">
+                    <label>金额:</label>
+                    <input
+                      type="number"
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                      onKeyDown={handleEnterFocusNext}
+                    />
+                  </div>
+
+                  <div className="row description-row">
+                    <label>描述:</label>
+                    <textarea
+                      rows="3"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="dialog-actions">
+                  <button
+                    className="exit-btn"
+                    onClick={() => setAddDialogVisible(false)}
+                  >
+                    退出
+                  </button>
+                  <button
+                    className="save-btn"
+                    onClick={() => {
+                      // alert(
+                      //   `频率: ${frequencyMode === "每" ? `每 ${frequencyNumber} ${frequencyUnit}` : "单次"}\n类别: ${selectedCategory}\n日期: ${nextDate}\n金额: ${amount}\n描述: ${description}`
+                      // );
+                      handleSave(frequencyMode,frequencyNumber,frequencyUnit,selectedCategory,nextDate,amount,description);
+                      // setAddDialogVisible(false);
+                    }}
+                  >
+                    保存
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+
+        </div>
+      )}
+
+
+
+
+      {/* Scheduled Payments Display Section */}
+      <div className="expense-display">
+          {/* Table Header */}
+          <div className="table-header">
+            <div>频率</div> 
+            <div>类别</div>
+            <div>下个日期</div>
+            <div>金额</div>
+            <div>描述</div>
+            <div>操作</div>
+          </div>
+
+          {/* Payment Rows */}
+          <div className="table-body"></div>
+      </div>
+
+
+    </div>
+  );
 };
 
 const BudgetPage = () => {
@@ -3073,16 +3229,16 @@ const RecordIncomePage = () => {
   useEffect(() => {
     const fetchTotalChecking = async () => {
       try {
-        const response = await fetch("/recentTransactions.json");
+        const response = await fetch("http://localhost:5001/api/get-total-checking")
         const data = await response.json();
-        setTotalChecking(data.Checking || 0);
+        setTotalChecking(data.checking || 0);
       } catch (error) {
-        console.error("Error fetching recentTransactions.json:", error);
+        console.error("Error fetching total checking:", error);
       }
     };
     fetchTotalChecking();
-    
   }, []);
+
 
   const handleSave = () => {
     if (!preTaxAmount || !postTaxAmount || !notes || !date) {
@@ -5264,7 +5420,7 @@ const App = () => {
 
   // Fetch and initialize data
   useEffect(() => {
-    fetch("/data.json")
+    fetch("http://localhost:5001/api/get-data")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to fetch data");
@@ -5283,6 +5439,7 @@ const App = () => {
         console.error("Error fetching the JSON data:", error);
       });
   }, []);
+
   // Call loadCategoriesData when the component mounts
   useEffect(() => {
     loadCategoriesData(); // This will fetch and load the categories into global variables
@@ -5459,6 +5616,10 @@ const App = () => {
       return { ...prevData, expenses: updatedExpenses };
     });
   };
+
+  const addPrepay = () =>{
+
+  }
 
 
   return (

@@ -11,13 +11,14 @@ app.use(express.json());
 
 // TIME HERE IS IN UTC
 
-const dataFilePath = path.join(__dirname, "../public/data.json");
-const settingsFilePath = path.join(__dirname, "../public/settings.json");
-const recentTransactionsFilePath = path.join(__dirname, "../public/recentTransactions.json");
-const backupFolderPath = path.join(__dirname, "../public/backup");
-const successAudioPath = path.join(__dirname, "../public/soundEffects/success.mp3");
-const categoriesFilePath = path.join(__dirname, "../public/categories.json");
-const publicDir = path.join(__dirname, "../public");
+const dataFilePath = path.join(__dirname, "../userData/data.json");
+const settingsFilePath = path.join(__dirname, "../userData/settings.json");
+const recentTransactionsFilePath = path.join(__dirname, "../userData/recentTransactions.json");
+const prepayFilePath = path.join(__dirname, "../userData/prepay_schedule.json");
+const backupFolderPath = path.join(__dirname, "../userData/backup");
+const successAudioPath = path.join(__dirname, "../userData/soundEffects/success.mp3");
+const categoriesFilePath = path.join(__dirname, "../userData/categories.json");
+const userDataDir = path.join(__dirname, "../userData");
 
 
 const processedRequests = new Set(); // Store processed request IDs
@@ -75,7 +76,7 @@ const filesToCreate = [
 ];
 // ✅ Create files if missing
 filesToCreate.forEach(({ filename, content }) => {
-  const fullPath = path.join(publicDir, filename);
+  const fullPath = path.join(userDataDir, filename);
 
   if (!fs.existsSync(fullPath)) {
     fs.writeFile(fullPath, JSON.stringify(content, null, 2), (err) => {
@@ -89,6 +90,39 @@ filesToCreate.forEach(({ filename, content }) => {
     console.log(`✅ ${filename} already exists`);
   }
 });
+function generateTimestampId() {
+  const now = new Date();
+  const pad = (n, len = 2) => n.toString().padStart(len, "0");
+
+  const date = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
+  const time = `${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}${pad(now.getMilliseconds(), 3)}`;
+
+  return `${date}_${time}`;
+}
+function resolveDatePlaceholders(description) {
+  const now = new Date();
+
+  const pad = (n, len = 2) => n.toString().padStart(len, "0");
+
+  const replacements = {
+    "{YEAR}": now.getFullYear(),
+    "{MONTH}": pad(now.getMonth() + 1),
+    "{DAY}": pad(now.getDate()),
+    "{HOUR}": pad(now.getHours()),
+    "{MINUTE}": pad(now.getMinutes()),
+    "{SECOND}": pad(now.getSeconds()),
+    "{MS}": pad(now.getMilliseconds(), 3)
+  };
+
+  let result = description;
+
+  for (const [key, value] of Object.entries(replacements)) {
+    result = result.replaceAll(key, value);
+  }
+
+  return result;
+}
+
 
 
 
@@ -255,39 +289,6 @@ app.post("/api/update-total", (req, res) => {
   });
 });
 
-// Endpoint to update CheckingLast10 transactions
-// app.post("/api/update-checking-last10", (req, res) => {
-//   const { newTransaction,requestId } = req.body;
-//   if (processedRequests.has(requestId)) {
-//     return res.status(200).send(`Request with ID ${requestId} already processed.`);
-//   }
-  
-//   fs.readFile(settingsFilePath, "utf8", (err, data) => {
-//     if (err) {
-//       return res.status(500).send("Failed to read file.");
-//     }
-
-//     const jsonData = JSON.parse(data);
-    
-//     // Add the new transaction to the front of the array
-//     jsonData.CheckingLast10.unshift(newTransaction);
-
-//     // Ensure the length of CheckingLast10 does not exceed 10
-//     if (jsonData.CheckingLast10.length > 10) {
-//       jsonData.CheckingLast10.pop(); // Remove the last element if there are more than 10
-//     }
-
-//     // Write the updated data back to the settings.json file
-//     fs.writeFile(settingsFilePath, JSON.stringify(jsonData, null, 2), (writeErr) => {
-//       if (writeErr) {
-//         return res.status(500).send("Failed to write file.");
-//       }
-
-//       res.status(200).send("Transaction successfully updated.");
-//     });
-//   });
-// });
-
 // Endpoint to update CheckingLast100 transactions
 app.post("/api/update-checking-last100", (req, res) => {
   console.log("Received request at update-checking-last100");
@@ -342,6 +343,46 @@ app.post("/api/update-checking-last100", (req, res) => {
 
 
 });
+
+app.post("/api/add-prepay", (req, res) => {
+  const { newPrepay, requestId } = req.body;
+
+  if (processedRequests.has(requestId)) {
+    console.log(`Duplicate request: ${requestId}`);
+    return res.status(200).send("Already processed.");
+  }
+  processedRequests.add(requestId);
+
+  fs.readFile(prepayFilePath, "utf8", (err, data) => {
+    let allPrepay = [];
+
+    if (!err && data) {
+      try {
+        allPrepay = JSON.parse(data);
+      } catch {
+        allPrepay = [];
+      }
+    }
+
+    // Append ID here
+    const prepayWithId = {
+      id: generateTimestampId(),
+      ...newPrepay,
+    };
+
+    allPrepay.push(prepayWithId);
+
+    fs.writeFile(prepayFilePath, JSON.stringify(allPrepay, null, 2), (err) => {
+      if (err) {
+        console.error("Write failed:", err);
+        return res.status(500).send("Failed to save.");
+      }
+
+      res.status(200).send("Prepay added successfully.");
+    });
+  });
+});
+
 
 app.post("/api/add-category", (req, res) => {
   const { en, zh } = req.body;
@@ -401,6 +442,93 @@ app.post("/api/delete-categories", (req, res) => {
     });
   });
 });
+
+// Endpoint to fetch total checking amount
+app.get("/api/get-total-checking", (req, res) => {
+  fs.readFile(recentTransactionsFilePath, "utf8", (err, data) => {
+    if (err) {
+      console.error("Error reading recentTransactions.json:", err);
+      return res.status(500).send("Failed to read total checking.");
+    }
+
+    try {
+      const jsonData = JSON.parse(data);
+      const checking = jsonData.Checking || 0;
+      res.status(200).json({ checking });
+    } catch (parseErr) {
+      console.error("Error parsing recentTransactions.json:", parseErr);
+      res.status(500).send("Invalid JSON format.");
+    }
+  });
+});
+// Endpoint to fetch CheckingRecent100
+app.get("/api/get-checking-recent100", (req, res) => {
+  fs.readFile(recentTransactionsFilePath, "utf8", (err, data) => {
+    if (err) {
+      console.error("Error reading recentTransactions.json:", err);
+      return res.status(500).send("Failed to read recent transactions.");
+    }
+
+    try {
+      const jsonData = JSON.parse(data);
+      const recent100 = jsonData.CheckingRecent100 || [];
+      res.status(200).json({ recent100 });
+    } catch (parseErr) {
+      console.error("Error parsing recentTransactions.json:", parseErr);
+      res.status(500).send("Invalid JSON format.");
+    }
+  });
+});
+// Endpoint to get settings.json
+app.get("/api/get-settings", (req, res) => {
+  fs.readFile(settingsFilePath, "utf8", (err, data) => {
+    if (err) {
+      console.error("Error reading settings.json:", err);
+      return res.status(500).send("Failed to read settings.");
+    }
+
+    try {
+      const settings = JSON.parse(data);
+      res.status(200).json(settings);
+    } catch (parseErr) {
+      console.error("Error parsing settings.json:", parseErr);
+      return res.status(500).send("Invalid JSON in settings.");
+    }
+  });
+});
+app.get("/api/get-data", (req, res) => {
+  fs.readFile(dataFilePath, "utf8", (err, data) => {
+    if (err) {
+      console.error("Failed to read data.json:", err);
+      return res.status(500).send("Failed to read data file.");
+    }
+
+    try {
+      const jsonData = JSON.parse(data);
+      res.status(200).json(jsonData);
+    } catch (parseErr) {
+      console.error("Error parsing data.json:", parseErr);
+      return res.status(500).send("Invalid JSON format.");
+    }
+  });
+});
+app.get("/api/get-categories", (req, res) => {
+  fs.readFile(categoriesFilePath, "utf8", (err, data) => {
+    if (err) {
+      console.error("Error reading categories.json:", err);
+      return res.status(500).send("Failed to read categories.json");
+    }
+
+    try {
+      const jsonData = JSON.parse(data);
+      res.status(200).json(jsonData);
+    } catch (parseErr) {
+      console.error("Invalid JSON in categories.json:", parseErr);
+      return res.status(500).send("Invalid JSON format.");
+    }
+  });
+});
+
 
 app.listen(5001, () => {
   ensureBackupFolder()

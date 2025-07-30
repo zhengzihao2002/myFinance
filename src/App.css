@@ -6,6 +6,59 @@
 
   font-family: "ZCOOL QingKe HuangYou", serif;
 }
+.hidden {
+  display: none!important;
+}
+.checkmark {
+  /* width: 100px;
+  height: 100px; */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  width: 300px;
+  height: 300px;
+
+  stroke: green;
+  stroke-width: 6;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+
+  animation: draw 0.6s ease-in-out forwards;
+  z-index: 999; /* optional */
+}
+
+.checkmark path {
+  fill: none;
+  stroke: rgba(0, 128, 0, 0.5);
+  stroke-width: 6;
+
+  stroke: rgba(0, 128, 0, 0.8); /* stronger green */
+  stroke-width: 8;
+
+  
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: drawCheck 2.5s ease forwards;
+}
+
+@keyframes drawCheck {
+  /* to {
+    stroke-dashoffset: 0;
+  } */
+  from {
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+  }
+  to {
+    stroke-dasharray: 48;
+    stroke-dashoffset: 0;
+  }
+}
 .zcool-kuaile-regular {
   font-family: "ZCOOL KuaiLe", sans-serif;
   font-weight: 400;
@@ -30,6 +83,18 @@ body,
   transition-duration: 1.5s;
   transition-timing-function: ease;
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* homepage */
 .panel_title{
@@ -104,12 +169,43 @@ body,
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*
 支出明细/收入明细
 */
 .table-row[data-has-actions="true"]:hover {
   background-color: #e0e0e0; /* or any darker color you want */
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*记录支出 记录收入*/
 .income-page .today-btn,
@@ -136,6 +232,28 @@ body,
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*预付款*/
 .prepay-display .table-header {
   display: grid; /* Grid layout for consistent column widths */
@@ -157,6 +275,120 @@ body,
   padding: 10px 20px;
   align-items: center; /* Centers content vertically within each cell */
 }
+.add-prepay-btn {
+  background-color: #6bc07f; /* Blue color */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-right: 10px;
+  height: 40px; /* Ensure it matches the height of the exit button */
+}
+.add-prepay-btn:hover {
+  background-color: #3d774b;
+}
+
+/* === Dialog Container === */
+.add-prepay-dialog {
+  background: #fff;
+  border-radius: 12px;
+  min-height: 521px;
+  width: 460px;
+  max-width: 90%;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  animation: fadeInScale 0.3s ease;
+  overflow:visible;
+  padding: 24px 28px;
+  position: relative;
+}
+
+.add-prepay-dialog h3 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-align: center;
+}
+/* Labels: fixed width to align nicely */
+.add-prepay-dialog .dialog-body label {
+  width: 50px;
+  font-weight: 500;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+/* === Inputs & Selects === */
+.add-prepay-dialog .dialog-body input,
+.add-prepay-dialog .dialog-body select {
+  flex: 1;
+  padding: 8px 10px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  transition: border-color 0.2s ease;
+}
+.add-prepay-dialog .dialog-body .row.description-row {
+  flex-direction: column;
+  align-items: stretch;
+}
+.add-prepay-dialog .dialog-body .row.description-row label {
+  width: auto;
+  margin-bottom: 6px;
+}
+/* Textarea full width */
+.add-prepay-dialog .dialog-body textarea {
+  resize: none;
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  transition: border-color 0.2s ease;
+}
+/* .add-prepay-dialog input:focus,
+.add-prepay-dialog select:focus,
+.add-prepay-dialog textarea:focus {
+  border-color: #007bff;
+  outline: none;
+} */
+
+.add-prepay-dialog .exit-btn,
+.add-prepay-dialog .save-btn {
+  /* padding: 8px 16px; */
+  font-size: 15px;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+  border: none;
+
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  flex-grow: 1;
+  margin: 0 5px;
+}
+
+.add-prepay-dialog .action-btn1 {
+  background: #007bff;
+  color: white;
+}
+
+.add-prepay-dialog .action-btn1:hover {
+  background: #005dc1;
+}
+
+/* === Animation === */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
 /* Expense Display Section */
 .prepay-display {
   height: 87%;
@@ -169,11 +401,7 @@ body,
   color: #777;
   overflow-y: auto;
   position: relative;
-
-  
 }
-
-
 /* Table Header Column Centering */
 .prepay-display .table-header > div {
   display: flex;
@@ -183,12 +411,10 @@ body,
   /* text-align: center; */
   text-align: left;
 }
-
 /* Table Body */
 .prepay-display .table-body {
   padding: 10px 20px; /* No extra padding needed */
 }
-
 .prepay-display .table-row {
   display: grid; /* Grid layout for consistent column widths */
   grid-template-columns: 
@@ -204,7 +430,6 @@ body,
   border-bottom: 1px solid #eee;
   overflow: hidden;
 }
-
 /* Row Column Content Alignment */
 .prepay-display .table-row > div {
   /* text-align: center; Centers text within each column */
@@ -223,18 +448,38 @@ body,
   color: white;
   width: 80px; /* Fixed width to ensure consistency */
 }
-
 /* Action Buttons Container */
 .prepay-display .table-row > div:last-child {
   display: flex;
   justify-content: center; /* Center action buttons */
   gap: 10px; /* Add space between buttons */
 }
-
 /* Hover Effect for Action Buttons */
 .prepay-display .action-btn:hover {
   background-color: #45a049;
 }
+.add-prepay-dialog .save-btn {
+  background-color: #4CAF50;
+}
+.add-prepay-dialog .exit-btn {
+  background-color: #ff0000;
+}
+.save-btn:hover {
+  background-color: #45a049;
+}.exit-btn:hover {
+  background-color: #bc2c2c;
+}
+.add-prepay-dialog select:focus,
+.add-prepay-dialog input:focus,
+.add-prepay-dialog textarea:focus {
+  outline: none;
+  border: 1px solid #80bdff;
+  animation: breathe-shadow 2.4s ease-in-out infinite;
+}
+
+
+
+
 
 
 
