@@ -476,6 +476,38 @@ body,
   border: 1px solid #80bdff;
   animation: breathe-shadow 2.4s ease-in-out infinite;
 }
+@keyframes red-breathe-shadow {
+  0% {
+    box-shadow: 0 0 0 0.1rem rgba(255, 0, 0, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 0 1rem rgba(255, 0, 0, 0.4);
+  }
+  100% {
+    box-shadow: 0 0 0 0.1rem rgba(255, 0, 0, 0.25);
+  }
+}
+
+.delete-dialog {
+  border-radius: 12px;
+  animation: red-breathe-shadow 1.5s ease-in-out infinite;
+  /* border: 2px solid red; */
+}
+.delete-summary {
+  margin-top: 12px;
+  line-height: 1.6;
+  padding: 20px;
+  font-size: 20px;
+}
+.delete-summary div {
+  margin-bottom: 6px;
+}
+.confirm-btn.danger {
+  background-color: #dc3545;
+  color: white;
+  font-weight: bold;
+  border: none;
+}
 
 
 
@@ -796,7 +828,7 @@ body,
 }
 
 .modify-expense-container .popups_modify_delete .dialog-actions .confirm-btn:hover,.modify-income-container .popups_modify_delete .dialog-actions .confirm-btn:hover {
-  background-color: #c82333; /* Darker red on hover */
+  background-color: #218838; /* Darker green on hover */
 }
 
 .modify-expense-container .popups_modify_delete .dialog-actions .exit-btn,.modify-income-container .popups_modify_delete .dialog-actions .exit-btn {
@@ -812,7 +844,8 @@ body,
 }
 
 .modify-expense-container .popups_modify_delete .dialog-actions .exit-btn:hover,.modify-income-container .popups_modify_delete .dialog-actions .exit-btn:hover {
-  background-color: #218838; /* Darker green on hover */
+  
+  background-color: #c82333; /* Darker red on hover */
 }
 
 .modify-expense-container .popups_modify_delete select,.modify-expense-container .popups_modify_delete input,.modify-income-container .popups_modify_delete select,.modify-income-container .popups_modify_delete input{

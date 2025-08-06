@@ -63,11 +63,10 @@ function createId(dateStr) {
   // Format the date as YYYYMMDD
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
-  const day = String(date.getDate()).padStart(2, '0');
+  const day = String(date.getDate()+1).padStart(2, '0');
   
   // Combine everything to form the id
   const id = `${year}${month}${day}_${hours}${minutes}${seconds}${milliseconds}`;
-  
   return id;
 }
 
@@ -102,8 +101,9 @@ const HomePage = () => {
       .catch((error) => console.error("Error loading settings:", error));
   }, []);
 
+  
 
-  const { data } = useContext(DataContext); // Access global expense data from context
+  const { data,addExpense } = useContext(DataContext); // Access global expense data from context
   const [isModalOpenCategory, setIsModalOpenCategory] = useState(false);
   const [modalContentCategory, setModalContentCategory] = useState("");
   const [isModalOpenOther, setIsModalOpenOther] = useState(false);
@@ -112,6 +112,7 @@ const HomePage = () => {
   const [modalContentMiscellaneous, setModalContentMiscellaneous] = useState("");
   const [maskNumbers, setMaskNumbers] = useState(true);
   const [daylight, setDayLight] = useState(true);
+  
 
   const openModalCategory = (content) => {
     setModalContentCategory(content);
@@ -163,6 +164,8 @@ const HomePage = () => {
   const [filteredExpenses, setFilteredExpenses] = useState(data.expenses);
   const [chartData, setChartData] = useState([["Expenses", "Dollars"]]);
   const [chartTitle, setChartTitle] = useState("支出概览 - 全部显示");
+  const [chartError, setChartError] = useState(false);
+  //reset error when chartData or options change
   const currentYear = new Date().getFullYear(); // Get the current year
   let options = {
     // title: timeRange,
@@ -226,7 +229,20 @@ const HomePage = () => {
     ],
     backgroundColor: 'transparent', // Set the background color here
   };
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
 
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
   // Available years for "按年显示"
   const availableYears = [...new Set(data.expenses.map((exp) => exp.date.substring(0,4)))].sort();
 
@@ -1017,6 +1033,147 @@ const HomePage = () => {
 
 
 
+  // Prepay Execution:
+  const [scheduledPrepays, setScheduledPrepays] = useState([]);
+  let hasCheckedDue = false; // Prevent multiple executions
+  // 🔁 Fetch all scheduled prepays from backend
+  const fetchScheduledPrepays = async () => {
+    try {
+      const response = await fetch("http://localhost:5001/api/get-prepay");
+      if (!response.ok) throw new Error("Failed to fetch");
+      const data = await response.json();
+      setScheduledPrepays(data || []);
+      return data; // For reuse
+    } catch (err) {
+      console.error("Error loading scheduled prepays:", err);
+      return [];
+    }
+  };
+  // 🔔 On page load: check for due prepays and update if repeating
+  useEffect(() => {
+    if (totalChecking !== null) {
+      const checkAndHandleDuePrepays = async () => {
+        if (hasCheckedDue) return;
+        hasCheckedDue = true;
+
+        const data = await fetchScheduledPrepays();
+        const today = new Date().toISOString().split("T")[0];
+        let updated = false;
+
+        for (const prepay of data) {
+          if (prepay.date <= today) {
+            // Step 1: Convert to real expense
+            const formattedAmount = parseFloat(prepay.amount).toFixed(2);
+            const id = createId(prepay.date);
+            addExpense({
+              category: prepay.category,
+              amount: formattedAmount,
+              description: prepay.description.replace('{MONTH}', new Date().toLocaleString('en-US', { month: 'long' }))+ " (Recurring)",
+              date: prepay.date,
+              id: id
+            });
+            handleAdjustAmountNonManual(id, "subtract", formattedAmount);
+
+            // Step 2: Recurring vs Single-Time
+            if (prepay.frequencyMode === "每") {
+              const current = new Date(prepay.date);
+              const next = new Date(current);
+
+              switch (prepay.frequencyUnit) {
+                case "天":
+                  next.setDate(current.getDate() + parseInt(prepay.frequencyNumber));
+                  break;
+                case "周":
+                  next.setDate(current.getDate() + 7 * parseInt(prepay.frequencyNumber));
+                  break;
+                case "月":
+                  next.setMonth(current.getMonth() + parseInt(prepay.frequencyNumber));
+                  break;
+                case "年":
+                  next.setFullYear(current.getFullYear() + parseInt(prepay.frequencyNumber));
+                  break;
+              }
+
+              const nextDateStr = next.toISOString().split("T")[0];
+              const res = await fetch("http://localhost:5001/api/update-prepay-date", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: prepay.id, newDate: nextDateStr }),
+              });
+
+              if (res.ok) updated = true;
+
+            } else if (prepay.frequencyMode === "单次") {
+              // Step 3: DELETE this prepay since it's a one-time
+              const res = await fetch("http://localhost:5001/api/delete-prepay", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: prepay.id })
+              });
+
+              if (res.ok) updated = true;
+            }
+          }
+
+        }
+
+        // Reload the page after updates are made
+      if (updated) {
+        window.location.reload();  // This will reload the page
+      }
+
+      };
+
+      checkAndHandleDuePrepays();
+      }
+  }, [totalChecking]); // This ensures the function will run when totalChecking is updated
+
+ 
+  const handleAdjustAmountNonManual = async (id,adjustType,adjustAmount) => {
+    // This is the function that is from RecordExpensePage, which does not show manual add/subtract
+    const adjustment = adjustType === "add" ? parseFloat(parseFloat(adjustAmount).toFixed(2)) : -parseFloat(adjustAmount).toFixed(2);
+    
+    
+    const newTotal = totalChecking + adjustment;
+
+    // Create a new transaction entry for the last100 transactions
+    const newTransaction = [
+      new Date().toISOString().slice(0, 10),  // Current date in YYYY-MM-DD format
+      "Expense",  // Category
+      adjustment,  // The amount
+      newTotal.toFixed(2),  // The updated balance
+      id
+    ];
+
+
+    // Send another request to update CheckingRecent100
+    const requestId = uuidv4(); // Generate a unique request ID
+    const last100Response = await fetch("http://localhost:5001/api/update-checking-last100", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ newTransaction,requestId }),
+    });
+    if (last100Response.ok) {
+      console.log("金额和交易记录更新成功");
+    } else {
+      alert("更新交易记录失败，请稍后再试");
+    }
+
+    // const requestId = uuidv4(); // Generate a unique request ID
+    // // Send update request to update total checking
+    // const response = await fetch("http://localhost:5001/api/update-total", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({ newTotal, requestId }),
+    // });
+    // alert(response)
+    setTotalChecking(newTotal);
+  };
+
 
   
 
@@ -1639,19 +1796,32 @@ const HomePage = () => {
                 overflow:"visible",
               }}
             >
-              <Chart
-                chartType="PieChart"
-                data={chartData}
-                options={options}
-                width={"700px"}
-                height={"350px"}
-              />
+              {(!navigator.onLine || chartError) ? (
+                <div>
+                  NO INTERNET<br />CHART NOT AVAILABLE
+                </div>
+              ) : (
+                <Chart
+                  chartType="PieChart"
+                  data={chartData}
+                  options={options}
+                  width={"700px"}
+                  height={"350px"}
+                  chartEvents={[
+                    {
+                      eventName: "error",
+                      callback: () => setChartError(true),
+                    },
+                  ]}
+                  onError={() => setChartError(true)}
+                />
+              )}
             </div>
           </div>
         </div>
 
       </div>
-      <div className="homepage-right">
+      <div className="homepage-right" style={{overflow:"hidden"}}>
       <div
         className={`flip-container ${animationType === "flip" ? "flip-mode" : "slide-mode"} ${isFlipped ? "flipped" : ""} ${isReadyToFlip ? "ready-to-flip" : ""}`}
         onClick={handleBoxClick}
@@ -1928,11 +2098,11 @@ const HomePage = () => {
                       }}
                     >
                       <span style={{ width: "20%" }}>
-                        {new Date(date).toLocaleDateString("en-US", {
-                          year: "2-digit",
-                          month: "2-digit",
-                          day: "2-digit",
-                        })}
+                        {(() => {
+                          const [yyyy, mm, dd] = date.split("-");
+                          return `${mm}/${dd}/${yyyy.slice(2)}`;
+                        })()}
+
                       </span>
                       <span style={{ width: "14%" }}>
                         {category === "Expense" ? "支出" : category === "Income" ? "收入" : "手动调整"}
@@ -2511,23 +2681,13 @@ const PrepayPage = () => {
   // 暂存 States: May contain clicked but not saved (means we don't want)
   const [filterOption, setFilterOption] = useState(""); // Combo box value, default all will be set in a usestate hook below somewhere, above return
   const [subOption, setSubOption] = useState(""); // Sub combo box value
-  const [amountThreshold, setAmountThreshold] = useState(""); // Text box value
-  const [showAboveThreshold, setShowAboveThreshold] = useState(false); // Checkbox value
   const [sortType,setSortType] = useState("")
   const [showType, setShowType] = useState(""); // Display type combo box value
   const [isSortDialogVisible, setSortDialogVisible] = useState(false); // Dialog visibility
   const [isModifyDialogVisible, setModifyDialogVisible] = useState(false);
   const [isDeleteDialogVisible, setDeleteDialogVisible] = useState(false);
-  const [selectedExpense, setSelectedExpense] = useState(null);
+  const [selectedPrepay, setSelectedPrepay] = useState(null);
 
-  // the saved state, state we actually want and render
-  const [appliedFilters, setAppliedFilters] = useState({
-    filterOption: "",
-    subOption: "",
-    amountThreshold: "",
-    showAboveThreshold: false,
-    showType: ""
-  });
 
 
 
@@ -2650,6 +2810,12 @@ const PrepayPage = () => {
     
     showCheckmark()
     // navigate("/");
+    setTimeout(() => {
+      window.location.reload(); // refresh for now
+    }, 2500);
+
+    
+
   };
   const [showCheckmarkOnly, setShowCheckmarkOnly] = useState(false);
   const showCheckmark = () => {
@@ -2657,58 +2823,220 @@ const PrepayPage = () => {
   setTimeout(() => {
     setAddDialogVisible(false);
     setShowCheckmarkOnly(false); // Reset for next time
-  }, 2000);
+  }, 2500);
 };
 
 
 
+
+const [scheduledPrepays, setScheduledPrepays] = useState([]);
+  useEffect(() => {
+    const fetchScheduledPrepays = async () => {
+      try {
+        const response = await fetch("http://localhost:5001/api/get-prepay");
+        if (!response.ok) throw new Error("Failed to fetch");
+
+        const data = await response.json();
+        setScheduledPrepays(data || []);
+      } catch (err) {
+        console.error("Error loading scheduled prepays:", err);
+      }
+    };
+
+    fetchScheduledPrepays();
+  }, []);
+// useEffect(() => {
+//   fetch("http://localhost:5001/api/get-prepay")
+//     .then((res) => res.json())
+//     .then((data) => {
+//       // Replace tokens in description
+//       const now = new Date();
+//       const month = now.getMonth() + 1;
+//       const day = now.getDate();
+//       const year = now.getFullYear();
+
+//       const tokenReplaced = data.map((item) => ({
+//         ...item,
+//         description: item.description
+//           .replace("{MONTH}", month.toString().padStart(2, "0"))
+//           .replace("{DAY}", day.toString().padStart(2, "0"))
+//           .replace("{YEAR}", year.toString())
+//       }));
+
+//       setScheduledPrepays(tokenReplaced);
+//     })
+//     .catch((err) => console.error("Error loading scheduled prepays:", err));
+// }, []);
+  const translateFrequency = (raw) => {
+    switch (raw) {
+      case "每1月": return "每个月";
+      case "每1周": return "每周";
+      case "每1年": return "每年";
+      case "每1天": return "每天";
+      default: return raw;
+    }
+  };
+  const handleModifyClick = (expense) => {    
+    setSelectedPrepay(expense);
+    setModifyDialogVisible(true);
+  };
+
+  const handleDeleteClick = (expense) => {
+    setSelectedPrepay(expense);
+    setDeleteDialogVisible(true);
+  };
+  const closeDialogs = () => {
+    setModifyDialogVisible(false);
+    setDeleteDialogVisible(false);
+    setSelectedPrepay(null);
+  };
+  const handleSaveChanges = async () => {
+    const frequencyMode = document.getElementById("edit_frequencyMode").value;
+    const frequencyNumber = frequencyMode === "每"
+      ? document.getElementById("edit_frequencyNumber").value
+      : "";
+    const frequencyUnit = frequencyMode === "每"
+      ? document.getElementById("edit_frequencyUnit").value
+      : "";
+
+    const modified = {
+      id: selectedPrepay.id,
+      category: document.getElementById("edit_category").value,
+      date: document.getElementById("edit_date").value,
+      amount: parseFloat(document.getElementById("edit_amount").value).toFixed(2),
+      description: document.getElementById("edit_description").value,
+      frequencyMode:document.getElementById("edit_frequencyMode").value,
+      frequencyNumber: Math.floor(Number(document.getElementById("edit_frequencyNumber").value)) || 0,
+      frequencyUnit:document.getElementById("edit_frequencyUnit").value,
+    };
+
+    const res = await fetch("http://localhost:5001/api/modify-prepay", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(modified),
+    });
+
+    if (res.ok) {
+      alert("修改成功！");
+      closeDialogs();
+      window.location.reload(); // refresh for now
+    } else {
+      alert("修改失败！");
+    }
+  };
+  const handleDeleteChanges = async () => {
+    fetch("http://localhost:5001/api/delete-prepay", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      idToDelete: selectedPrepay.id
+    })
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error("删除失败");
+      return res.text();
+    })
+    .then((msg) => {
+      alert("删除成功");
+      closeDialogs();
+      window.location.reload(); // refresh for now
+    })
+    .catch((err) => {
+      console.error("删除失败", err);
+      alert("删除失败");
+    });
+  };
+//   let hasCheckedDue = false;
+//   const fetchScheduledPrepays = async () => {
+//   try {
+//     const response = await fetch("http://localhost:5001/api/get-prepay");
+//     if (!response.ok) throw new Error("Failed to fetch");
+
+//     const data = await response.json();
+//     setScheduledPrepays(data || []);
+//     return data; // ⬅️ Return data for reuse
+//   } catch (err) {
+//     console.error("Error loading scheduled prepays:", err);
+//     return [];
+//   }
+// };
+// useEffect(() => {
+//   const checkAndHandleDuePrepays = async () => {
+//     const data = await fetchScheduledPrepays();
+
+//     if (hasCheckedDue) return;
+//     hasCheckedDue = true;
+
+//     const today = new Date().toISOString().split("T")[0];
+//     let updated = false;
+
+//     for (const prepay of data) {
+//       if (prepay.date <= today) {
+//         alert(`预付款到期: ${prepay.description} - ${prepay.amount} - ${prepay.date}`);
+
+//         if (prepay.frequencyMode === "每") {
+//           const current = new Date(prepay.date);
+//           let next = new Date(current);
+
+//           switch (prepay.frequencyUnit) {
+//             case "天":
+//               next.setDate(current.getDate() + parseInt(prepay.frequencyNumber));
+//               break;
+//             case "周":
+//               next.setDate(current.getDate() + 7 * parseInt(prepay.frequencyNumber));
+//               break;
+//             case "月":
+//               next.setMonth(current.getMonth() + parseInt(prepay.frequencyNumber));
+//               break;
+//             case "年":
+//               next.setFullYear(current.getFullYear() + parseInt(prepay.frequencyNumber));
+//               break;
+//           }
+
+//           const nextDateStr = next.toISOString().split("T")[0];
+
+//           const res = await fetch("http://localhost:5001/api/update-prepay-date", {
+//             method: "POST",
+//             headers: { "Content-Type": "application/json" },
+//             body: JSON.stringify({ id: prepay.id, newDate: nextDateStr })
+//           });
+
+//           if (res.ok) updated = true;
+//         }
+//       }
+//     }
+
+//     if (updated) {
+//       // ⬅️ If any updates happened, reload the table
+//       await fetchScheduledPrepays();
+//     }
+//   };
+
+//   checkAndHandleDuePrepays();
+// }, []);
+
+
+
+
+
+
   /* all prepay scheduled here, can be canceled, can be modified. every time run app, we need to run all prepay first to see anything due*/
-  
-  // return (
-    
-  //   <div class="body">
-  //     <div className="expense-page page_bigger">
-  //       <h1 className="h-nobold" style={{ fontSize: "60px"}}>查看预付款</h1>
-        
-        // <div className="expense-display">
-        //   {/* Table Header */}
-        //   <div className="table-header">
-        //     <div>时间段</div> {/*每月11号*/}
-        //     <div>类别</div>
-        //     <div>下个日期</div>
-        //     <div>金额</div>
-        //     <div>描述</div>
-        //     <div>操作</div>
-        //   </div>
 
-        //   {/* Expense Rows */}
-        //   <div className="table-body"></div>
-        // </div>
-
-  //       <div className="button-group">
-  //         <Link to="/">
-  //           <button className="action-btn1">退出</button>
-  //         </Link>
-  //       </div>
-  //     </div>
-  //   </div>
-  // );
   
   return (
-    // 频率: 每月
-    // 类别: eg Car Related
-    // 下个日期: NA or eg 8/1/2025
-
     <div className="modify-expense-container">
       {/* Header Section */}
       <div className="modify-expense-header">
         <div className="header-left">
-          <h2>Scheduled Payments</h2>
+          <h2>Scheduled/Reaccurring Payments</h2>
         </div>
         <div className="header-right">
           <button
             onClick={() => setSortDialogVisible(true)}
             className="sort-btn"
+            disabled={true}
           >
             排序
           </button>
@@ -3144,9 +3472,182 @@ const PrepayPage = () => {
           </div>
 
           {/* Payment Rows */}
-          <div className="table-body"></div>
+          {/* <div className="table-body">
+            {scheduledPrepays.map((item, index) => (
+              <div className="table-row" key={item.id}>
+                <div>{translateFrequency(item.frequency)}</div>
+                <div>{item.category}</div>
+                <div>{item.nextDate}</div>
+                <div>${item.amount}</div>
+                <div className="description" data-fulltext={item.description}>{item.description}</div>
+                <div>
+                  <button className="action-btn" onClick={() => handleModifyClick(item)}>修改</button>
+                  <button className="action-btn" onClick={() => handleDeleteClick(item)}>删除</button>
+                </div>
+              </div>
+            ))}
+          </div> */}
+          <div className="table-body">
+            {scheduledPrepays.length === 0 ? (
+              <div style={{ padding: "20px", textAlign: "center", color: "#888" }}>
+                暂无预付款
+              </div>
+            ) : (
+              scheduledPrepays.map((item, index) => (
+                <div className="table-row" key={index}>
+                  <div>
+                    {item.frequencyMode === "每"
+                      ? `每 ${item.frequencyNumber} ${item.frequencyUnit}`
+                      : "单次"}
+                  </div>
+                  <div>{categoriesTranslation[item.category]}</div>
+                  <div>{item.date}</div>
+                  <div>{parseFloat(item.amount).toFixed(2)}</div>
+                  <div>{item.description}</div>
+                  <div>
+                    <button className="action-btn" onClick={() => handleModifyClick(item)}>修改</button>
+                    <button className="action-btn" onClick={() => handleDeleteClick(item)}>删除</button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+
+
       </div>
 
+      <div className="popups_modify_delete">
+        {/* Modify Dialog */}
+        {isModifyDialogVisible && selectedPrepay && (
+          <div className="modal-overlay">
+            <div className="modal-dialog">
+              <h3>修改支出</h3>
+              <p>
+                确认要修改此预定付款吗？（编号：{selectedPrepay.id}）
+              </p>
+              
+              <div className="form-group">
+                <label>频率</label>
+                <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                  <select
+                    id="edit_frequencyMode"
+                    defaultValue={selectedPrepay.frequencyMode}
+                  >
+                    <option value="每">每</option>
+                    <option value="单次">单次</option>
+                  </select>
+                  
+                  {selectedPrepay.frequencyMode === "每" && (
+                    <>
+                      <input
+                        type="number"
+                        id="edit_frequencyNumber"
+                        defaultValue={selectedPrepay.frequencyNumber}
+                        style={{ width: "60px" }}
+                      />
+                      <select
+                        id="edit_frequencyUnit"
+                        defaultValue={selectedPrepay.frequencyUnit}
+                      >
+                        <option value="天">天</option>
+                        <option value="周">周</option>
+                        <option value="月">月</option>
+                        <option value="年">年</option>
+                      </select>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>类别</label>
+                <select id="edit_category" defaultValue={selectedPrepay.category}>
+                  {categories.map((category) => (
+                    <option key={category} value={category}>{category}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>{selectedPrepay.frequencyMode === "每" ? "下个日期" : "日期"}</label>
+                <input
+                  id="edit_date"
+                  type="date"
+                  defaultValue={selectedPrepay.date}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>金额</label>
+                <input
+                  id="edit_amount"
+                  type="number"
+                  step="0.01"
+                  defaultValue={selectedPrepay.amount}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>描述</label>
+                <textarea
+                  id="edit_description"
+                  defaultValue={selectedPrepay.description}
+                />
+              </div>
+
+
+              <div className="dialog-actions">
+                <button
+                  className="confirm-btn"
+                  onClick={handleSaveChanges}
+
+                >
+                  保存
+              </button>
+                <button className="exit-btn" onClick={closeDialogs}>
+                  退出
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+
+
+        {/* Delete Dialog */}
+        {isDeleteDialogVisible && selectedPrepay && (
+          <div className="modal-overlay">
+            <div className="modal-dialog delete-dialog">
+              <h3 style={{ color: "#b30000" }}>⚠️ 删除确认</h3>
+              <div className="delete-summary">
+                <div><strong>编号:</strong> {selectedPrepay.id}</div>
+                <div><strong>类别:</strong> {selectedPrepay.category}</div>
+                <div><strong>日期:</strong> {selectedPrepay.date}</div>
+                <div><strong>金额:</strong> ${parseFloat(selectedPrepay.amount).toFixed(2)}</div>
+                <div><strong>描述:</strong> {selectedPrepay.description}</div>
+              </div>
+
+              <div className="dialog-actions" style={{ marginTop: "20px" }}>
+                <button
+                  className="confirm-btn danger"
+                  onClick={() => {
+                    // Delete logic goes here
+                    handleDeleteChanges();
+                    closeDialogs();
+                  }}
+                >
+                  确认删除
+                </button>
+                <button className="exit-btn" onClick={closeDialogs}>
+                  取消
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+      </div>
 
     </div>
   );
@@ -3196,6 +3697,8 @@ const RecordIncomePage = () => {
       newTotal.toFixed(2),  // The updated balance
       id
     ];
+    console.log(123123123123,newTransaction);
+    
 
     // Send another request to update CheckingRecent100
     const requestId = uuidv4(); // Generate a unique request ID
@@ -3222,8 +3725,6 @@ const RecordIncomePage = () => {
     //   body: JSON.stringify({ newTotal, requestId }),
     // });
     setTotalChecking(newTotal);
-
-    
   };
   // Fetch the total amount from recentTransactions.json
   useEffect(() => {
@@ -3420,130 +3921,6 @@ const ShowExpensePage = () => {
   useEffect(() => {
     localStorage.setItem("autoApplyChanges", JSON.stringify(autoApplyChanges));
   }, [autoApplyChanges]);
-
-
-  const filterExpensesORIGINAL = () => {    
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    let sortType = appliedFilters.sortType; // we need this. directly using sortType hook (aka not thru applied filters) will do immediate render bypassing save
-  
-    return data.expenses
-      .filter((expense) => {
-        let include = true;
-        
-        // Apply filters based on saved state (appliedFilters)
-        const {
-          filterOption,
-          subOption,
-          amountThreshold,
-          showAboveThreshold,
-          showType,
-          sortType
-        } = appliedFilters;
-        
-        // Handle showType = "Category sum" or "List all Category Expenses"
-        if (showType == "Category sum" || showType == "List all Category Expenses") {
-          return false; // Do not include any expenses YET
-        }
-  
-        // Handle filterOption logic
-        if (filterOption == "显示全部") {
-          include = true; // Include all expenses
-        } else if (filterOption == "按月显示") {
-          const monthMapping = {// originally used for .getFullYear() etc functions so we need to +1 to it below
-            "一月": 0,
-            "二月": 1,
-            "三月": 2,
-            "四月": 3,
-            "五月": 4,
-            "六月": 5,
-            "七月": 6,
-            "八月": 7,
-            "九月": 8,
-            "十月": 9,
-            "十一月": 10,
-            "十二月": 11,
-          };
-          
-          if (subOption in monthMapping) {
-            const targetMonth = monthMapping[subOption];
-            //const expenseDate = new Date(expense.date);
-            const expenseDate = expense.date;  // Assuming expense.date is in 'YYYY-MM-DD' format
-            const year = expenseDate.substring(0, 4);  // Extract the year (first 4 characters)
-            const month = expenseDate.substring(5, 7); // Extract the month (characters at positions 5-6)
-
-            include =
-              include &&
-              year == currentYear &&
-              month == targetMonth+1;
-          } else {
-            include = false; // Invalid subOption
-          }
-        } else if (filterOption == "按季度显示") {
-          const quarterMapping = {
-            Q1: [0, 1, 2],
-            Q2: [3, 4, 5],
-            Q3: [6, 7, 8],
-            Q4: [9, 10, 11],
-          };
-  
-          if (subOption in quarterMapping) {
-            const targetMonths = quarterMapping[subOption];
-            //const expenseDate = new Date(expense.date);
-            const expenseDate = expense.date;  // Assuming expense.date is in 'YYYY-MM-DD' format
-            const year = expenseDate.substring(0, 4);  // Extract the year (first 4 characters)
-            const month = expenseDate.substring(5, 7); // Extract the month (characters at positions 5-6)
-            include =
-              include &&
-              year == currentYear &&
-              targetMonths.includes(month+1);
-          } else {
-            include = false; // Invalid subOption
-          }
-        } else if (filterOption == "按年份显示") {
-          const targetYear = parseInt(subOption, 10);
-          const expenseDate = expense.date;  // Assuming expense.date is in 'YYYY-MM-DD' format
-          const year = expenseDate.substring(0, 4);  // Extract the year (first 4 characters)
-
-          include =
-            include &&
-            !isNaN(targetYear) &&
-            year == targetYear;
-        }else if (
-          filterOption == "前3个月" ||
-          filterOption == "前12个月" || 
-          filterOption === "前6个月"
-        ) {
-
-          const monthsToSubtract = filterOption == "前3个月" ? 3 
-                        : filterOption == "前6个月" ? 6 
-                        :12;
-          const targetDate = new Date();
-          targetDate.setMonth(now.getMonth() - monthsToSubtract);
-  
-          const expenseDate = new Date(expense.date);
-                    
-          // Ensure the expense date is within the range
-          include = include && expenseDate >= targetDate && expenseDate <= now;
-        }
-  
-        // Filter by amountThreshold if applicable
-        if (showAboveThreshold && amountThreshold) {
-          include =
-            include &&
-            parseFloat(expense.amount) > parseFloat(amountThreshold);
-        }
-  
-        return include;
-      })
-      .sort((a, b) => {
-        // Sort expenses by date based on sortType
-        const dateA = new Date(a.date);
-        const dateB = new Date(b.date);
-        return sortType === "ascending" ? dateA - dateB : dateB - dateA;
-      }); 
-      //.sort((a, b) => new Date(a.date) - new Date(b.date)); // Sort expenses by date ascending
-  };
   
 
   const filterExpenses = () => {

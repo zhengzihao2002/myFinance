@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const cors = require("cors");
 const { exec } = require("child_process");
+const { log } = require("console");
 
 
 const app = express();
@@ -201,7 +202,7 @@ app.post("/api/update-expenses", (req, res) => {
   const { expenses, requestId } = req.body;
 
   if (processedRequests.has(requestId)) {
-    console.log(`Request with ID ${requestId} already processed.`);
+    console.log(`Request with ID ${requestId} already processed.${processedRequests}`);
     return res.status(200).send("Request already processed.");
   }
 
@@ -528,6 +529,133 @@ app.get("/api/get-categories", (req, res) => {
     }
   });
 });
+app.get("/api/get-prepay", (req, res) => {
+  fs.readFile(prepayFilePath, "utf8", (err, data) => {
+    if (err) {
+      console.error("Failed to read scheduled_prepay.json:", err);
+      return res.status(500).send("Failed to load prepay data.");
+    }
+
+    try {
+      const prepayList = JSON.parse(data);
+      res.status(200).json(prepayList);
+    } catch (e) {
+      console.error("Invalid JSON in prepay file:", e);
+      res.status(500).send("Malformed prepay data.");
+    }
+  });
+});
+app.post("/api/modify-prepay", (req, res) => {
+  const { id, category, amount, description, date, frequencyMode, frequencyNumber, frequencyUnit } = req.body;
+
+  fs.readFile(prepayFilePath, "utf8", (err, data) => {
+    if (err) {
+      console.error("Error reading prepay file:", err);
+      return res.status(502).send("读取失败");
+    }
+
+    let json = [];
+    try {
+      json = JSON.parse(data);
+    } catch (parseErr) {
+      return res.status(501).send("JSON格式错误");
+    }
+
+    const index = json.findIndex(p => p.id === id);
+    if (index === -1) {
+      return res.status(404).send("未找到预付款");
+    }
+
+    json[index] = {
+      id,
+      category,
+      amount,
+      description,
+      date,
+      frequencyMode,
+      frequencyNumber,
+      frequencyUnit
+    };
+
+    fs.writeFile(prepayFilePath, JSON.stringify(json, null, 2), (writeErr) => {
+      if (writeErr) {
+        return res.status(500).send("保存失败");
+      }
+      res.status(200).send("修改成功");
+    });
+  });
+});
+app.post("/api/delete-prepay", (req, res) => {
+  const { id } = req.body;
+  
+
+  fs.readFile(prepayFilePath, "utf8", (err, data) => {
+    if (err) {
+      console.error("Error reading prepay file:", err);
+      return res.status(500).send("读取失败");
+    }
+
+    let json;
+    try {
+      json = JSON.parse(data); // should be an array, NOT object with scheduledPrepays key
+    } catch (parseErr) {
+      console.error("Error parsing prepay file:", parseErr);
+      return res.status(500).send("JSON格式错误");
+    }
+
+    // Ensure it's an array
+    if (!Array.isArray(json)) {
+      return res.status(500).send("数据结构错误");
+    }
+
+    const updated = json.filter(p => p.id !== id);
+
+    if (updated.length === json.length) {
+      return res.status(404).send("未找到该预付款");
+    }
+
+    fs.writeFile(prepayFilePath, JSON.stringify(updated, null, 2), (writeErr) => {
+      if (writeErr) {
+        console.error("Error writing prepay file:", writeErr);
+        return res.status(500).send("保存失败");
+      }
+
+      res.status(200).send("删除成功");
+    });
+  });
+});
+app.post("/api/update-prepay-date", (req, res) => {
+  const { id, newDate } = req.body;
+
+  fs.readFile(prepayFilePath, "utf8", (err, data) => {
+    if (err) return res.status(500).send("读取失败");
+
+    let json;
+    try {
+      json = JSON.parse(data);
+    } catch {
+      return res.status(500).send("JSON格式错误");
+    }
+
+    if (!Array.isArray(json)) {
+      return res.status(500).send("预付款数据格式应为数组");
+    }
+
+    const index = json.findIndex(p => p.id === id);
+    if (index === -1) return res.status(404).send("未找到预付款");
+
+    json[index].date = newDate;
+
+    fs.writeFile(prepayFilePath, JSON.stringify(json, null, 2), (err) => {
+      if (err) return res.status(500).send("保存失败");
+      res.status(200).send("更新成功");
+    });
+  });
+});
+
+
+
+
 
 
 app.listen(5001, () => {

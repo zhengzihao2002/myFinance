@@ -4,7 +4,17 @@
     "category": "Car Related",
     "amount": "1005.12",
     "description": "{MONTH} Car Loan",
-    "date": "2025-08-01",
+    "date": "2025-09-06",
+    "frequencyMode": "每",
+    "frequencyNumber": 1,
+    "frequencyUnit": "月"
+  },
+  {
+    "id": "20250731_222821633",
+    "category": "Student Loan",
+    "amount": "103.66",
+    "description": "{MONTH} Student Loan",
+    "date": "2025-09-06",
     "frequencyMode": "每",
     "frequencyNumber": 1,
     "frequencyUnit": "月"
