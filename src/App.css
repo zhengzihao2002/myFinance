@@ -1,10 +1,13 @@
-/* Basic reset */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 
   font-family: "ZCOOL QingKe HuangYou", serif;
+}
+:root {
+  --bgc-duration: 0.6s;
+  --bgc-ease: ease;
 }
 .hidden {
   display: none!important;
@@ -79,11 +82,17 @@ body,
 .bottom-box,
 .flip-container .front,
 .flip-container .back {
-  transition-property: background-color;
-  transition-duration: 1.5s;
-  transition-timing-function: ease;
+  transition: background-color var(--bgc-duration) var(--bgc-ease);
 }
-
+/* Disable transitions initially */
+body.no-transition,
+body.no-transition .left-box,
+body.no-transition .right-box,
+body.no-transition .bottom-box,
+body.no-transition .flip-container .front,
+body.no-transition .flip-container .back {
+  transition: none !important;
+}
 
 
 
@@ -1704,7 +1713,7 @@ F/* ---------------- SLIDE MODE (Now using exact offset) ---------------- */
 .flip-container.ready-to-flip .back {
   transition:
     transform 1s ease-in-out,
-    background-color 1.5s ease;
+    background-color var(--bgc-duration) var(--bgc-ease);
   backface-visibility: hidden;
 }
 

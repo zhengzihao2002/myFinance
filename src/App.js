@@ -70,7 +70,27 @@ function createId(dateStr) {
   return id;
 }
 
+const changeLightMode = (newlightMode) => {
+  console.log("CHANGED!");
+  
+  // store in local storage so it could be accessed in other pages
+  localStorage.setItem("lightMode", newlightMode);
+  
+  if (newlightMode=="dark") {
+    // Dark Mode
+    document.body.style.backgroundColor = "rgba(28, 28, 30, 0.9)"; // Softer dark background
 
+    document.querySelectorAll(".left-box, .right-box, .bottom-box, .flip-container .front, .flip-container .back").forEach(el => {
+      el.style.backgroundColor = "rgba(119, 119, 119, 0.8)";
+    });
+  } else {
+    // Light Mode
+    document.body.style.backgroundColor = "";
+    document.querySelectorAll(".left-box, .right-box, .bottom-box, .flip-container .front, .flip-container .back").forEach(el => {
+      el.style.backgroundColor = "#f8f8f8";
+    });
+  }
+};
 
 
 
@@ -111,7 +131,28 @@ const HomePage = () => {
   const [isModalOpenMiscellaneous, setIsModalOpenMiscellaneous] = useState(false);
   const [modalContentMiscellaneous, setModalContentMiscellaneous] = useState("");
   const [maskNumbers, setMaskNumbers] = useState(true);
-  const [daylight, setDayLight] = useState(true);
+  const [lightMode, setLightMode] = useState(
+    // Read from local Storage once on mount
+    ()=>{
+      let initialMode =localStorage.getItem("lightMode") || "light"
+      return initialMode;
+    }
+  );
+  // Save Whenever light mode changes
+  useEffect(() => {      
+    changeLightMode(lightMode) // useEffect runs only after DOM is rendered, so the change will be applied after all things load
+    localStorage.setItem("lightMode", lightMode);
+  },[lightMode])
+  useEffect(() => {
+    setTimeout(() => {
+      document.body.classList.remove("no-transition");
+    }, 0);
+  }, []); // Runs once after first render
+  // Toggle function, triggered by button
+  const toggleLightMode = () => {
+    const newlightMode = lightMode === "light" ? "dark" : "light";
+    setLightMode(newlightMode);
+  };
   
 
   const openModalCategory = (content) => {
@@ -989,22 +1030,7 @@ const HomePage = () => {
     // Count the length of the original string (excluding $)
     return "$" + "•".repeat(15);
   };
-  const changeLightMode = (newDaylight) => {
-    if (!newDaylight) {
-      // Dark Mode
-      document.body.style.backgroundColor = "rgba(28, 28, 30, 0.9)"; // Softer dark background
-
-      document.querySelectorAll(".left-box, .right-box, .bottom-box, .flip-container .front, .flip-container .back").forEach(el => {
-        el.style.backgroundColor = "rgba(119, 119, 119, 0.8)";
-      });
-    } else {
-      // Light Mode
-      document.body.style.backgroundColor = "";
-      document.querySelectorAll(".left-box, .right-box, .bottom-box, .flip-container .front, .flip-container .back").forEach(el => {
-        el.style.backgroundColor = "#f8f8f8";
-      });
-    }
-  };
+  
 
 
 
@@ -1196,13 +1222,11 @@ const HomePage = () => {
         className={`icon-button2 ${!showButtons ? "icon-fade-out" : ""}`}
         onClick={(e) => {
           e.stopPropagation();
-          const newDaylight = !daylight;
-          setDayLight(newDaylight);
-          changeLightMode(newDaylight);
+          toggleLightMode();
         }}
       >
         <span
-          className={daylight ? "icon-brightness-contrast" : "icon-sun"}
+          className={lightMode ? "icon-brightness-contrast" : "icon-sun"}
         ></span>
       </button>
 

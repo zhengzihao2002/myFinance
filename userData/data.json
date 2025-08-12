@@ -2274,20 +2274,6 @@
       "description": "Health Insurance September",
       "date": "2025-08-06",
       "id": "20250806_144419923"
-    },
-    {
-      "category": "Car Related",
-      "amount": "1005.12",
-      "description": "八月 Car Loan (Recurring)",
-      "date": "2025-08-06",
-      "id": "20250806_145232489"
-    },
-    {
-      "category": "Student Loan",
-      "amount": "103.66",
-      "description": "August Student Loan (Recurring)",
-      "date": "2025-08-06",
-      "id": "20250806_145514235"
     }
   ],
   "income": [
