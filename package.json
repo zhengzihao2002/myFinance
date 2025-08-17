@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "cors": "^2.8.5",
     "cra-template": "1.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -18,7 +17,6 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "backend": "node backend/server.js",
-    "predev": "node -e \"try { require.resolve('concurrently'); } catch(e) { console.log('Installing concurrently...'); require('child_process').execSync('npm install concurrently', { stdio: 'inherit' }); }\"",
     "dev": "concurrently \"npm run start\" \"npm run backend\""
   },
   "eslintConfig": {
@@ -43,7 +41,7 @@
   "main": "index.js",
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "concurrently": "^9.2.0"
+    "concurrently": "^9.1.2"
   },
   "keywords": [],
   "author": "",
