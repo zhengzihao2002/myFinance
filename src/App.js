@@ -2,6 +2,7 @@ import React, { useState ,useEffect,createContext,useContext,useRef} from "react
 import { Chart } from "react-google-charts";
 import { v4 as uuidv4 } from "uuid"; // Import UUID library
 import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from "react-router-dom";
+import { Settings, LogOut } from "lucide-react"; // nice modern icons
 import "./App.css";
 import "./font.css"
 
@@ -47,7 +48,9 @@ const years = ["2023", "2024"];
 const displayTypes = ["Category Sum", "List all Category Expenses", "List all Expenses by Date"];
 
 
+let positive = "#2fc977";
 
+let negative = "#ff3714";
 
 function createId(dateStr) {
   // Parse the date string into a Date object
@@ -83,11 +86,17 @@ const changeLightMode = (newlightMode) => {
     document.querySelectorAll(".left-box, .right-box, .bottom-box, .flip-container .front, .flip-container .back").forEach(el => {
       el.style.backgroundColor = "rgba(119, 119, 119, 0.8)";
     });
+    document.querySelectorAll('.homepage-container [class^="icon-button"] span').forEach(el => {
+      el.style.color = "white";
+    });
   } else {
     // Light Mode
     document.body.style.backgroundColor = "";
     document.querySelectorAll(".left-box, .right-box, .bottom-box, .flip-container .front, .flip-container .back").forEach(el => {
       el.style.backgroundColor = "#f8f8f8";
+    });
+    document.querySelectorAll('.homepage-container [class^="icon-button"] span').forEach(el => {
+      el.style.color = "black";
     });
   }
 };
@@ -130,7 +139,23 @@ const HomePage = () => {
   const [modalContentOther, setModalContentOther] = useState("");
   const [isModalOpenMiscellaneous, setIsModalOpenMiscellaneous] = useState(false);
   const [modalContentMiscellaneous, setModalContentMiscellaneous] = useState("");
-  const [maskNumbers, setMaskNumbers] = useState(true);
+  const [maskNumbers, setMaskNumbers] = useState(() => {
+    const stored = localStorage.getItem("maskNumbers");
+    const lastChanged = localStorage.getItem("maskNumbersLastChanged");
+    // If never set, default to true (masked)
+    let value = stored === null ? true : stored === "true";
+    // If unmasked, check if over 24 hours since last change
+    if (value === false && lastChanged) {
+      const now = Date.now();
+      const diff = now - Number(lastChanged);
+      if (diff > 24 * 60 * 60 * 1000) {
+        // Over 24 hours, force mask
+        localStorage.setItem("maskNumbers", "true");
+        value = true;
+      }
+    }
+    return value;
+  });
   const [lightMode, setLightMode] = useState(
     // Read from local Storage once on mount
     ()=>{
@@ -146,14 +171,23 @@ const HomePage = () => {
   useEffect(() => {
     setTimeout(() => {
       document.body.classList.remove("no-transition");
-    }, 0);
+    }, 1);
   }, []); // Runs once after first render
   // Toggle function, triggered by button
   const toggleLightMode = () => {
     const newlightMode = lightMode === "light" ? "dark" : "light";
     setLightMode(newlightMode);
   };
-  
+  // When maskNumbers changes, update localStorage and lastChanged date
+  const prevMaskNumbers = useRef(maskNumbers);
+  useEffect(() => {
+    localStorage.setItem("maskNumbers", maskNumbers);
+    // Only update the timestamp if the value actually changed
+    if (prevMaskNumbers.current !== maskNumbers) {
+      localStorage.setItem("maskNumbersLastChanged", Date.now().toString());
+      prevMaskNumbers.current = maskNumbers;
+    }
+  }, [maskNumbers]);
 
   const openModalCategory = (content) => {
     setModalContentCategory(content);
@@ -726,11 +760,11 @@ const HomePage = () => {
     const isIncrease = change > 0;
     const color = isExpense
       ? isIncrease
-        ? "#FF2800"
-        : "#28a864"
+        ? negative
+        : positive
       : isIncrease
-      ? "#28a864"
-      : "#FF2800";
+      ? positive
+      : negative;
     const arrow = isIncrease ? "↑" : "↓";
     const arrowClass = isIncrease ? "icon-arrow-up2" : "icon-arrow-down2";
 
@@ -3677,23 +3711,138 @@ const [scheduledPrepays, setScheduledPrepays] = useState([]);
   );
 };
 
+// const BudgetPage = () => {
+//   /* shows budget  */
+
+//   return (
+//     <div class="body">
+//       <div className="expense-page page_bigger">
+//         <h1 className="h-nobold" style={{ fontSize: "60px" }}>财务规划</h1>
+//         Under construction, please check back later.
+//         <div className="button-group">
+//           <Link to="/">
+//             <button className="action-btn1">退出</button>
+//           </Link>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
 const BudgetPage = () => {
-  /* shows budget  */
-
   return (
-    <div class="body">
-      <div className="expense-page page_bigger">
-        <h1 className="h-nobold" style={{ fontSize: "60px" }}>财务规划</h1>
-
-        <div className="button-group">
+    <div className="budget-page">
+      {/* Header */}
+      <div className="budget-header">
+        <h1 className="budget-title">财务规划</h1>
+        <div className="budget-header-actions">
+          <button className="header-btn settings-btn">
+            <Settings size={22} />
+          </button>
           <Link to="/">
-            <button className="action-btn1">退出</button>
+            <button className="header-btn exit-btn">
+              <LogOut size={22} />
+              <span>退出</span>
+            </button>
           </Link>
+        </div>
+      </div>
+
+      {/* Status */}
+      <div className="budget-status">
+        <p className="status-text on-track">你相当牛逼</p>
+      </div>
+
+      {/* Progress Overview WRAPPER */}
+      <div className="budget-overview-wrapper">
+        {/* Expenses vs Budget */}
+        <div className="budget-progress">
+          <div className="budget-progress-info">
+            <span className="spent">$500 Spent</span>
+            <span className="percent">50% of Total Budget</span>
+          </div>
+          <div className="progress-bar large">
+            <div className="progress-fill" style={{ width: "50%" }}></div>
+          </div>
+          <p className="budget-total">Total Budget: $1000</p>
+        </div>
+
+        {/* Income vs Expenses */}
+        <div className="income-expense-overview">
+          <div className="budget-progress-info">
+            <span className="spent">Income: $6000</span>
+            <span className="percent">Expenses: $500</span>
+          </div>
+          <div className="progress-bar large income-bar">
+            <div className="progress-fill income" style={{ width: "25%" }}></div>
+          </div>
+          <p className="budget-total">Remaining Income: $5500</p>
+        </div>
+      </div>
+
+      {/* Scrollable Category Table */}
+      <div className="budget-table-wrapper">
+        <div className="budget-table">
+          <div className="table-header">
+            <span>Category</span>
+            <span>Progress</span>
+            <span>Budgeted</span>
+            <span>Spent</span>
+            <span>Remaining</span>
+          </div>
+
+          {/* Expanded Categories */}
+          {[
+            { icon: "shopping-cart", name: "Shopping", budget: 200, spent: 130 },
+            { icon: "car", name: "Car", budget: 300, spent: 280 },
+            { icon: "food", name: "Food", budget: 150, spent: 45 },
+            { icon: "home", name: "Housing", budget: 1000, spent: 700 },
+            { icon: "bus", name: "Transport", budget: 150, spent: 90 },
+            { icon: "movie", name: "Entertainment", budget: 120, spent: 110 },
+            { icon: "gym", name: "Fitness", budget: 80, spent: 40 },
+            { icon: "education", name: "Education", budget: 300, spent: 50 },
+            { icon: "medical", name: "Healthcare", budget: 200, spent: 60 },
+            { icon: "gift", name: "Gifts", budget: 100, spent: 70 },
+            { icon: "travel", name: "Travel", budget: 500, spent: 300 },
+            { icon: "investment", name: "Investments", budget: 400, spent: 200 },
+            { icon: "savings", name: "Savings", budget: 600, spent: 300 },
+          ].map((cat, i) => {
+            const remaining = cat.budget - cat.spent;
+            const percent = Math.min(100, (cat.spent / cat.budget) * 100);
+            let color = "green";
+            if (percent > 80) color = "red";
+            else if (percent > 50) color = "yellow";
+
+            return (
+              <div className="table-row" key={i}>
+                <div className="table-category">
+                  <img
+                    src={`https://img.icons8.com/fluency/48/${cat.icon}.png`}
+                    alt={cat.name}
+                  />
+                  <span>{cat.name}</span>
+                </div>
+                <div className="table-progress">
+                  <div className="mini-bar short">
+                    <div
+                      className={`mini-fill ${color}`}
+                      style={{ width: `${percent}%` }}
+                    ></div>
+                  </div>
+                </div>
+                <span>${cat.budget}</span>
+                <span>${cat.spent}</span>
+                <span className={`remaining ${color}`}>
+                  {remaining >= 0 ? `$${remaining}` : `-$${Math.abs(remaining)}`}
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
   );
 };
+
 
 
 const RecordIncomePage = () => {

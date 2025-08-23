@@ -2260,41 +2260,6 @@
       "description": "Happy Whale Rep:\n1x Balenciaga Yellow Tape TSHIRT\n1x Balenciaga White Tape TSHIRT\n1x Balenciaga Political Campaign Embroidered TSHIRT\n1x Balenciaga Regular Enbriodered TSHIRT",
       "date": "2025-08-01",
       "id": "20250731_142715722"
-    },
-    {
-      "category": "Car Related",
-      "amount": "899.36",
-      "description": "Half Year Car Insurance One Time Payment",
-      "date": "2025-08-05",
-      "id": "20250804_144825033"
-    },
-    {
-      "category": "Other",
-      "amount": "4.62",
-      "description": "Health Insurance September",
-      "date": "2025-08-06",
-      "id": "20250806_144419923"
-    },
-    {
-      "category": "Gas",
-      "amount": "37.58",
-      "description": "Costco North Brunswick: Premium $3.259/Gal",
-      "date": "2025-08-12",
-      "id": "20250812_184645467"
-    },
-    {
-      "category": "Student Loan",
-      "amount": "103.66",
-      "description": "August Student Loan (Recurring)",
-      "date": "2025-08-15",
-      "id": "20250815_114809250"
-    },
-    {
-      "category": "Gas",
-      "amount": "41.38",
-      "description": "Costco North Brunswick: Premium $3.259/Gal",
-      "date": "2025-08-22",
-      "id": "20250822_153850466"
     }
   ],
   "income": [
@@ -2529,22 +2494,6 @@
       "date": "2025-07-18",
       "id": "20250717_174729832",
       "tax_percentage": 19.87483795985874
-    },
-    {
-      "before_tax": "2038.37",
-      "after_tax": "1646.89",
-      "description": "LinkW August 5",
-      "date": "2025-08-05",
-      "id": "20250804_144943953",
-      "tax_percentage": 19.20554168281518
-    },
-    {
-      "before_tax": "2154.32",
-      "after_tax": "1731.85",
-      "description": "LinkW August 20\n\n$180 July KPI",
-      "date": "2025-08-20",
-      "id": "20250820_153703914",
-      "tax_percentage": 19.610364291284498
     }
   ],
   "totalChecking": 6001

@@ -248,7 +248,195 @@ body.no-transition .flip-container .back {
 
 
 
+/* ====== BUDGET PAGE BASE ====== */
+.budget-page {
+  font-family: "Inter", sans-serif;
+  padding: 2rem;
+  color: #222;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
 
+/* ====== HEADER ====== */
+.budget-page .budget-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.budget-page .budget-title {
+  font-size: 3rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.budget-page .budget-header-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.budget-page .header-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.6rem 1rem;
+  border-radius: 12px;
+  border: none;
+  background: #f5f5f5;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.budget-page .header-btn:hover {
+  background: #e2e2e2;
+}
+
+.budget-page .exit-btn {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+.budget-page .exit-btn:hover {
+  background: #fee2e2;
+}
+
+/* ====== STATUS ====== */
+.budget-page .budget-status {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.budget-page .status-text {
+  font-size: 4rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+.budget-page .status-text.on-track { color: #16a34a; }
+.budget-page .status-text.off-track { color: #dc2626; }
+
+/* ====== BIG PROGRESS BARS ====== */
+.budget-overview-wrapper {
+  width: 90%;
+  margin: 1.5rem auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.budget-page .budget-progress,
+.budget-page .income-expense-overview {
+  width: 90%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.budget-page .budget-progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+}
+
+.budget-page .progress-bar.large {
+  width: 100%;
+  height: 28px;
+  background: #e5e7eb;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.budget-page .progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+}
+.budget-page .progress-fill.income {
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+}
+
+.budget-page .budget-total {
+  margin-top: 0.8rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+/* ====== TABLE ====== */
+/* Scrollable wrapper */
+.budget-table-wrapper {
+  max-height: 400px;
+  overflow-y: auto;
+  margin-top: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+}
+
+/* Table container */
+.budget-page .budget-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Sticky header */
+.budget-page .table-header {
+  display: grid;
+  grid-template-columns: 1.4fr 2fr 1fr 1fr 1fr;
+  align-items: center;
+  padding: 1rem;
+  position: sticky;
+  top: 0;
+  background: #f9fafb;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+  z-index: 2;
+}
+
+.budget-page .table-row {
+  display: grid;
+  grid-template-columns: 1.4fr 2fr 1fr 1fr 1fr;
+  align-items: center;
+  padding: 1rem;
+  background: white;
+  border-bottom: 1px solid #f1f1f1;
+  font-size: 0.95rem;
+  transition: background 0.2s;
+}
+.budget-page .table-row:hover { background: #f9f9f9; }
+
+/* Category cell */
+.budget-page .table-category {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.budget-page .table-category img {
+  width: 26px;
+  height: 26px;
+}
+
+/* Mini progress bars */
+.budget-page .table-progress .mini-bar.short {
+  width: 80px;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.budget-page .table-progress .mini-fill { height: 100%; }
+.budget-page .mini-fill.green  { background: #22c55e; }
+.budget-page .mini-fill.yellow { background: #eab308; }
+.budget-page .mini-fill.red    { background: #dc2626; }
+
+/* Remaining colors */
+.budget-page .remaining {
+  font-weight: 600;
+}
+.budget-page .remaining.green  { color: #16a34a; }
+.budget-page .remaining.yellow { color: #eab308; }
+.budget-page .remaining.red    { color: #dc2626; }
 
 
 
@@ -1002,11 +1190,13 @@ h1 {
 }
 .h-nobold{font-weight: normal;}
 .positive{
-  /* color:green; */
-  color: #28a864;
+  /* color:#28a864; */
+  color: #2fc977;
 }
 .negative{
-  color:#FF2800;
+  /* color:#FF2800; */
+  color:#ff3714;
+
 }
 
 
