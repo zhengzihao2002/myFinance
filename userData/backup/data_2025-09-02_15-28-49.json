@@ -2325,6 +2325,13 @@
       "id": "20250831_210228254"
     },
     {
+      "category": "Food",
+      "amount": "25.66",
+      "description": "Sarku Japan\n2 Terayaki Chick Combo (Entree + 2pc Spring roll + Small Fountain Drink) 11.99 each\nTax 1.68",
+      "date": "2025-08-30",
+      "id": "20250831_210115658"
+    },
+    {
       "category": "Relationship Related",
       "amount": "309.64",
       "description": "The Verve Hotel Boston Natick, Tapestry Collection by Hilton\n2 Nights",
@@ -2333,15 +2340,8 @@
     },
     {
       "category": "Relationship Related",
-      "amount": "25.66",
-      "description": "(请)\nSarku Japan\n2* Terayaki Chicken Meal (Entree+2pc Spring Roll+Small Fountain Drink)\n11.99 each\nTax 1.68",
-      "date": "2025-08-30",
-      "id": "20250830_112624613"
-    },
-    {
-      "category": "Relationship Related",
       "amount": "12.83",
-      "description": "(请) Sarku Japan Chicken Terayaki Meal",
+      "description": "Sarku Japan Chicken Terayaki Meal",
       "date": "2025-08-31",
       "id": "20250831_110148889"
     },
@@ -2409,32 +2409,11 @@
       "id": "20250832_110548644"
     },
     {
-      "category": "Gas",
-      "amount": "31.00",
-      "description": "Costco North Brunswick: Regular $2.899/Gal",
-      "date": "2025-09-05",
-      "id": "20250905_185840890"
-    },
-    {
-      "category": "Food",
-      "amount": "39.87",
-      "description": "Happy Lamb Edison:\nFriday Night/Weekend: $31.99 + $4.24 Tax\nSubtotal: $34.11\nTip: $5.76",
-      "date": "2025-09-12",
-      "id": "20250912_110114136"
-    },
-    {
-      "category": "Student Loan",
-      "amount": "103.66",
-      "description": "September Student Loan (Recurring)",
-      "date": "2025-09-15",
-      "id": "20250915_202654792"
-    },
-    {
-      "category": "Gas",
-      "amount": "30.79",
-      "description": "Costco North Brunswick: Regular $2.939/Gal",
-      "date": "2025-09-16",
-      "id": "20250916_203009682"
+      "category": "Relationship Related",
+      "amount": "25.66",
+      "description": "(请) 2* Terayaki Chicken Meal (Entree+2pc Spring Roll+Small Fountain Drink)",
+      "date": "2025-08-30",
+      "id": "20250830_112624613"
     }
   ],
   "income": [
@@ -2685,14 +2664,6 @@
       "date": "2025-08-20",
       "id": "20250820_153703914",
       "tax_percentage": 19.610364291284498
-    },
-    {
-      "before_tax": "1961.13",
-      "after_tax": "1590.29",
-      "description": "LinkW September 5",
-      "date": "2025-09-05",
-      "id": "20250905_153631018",
-      "tax_percentage": 18.909506254047418
     }
   ],
   "totalChecking": 6001

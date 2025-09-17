@@ -72,7 +72,14 @@ function createId(dateStr) {
   const id = `${year}${month}${day}_${hours}${minutes}${seconds}${milliseconds}`;
   return id;
 }
-
+function getLocalDateString() {
+  const now = new Date();
+  // Pad month and day to two digits
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
 const changeLightMode = (newlightMode) => {
   console.log("CHANGED!");
   
@@ -1132,11 +1139,15 @@ const HomePage = () => {
               date: prepay.date,
               id: id
             });
+            
+            
             handleAdjustAmountNonManual(id, "subtract", formattedAmount);
 
             // Step 2: Recurring vs Single-Time
             if (prepay.frequencyMode === "每") {
-              const current = new Date(prepay.date);
+              // Parse as local time
+              const [year, month, day] = prepay.date.split('-').map(Number);
+              const current = new Date(year, month - 1, day);
               const next = new Date(current);
 
               switch (prepay.frequencyUnit) {
@@ -1154,7 +1165,13 @@ const HomePage = () => {
                   break;
               }
 
-              const nextDateStr = next.toISOString().split("T")[0];
+              const yearStr = next.getFullYear();
+              const monthStr = String(next.getMonth() + 1).padStart(2, '0');
+              const dayStr = String(next.getDate()).padStart(2, '0');
+              const nextDateStr = `${yearStr}-${monthStr}-${dayStr}`;
+
+              // console.log(666666, prepay, next, nextDateStr);
+              // alert(next);
               const res = await fetch("http://localhost:5001/api/update-prepay-date", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -1162,7 +1179,6 @@ const HomePage = () => {
               });
 
               if (res.ok) updated = true;
-
             } else if (prepay.frequencyMode === "单次") {
               // Step 3: DELETE this prepay since it's a one-time
               const res = await fetch("http://localhost:5001/api/delete-prepay", {
@@ -1190,15 +1206,17 @@ const HomePage = () => {
 
  
   const handleAdjustAmountNonManual = async (id,adjustType,adjustAmount) => {
-    // This is the function that is from RecordExpensePage, which does not show manual add/subtract
+    // This is the function that is from hompage load prepay, which does not show manual add/subtract
     const adjustment = adjustType === "add" ? parseFloat(parseFloat(adjustAmount).toFixed(2)) : -parseFloat(adjustAmount).toFixed(2);
     
     
     const newTotal = totalChecking + adjustment;
 
     // Create a new transaction entry for the last100 transactions
+    const now = new Date();
+    const localDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     const newTransaction = [
-      new Date().toISOString().slice(0, 10),  // Current date in YYYY-MM-DD format
+      localDate,  // Current date in YYYY-MM-DD format (local time)
       "Expense",  // Category
       adjustment,  // The amount
       newTotal.toFixed(2),  // The updated balance
@@ -2706,7 +2724,10 @@ const RecordExpensePage = () => {
           </div>
           <div style={{ flex: "0 0 20%" }}>
             <button
-              onClick={() => setDate(new Date().toISOString().slice(0, 10))}
+              onClick={() => {
+                const localDate = getLocalDateString();
+                setDate(localDate);
+              }}
               onMouseOver={(e) => {
                 e.target.style.backgroundColor = "#eaeaea";
                 e.target.style.boxShadow = "0 4px 6px rgba(0,0,0,0.15)";
@@ -2989,7 +3010,7 @@ const [scheduledPrepays, setScheduledPrepays] = useState([]);
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      idToDelete: selectedPrepay.id
+      id: selectedPrepay.id // 传递要删除的预付款ID aka ID to delete
     })
   })
     .then((res) => {
@@ -4010,7 +4031,10 @@ const RecordIncomePage = () => {
           <div style={{ flex: "0 0 20%" }}>
             <button
               className="today-btn"
-              onClick={() => setDate(new Date().toISOString().slice(0, 10))}
+              onClick={() => {
+                const localDate = getLocalDateString();
+                setDate(localDate);
+              }}
               onMouseOver={(e) => {
                 e.target.style.backgroundColor = "#eaeaea";
                 e.target.style.boxShadow = "0 4px 6px rgba(0,0,0,0.15)";
@@ -5507,7 +5531,8 @@ const ShowIncomePage = () => {
                       // Update `subOption` etc with a default based on the new `filterOption`
                       // no need to update sortType since if unclicked default ascending, exactly which default radio is, once click desc, state updates.
                       if (newFilterOption == "按月显示") {
-                        setSubOption("一月"); // Default to "一月" for months, backend ONLY
+                        const currentMonth = new Date().toLocaleString("default", { month: "long" });
+                        setSubOption(currentMonth); // Default to current month
                         setShowType("Category sum")
                       } else if (newFilterOption == "按季度显示") {
                         setSubOption("Q1"); // Default to "Q1" for quarters
