@@ -2456,34 +2456,6 @@
       "description": "October Car Loan (Recurring)",
       "date": "2025-10-01",
       "id": "20250931_093454962"
-    },
-    {
-      "category": "Gas",
-      "amount": "28.11",
-      "description": "Costco North Brunswick: Regular $2.879/Gal",
-      "date": "2025-10-03",
-      "id": "20251003_085530077"
-    },
-    {
-      "category": "Gas",
-      "amount": "20.00",
-      "description": "Costco Marlboro: Regular $2.819/Gal",
-      "date": "2025-10-09",
-      "id": "20251009_190649112"
-    },
-    {
-      "category": "Other",
-      "amount": "15.01",
-      "description": "Amazon: CeraVe Facial Wash 19oz",
-      "date": "2025-10-09",
-      "id": "20251009_190752367"
-    },
-    {
-      "category": "Clothing",
-      "amount": "279.00",
-      "description": "Happy Whale:\nBalenciaga Nano BB: 360cny\nDior Overshirt: 540cny\nLV Flower: 370cny\nLV Purple: 350cny\nShipping:280cny\nTotal:1900CNY --> 266USD \nForeign Transaction Fee: $13",
-      "date": "2025-10-09",
-      "id": "20251009_191107552"
     }
   ],
   "income": [
@@ -2750,14 +2722,6 @@
       "date": "2025-09-19",
       "id": "20250919_131124427",
       "tax_percentage": 18.815972759634732
-    },
-    {
-      "before_tax": "2240.46",
-      "after_tax": "1794.93",
-      "description": "LinkW October 3",
-      "date": "2025-10-03",
-      "id": "20251003_085808473",
-      "tax_percentage": 19.88564848290083
     }
   ],
   "totalChecking": 6001
