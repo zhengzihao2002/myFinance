@@ -445,20 +445,38 @@ const HomePage = () => {
     const incomeDateMonth = incomeMonth - 1; // Adjust for 0-based month index (1-12 -> 0-11)
   
     if (timeRange === "按月显示") {
-      const monthMapping = {
-        一月: 0,
-        二月: 1,
-        三月: 2,
-        四月: 3,
-        五月: 4,
-        六月: 5,
-        七月: 6,
-        八月: 7,
-        九月: 8,
-        十月: 9,
-        十一月: 10,
-        十二月: 11,
-      };
+      let monthMapping = null;
+      if (subOption.includes("月")==true){
+        monthMapping = {
+          一月: 0,
+          二月: 1,
+          三月: 2,
+          四月: 3,
+          五月: 4,
+          六月: 5,
+          七月: 6,
+          八月: 7,
+          九月: 8,
+          十月: 9,
+          十一月: 10,
+          十二月: 11,
+        };
+      }else{
+        monthMapping = {
+          January: 0,
+          February: 1,
+          March: 2,
+          April: 3,
+          May: 4,
+          June: 5,
+          July: 6,
+          August: 7,
+          September: 8,
+          October: 9,
+          November: 10,
+          December: 11,
+        };
+      }
 
       return incomeYear === currentYear && incomeDateMonth === monthMapping[subOption];
     } else if (timeRange === "按季度显示") {
