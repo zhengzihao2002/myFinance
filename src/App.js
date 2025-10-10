@@ -625,13 +625,14 @@ const HomePage = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ newTransaction }),
+          body: JSON.stringify({ newTransaction,requestId }),
         });
   
         if (last100Response.ok) {
           alert("金额和交易记录更新成功");
           setTotalChecking(newTotal);
           setAdjustAmount(""); // Reset the input
+          window.location.reload()
         } else {
           alert("更新交易记录失败，请稍后再试");
         }
@@ -701,6 +702,7 @@ const HomePage = () => {
           alert("金额和交易记录更新成功");
           setTotalChecking(newTotal);
           setAdjustAmount(""); // Reset the input
+          window.location.reload(); // refresh for now
         } else {
           alert("更新交易记录失败，请稍后再试");
         }
@@ -5251,15 +5253,28 @@ const ShowIncomePage = () => {
         actions: null,  // Add actions as "none"
         type: "total_before_tax"
     };
+    let endingLabel = "年收入（税前）";
+    if (filterOption === "按月显示") {
+      endingLabel = `${subOption}收入（税前）`;
+    } else if (filterOption === "按季度显示") {
+      endingLabel = `${subOption}收入（税前）`;
+    } else if (filterOption === "按年份显示") {
+      endingLabel = `${subOption}年收入（税前）`;
+    } else if (["前3个月", "前6个月", "前12个月"].includes(filterOption)) {
+      endingLabel = `${filterOption}收入（税前）`;
+    }else{
+      endingLabel = `总收入（税前）`;
+    }
+
     const endingRow = {
-        date: `${"年收入（税前）"}: $${totalBeforeTax}`,  
-        before_tax: null,
-        after_tax: null,
-        description: null,
-        tax_percentage: null,
-        id: null,
-        actions: null,  // Add actions as "none"
-        type: "total_after_tax"
+      date: `${endingLabel}: $${totalBeforeTax}`,
+      before_tax: null,
+      after_tax: null,
+      description: null,
+      tax_percentage: null,
+      id: null,
+      actions: null,
+      type: "total_after_tax"
     };
 
     // Return the updated array with the title row at the top

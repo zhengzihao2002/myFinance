@@ -299,7 +299,7 @@ app.post("/api/update-checking-last100", (req, res) => {
 
   if (processedRequests.has(requestId)) {
     console.log(`Request with ID ${requestId} already processed.`);
-    return res.status(200).send("Request already processed.");
+    return res.status(500).send("Request already processed. Last 100 Not updated.");
   }
 
   processedRequests.add(requestId);
