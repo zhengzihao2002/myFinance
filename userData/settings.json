@@ -1,0 +1,9 @@
+{
+  "Sound Effect": "success.mp3",
+  "soundEffects": ["success.mp3"],
+  "animationType": "slide",
+  "showTransaction": 100,
+  "language": "Chinese",
+  "clickEffect": "",
+  "clickEffectsList": ["click.mp3"]
+}
