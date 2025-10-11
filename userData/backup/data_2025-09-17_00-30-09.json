@@ -1,0 +1,2692 @@
+{
+  "expenses": [
+    {
+      "category": "Gas",
+      "amount": "30.00",
+      "description": "",
+      "date": "2023-06-22",
+      "id": "20230622_000000000"
+    },
+    {
+      "category": "Gas",
+      "amount": "30.00",
+      "description": "",
+      "date": "2023-07-09",
+      "id": "20230709_000000000"
+    },
+    {
+      "category": "Gas",
+      "amount": "35.00",
+      "description": "",
+      "date": "2023-07-27",
+      "id": "20230727_000000000"
+    },
+    {
+      "category": "Gas",
+      "amount": "33.00",
+      "description": "",
+      "date": "2023-08-16",
+      "id": "20230816_000000000"
+    },
+    {
+      "category": "Gas",
+      "amount": "35.00",
+      "description": "",
+      "date": "2023-09-09",
+      "id": "20230909_000000000"
+    },
+    {
+      "category": "Gas",
+      "amount": "30.52",
+      "description": "",
+      "date": "2023-09-30",
+      "id": "20230930_000000000"
+    },
+    {
+      "category": "Gas",
+      "amount": "25.18",
+      "description": "",
+      "date": "2023-10-15",
+      "id": "20231015_000000000"
+    },
+    {
+      "category": "Gas",
+      "amount": "25.74",
+      "description": "",
+      "date": "2023-11-04",
+      "id": "20231104_000000000"
+    },
+    {
+      "category": "Gas",
+      "amount": "31.24",
+      "description": "",
+      "date": "2023-11-24",
+      "id": "20231124_000000000"
+    },
+    {
+      "category": "Gas",
+      "amount": "24.10",
+      "description": "",
+      "date": "2023-12-10",
+      "id": "20231210_000000000"
+    },
+    {
+      "category": "Gas",
+      "amount": "30.49",
+      "description": "",
+      "date": "2023-12-30",
+      "id": "20231230_000000000"
+    },
+    {
+      "category": "Gas",
+      "amount": "21.84",
+      "description": "",
+      "date": "2024-01-15",
+      "id": "20240115_000000000"
+    },
+    {
+      "category": "Gas",
+      "amount": "24.62",
+      "description": "",
+      "date": "2024-02-03",
+      "id": "20240203_000000000"
+    },
+    {
+      "category": "Gas",
+      "amount": "27.36",
+      "description": "",
+      "date": "2024-02-25",
+      "id": "20240225_000000000"
+    },
+    {
+      "category": "Gas",
+      "amount": "29.95",
+      "description": "",
+      "date": "2024-03-17",
+      "id": "20240317_000000000"
+    },
+    {
+      "category": "Gas",
+      "amount": "28.76",
+      "description": "",
+      "date": "2024-04-07",
+      "id": "20240407_000000000"
+    },
+    {
+      "category": "NJSP Related",
+      "amount": "135.00",
+      "description": "PQT Physical",
+      "date": "2024-04-23",
+      "id": "20240423_000000000"
+    },
+    {
+      "category": "Gas",
+      "amount": "30.00",
+      "description": "",
+      "date": "2024-04-27",
+      "id": "20240427_000000000"
+    },
+    {
+      "category": "Gas",
+      "amount": "20.00",
+      "description": "",
+      "date": "2024-05-04",
+      "id": "20240504_000000000"
+    },
+    {
+      "category": "NJSP Related",
+      "date": "2024-05-13",
+      "amount": "2.39",
+      "description": "clipboard",
+      "id": "20240513_000000000"
+    },
+    {
+      "category": "NJSP Related",
+      "date": "2024-05-13",
+      "amount": "6.43",
+      "description": "sftypin white shirt",
+      "id": "20240513_000000001"
+    },
+    {
+      "category": "Other",
+      "amount": "16.89",
+      "description": "床单",
+      "date": "2024-05-13",
+      "id": "20240513_000000002"
+    },
+    {
+      "category": "Rent",
+      "amount": "375.00",
+      "description": "rent for may half month",
+      "date": "2024-05-13",
+      "id": "20240513_000000003"
+    },
+    {
+      "category": "Groceries",
+      "amount": "30.87",
+      "description": "Costco for banana and chk bst",
+      "date": "2024-05-15",
+      "id": "20240515_000000000"
+    },
+    {
+      "category": "Luxury",
+      "date": "2024-05-15",
+      "amount": "202.59",
+      "description": "Bleu De Chanel Eau De Parfum 5FL.OZ",
+      "id": "20240515_000000001"
+    },
+    {
+      "category": "Gas",
+      "amount": "10.00",
+      "description": "Wawa @ Hamilton",
+      "date": "2024-05-17",
+      "id": "20240517_000000000"
+    },
+    {
+      "category": "Gas",
+      "amount": "34.49",
+      "description": "costco princeton",
+      "date": "2024-05-18",
+      "id": "20240518_000000000"
+    },
+    {
+      "category": "Groceries",
+      "amount": "18.92",
+      "description": "shoprite pasta+sauce+hotdog+buns",
+      "date": "2024-05-19",
+      "id": "20240519_000000000"
+    },
+    {
+      "category": "Groceries",
+      "amount": "142.74",
+      "description": "Ice maker and whey",
+      "date": "2024-05-20",
+      "id": "20240520_000000000"
+    },
+    {
+      "category": "Gas",
+      "amount": "32.22",
+      "description": "costco princeton",
+      "date": "2024-05-25",
+      "id": "20240525_000000000"
+    },
+    {
+      "category": "Food",
+      "amount": "39.00",
+      "description": "Dinner with yi and xubo",
+      "date": "2024-05-28",
+      "id": "20240528_000000000"
+    },
+    {
+      "category": "Utilities",
+      "amount": "42.86",
+      "description": "May Utilities @ 8 Redbud Rd, 1/2 month",
+      "date": "2024-05-31",
+      "id": "20240531_000000000"
+    },
+    {
+      "category": "Rent",
+      "amount": "550.00",
+      "description": "June Rent",
+      "date": "2024-06-01",
+      "id": "20240601_000000000"
+    },
+    {
+      "category": "Groceries",
+      "amount": "1.30",
+      "description": "Shoprite buy bananas got 坑ed",
+      "date": "2024-06-03",
+      "id": "20240603_000000000"
+    },
+    {
+      "category": "Gas",
+      "amount": "30.00",
+      "description": "princeton costco",
+      "date": "2024-06-09",
+      "id": "20240609_000000000"
+    },
+    {
+      "category": "Groceries",
+      "amount": "1.49",
+      "description": "Shoprite buy hotdog buns",
+      "date": "2024-06-10",
+      "id": "20240610_000000000"
+    },
+    {
+      "category": "Clothing",
+      "amount": "4.00",
+      "description": "Hollister Cooling Tank",
+      "date": "2024-06-10",
+      "id": "20240610_000000001"
+    },
+    {
+      "category": "Clothing",
+      "date": "2024-06-11",
+      "amount": "141.79",
+      "description": "Calvin Klein",
+      "id": "20240611_000000000"
+    },
+    {
+      "category": "Food",
+      "amount": "34.80",
+      "description": "一品香 东北菜",
+      "date": "2024-06-14",
+      "id": "20240614_000000000"
+    },
+    {
+      "category": "Luxury",
+      "date": "2024-06-15",
+      "amount": "1260.00",
+      "description": "LV Trainer Black and white jean colored",
+      "id": "20240615_000000000"
+    },
+    {
+      "category": "Food",
+      "amount": "49.00",
+      "description": "Tofu House in Edison with Yi after 飞盘, Dinner",
+      "date": "2024-06-18",
+      "id": "20240618_000000000"
+    },
+    {
+      "category": "Groceries",
+      "amount": "41.81",
+      "description": "Shoprite:Pasta,Pasta Sauce, Bun, Hot dogs, Chk Brst, Mango, Ice Crm",
+      "date": "2024-06-18",
+      "id": "20240618_000000001"
+    },
+    {
+      "category": "Entertainment",
+      "amount": "20.00",
+      "description": "BadMinton IBC Game Reserve",
+      "date": "2024-06-19",
+      "id": "20240619_000000000"
+    },
+    {
+      "category": "Food",
+      "date": "2024-06-19",
+      "amount": "29.13",
+      "description": "Lua Viet Restaurant: Dinner after badminton with yi and his shitty friend and her foreign friend",
+      "id": "20240619_000000001"
+    },
+    {
+      "category": "Other",
+      "amount": "65.00",
+      "description": "IBC Bad-Minton Racket",
+      "date": "2024-06-19",
+      "id": "20240619_000000002"
+    },
+    {
+      "category": "Other",
+      "amount": "48.07",
+      "description": "NJMVC Registeration",
+      "date": "2024-06-20",
+      "id": "20240620_000000000"
+    },
+    {
+      "category": "Other",
+      "amount": "9.78",
+      "description": "FuGui Water Bottle from pet smart",
+      "date": "2024-06-20",
+      "id": "20240620_000000001"
+    },
+    {
+      "category": "Gas",
+      "amount": "31.35",
+      "description": "Costco Gas Edison",
+      "date": "2024-06-22",
+      "id": "20240622_000000000"
+    },
+    {
+      "category": "Groceries",
+      "amount": "5.28",
+      "description": "Strawberries and Bannanas at Costco",
+      "date": "2024-06-22",
+      "id": "20240622_000000001"
+    },
+    {
+      "category": "Food",
+      "date": "2024-06-27",
+      "amount": "55.83",
+      "description": "Her Name is Han (Bad Date + Garbage Food)",
+      "id": "20240627_000000000"
+    },
+    {
+      "category": "Transport",
+      "amount": "2.90",
+      "description": "NYC Subway",
+      "date": "2024-06-27",
+      "id": "20240627_000000001"
+    },
+    {
+      "category": "Transport",
+      "amount": "28.00",
+      "description": "NYC RoundTrip",
+      "date": "2024-06-27",
+      "id": "20240627_000000002"
+    },
+    {
+      "category": "Gas",
+      "amount": "22.87",
+      "description": "Costco Edison 3.13/gallon",
+      "date": "2024-06-29",
+      "id": "20240629_000000000"
+    },
+    {
+      "category": "Groceries",
+      "amount": "6.88",
+      "description": "Broccoli and Bananas @ Costco Edison",
+      "date": "2024-06-29",
+      "id": "20240629_000000001"
+    },
+    {
+      "category": "Groceries",
+      "amount": "43.69",
+      "description": "Liquor - 6pk Mike Lemonade 5% and Grey Goose Citron 750ml 40%",
+      "date": "2024-06-29",
+      "id": "20240629_000000002"
+    },
+    {
+      "category": "Luxury",
+      "date": "2024-06-29",
+      "amount": "675.00",
+      "description": "Balenciaga POLITICAL CAMPAIGN T-SHIRT LARGE FIT",
+      "id": "20240629_000000003"
+    },
+    {
+      "category": "Utilities",
+      "date": "2024-06-30",
+      "amount": "143.70",
+      "description": "June Utilities: Water, Gas + Electric, Garbage. One less ppl + higher temp",
+      "id": "20240630_000000000"
+    },
+    {
+      "category": "Rent",
+      "amount": "550.00",
+      "description": "July Rent",
+      "date": "2024-07-01",
+      "id": "20240701_000000000"
+    },
+    {
+      "category": "Food",
+      "amount": "7.70",
+      "description": "McDonalds for Dinner after 10.97 hours of Amazon",
+      "date": "2024-07-03",
+      "id": "20240703_000000000"
+    },
+    {
+      "category": "Groceries",
+      "amount": "42.13",
+      "description": "ShopRite: Pasta, P Sauce, Chk Brst, Ht Dg, Ice Crm",
+      "date": "2024-07-04",
+      "id": "20240704_000000000"
+    },
+    {
+      "category": "Groceries",
+      "amount": "48.89",
+      "description": "Shoprite: Pasta, PSauce, Chk Brst, Bread, Ktchp, Instnt Rce, Almds",
+      "date": "2024-07-09",
+      "id": "20240709_000000000"
+    },
+    {
+      "category": "Groceries",
+      "amount": "6.88",
+      "description": "Broccoli and Bananas @ Costco Edison",
+      "date": "2024-07-09",
+      "id": "20240709_000000001"
+    },
+    {
+      "category": "Food",
+      "amount": "19.00",
+      "description": "Popeyes with Yiming and Yiqun",
+      "date": "2024-07-10",
+      "id": "20240710_000000000"
+    },
+    {
+      "category": "Food",
+      "amount": "5.33",
+      "description": "McDonalds for dinner after 10.5 hrs of amazon",
+      "date": "2024-07-10",
+      "id": "20240710_000000001"
+    },
+    {
+      "category": "Food",
+      "date": "2024-07-12",
+      "amount": "72.26",
+      "description": "Happy Lamb Hot Pot: 请黄奕茗吃饭",
+      "id": "20240712_000000000"
+    },
+    {
+      "category": "NJSP Related",
+      "date": "2024-07-12",
+      "amount": "10.00",
+      "description": "Official College Transcript for Official College Transcript Background Check",
+      "id": "20240712_000000001"
+    },
+    {
+      "category": "Other",
+      "amount": "15.51",
+      "description": "Temu Anti Sun",
+      "date": "2024-07-13",
+      "id": "20240713_000000000"
+    },
+    {
+      "category": "Groceries",
+      "date": "2024-07-14",
+      "amount": "38.05",
+      "description": "ShopRite:8Pasta,8PSauce, 2GalTea,5Chip,3Peach",
+      "id": "20240714_000000000"
+    },
+    {
+      "category": "NJSP Related",
+      "date": "2024-07-16",
+      "amount": "4.99",
+      "description": "Notary for NJSP",
+      "id": "20240716_000000000"
+    },
+    {
+      "category": "Other",
+      "date": "2024-07-17",
+      "amount": "17.70",
+      "description": "Speedo Swimming Mirror Goggles",
+      "id": "20240717_000000000"
+    },
+    {
+      "category": "Gas",
+      "amount": "23.71",
+      "description": "Edison Costco Gas 3.25/gallon",
+      "date": "2024-07-18",
+      "id": "20240718_000000000"
+    },
+    {
+      "category": "Groceries",
+      "date": "2024-07-18",
+      "amount": "20.85",
+      "description": "Costco: Milk, Strawberries, Eggs, Broccoli, Bananas",
+      "id": "20240718_000000001"
+    },
+    {
+      "category": "Luxury",
+      "date": "2024-07-19",
+      "amount": "597.10",
+      "description": "Prada SPR10Z",
+      "id": "20240719_000000000"
+    },
+    {
+      "category": "Food",
+      "amount": "5.33",
+      "description": "McDonalds after work of 10.63 hours",
+      "date": "2024-07-22",
+      "id": "20240722_000000000"
+    },
+    {
+      "category": "Food",
+      "amount": "72.29",
+      "description": "Chongqing Wharf Linner for Yi's BDay",
+      "date": "2024-07-24",
+      "id": "20240724_000000000"
+    },
+    {
+      "category": "Clothing",
+      "date": "2024-07-27",
+      "amount": "14.90",
+      "description": "Uniqlo T-Shirt Pure White",
+      "id": "20240727_000000000"
+    },
+    {
+      "category": "Gas",
+      "amount": "16.11",
+      "description": "Costco Edison Gas 3.18/gal",
+      "date": "2024-07-28",
+      "id": "20240728_000000000"
+    },
+    {
+      "category": "Groceries",
+      "amount": "71.33",
+      "description": "Costco: IceCrm, ProtBar, Broc, Milk, Bana, ChkBrst",
+      "date": "2024-07-28",
+      "id": "20240728_000000001"
+    },
+    {
+      "category": "Groceries",
+      "amount": "8.56",
+      "description": "ShopRite: 2HotDog, 2Bun",
+      "date": "2024-07-29",
+      "id": "20240729_000000000"
+    },
+    {
+      "category": "Other",
+      "amount": "50.00",
+      "description": "America Best Contacts Eye Exam",
+      "date": "2024-07-29",
+      "id": "20240729_000000001"
+    },
+    {
+      "category": "Food",
+      "amount": "0.00",
+      "description": "Happy Lamb Hot Pot: $76.21-$79.17 YI paid, with $15 off coupon",
+      "date": "2024-07-30",
+      "id": "20240730_000000000"
+    },
+    {
+      "category": "Utilities",
+      "amount": "192.00",
+      "description": "electric, gas, water, garbage, fucking wushui fei",
+      "date": "2024-07-31",
+      "id": "20240731_000000000"
+    },
+    {
+      "category": "Rent",
+      "date": "2024-08-01",
+      "amount": "550.00",
+      "description": "August Rent",
+      "id": "20240801_000000000"
+    },
+    {
+      "category": "Car Related",
+      "date": "2024-08-05",
+      "amount": "199.19",
+      "description": "Car Insurance for August",
+      "id": "20240805_000000000"
+    },
+    {
+      "category": "Car Related",
+      "date": "2024-08-05",
+      "amount": "4000.00",
+      "description": "2023 Audi A5 45 TFSI Prestige Quattro: Down Payment",
+      "id": "20240805_000000001"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "6.39",
+      "description": "PetSmart: A gift for Tang BoBo's BDay",
+      "date": "2024-08-06",
+      "id": "20240806_000000000"
+    },
+    {
+      "category": "Food",
+      "amount": "34.50",
+      "description": "XiaoShiDai: Linner with Tang Zexuan",
+      "date": "2024-08-07",
+      "id": "20240807_000000000"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "12.78",
+      "description": "MiTea: Autumn's First Cup of Milk Tea with Tang Zexuan",
+      "date": "2024-08-07",
+      "id": "20240807_000000001"
+    },
+    {
+      "category": "Entertainment",
+      "amount": "50.00",
+      "description": "Horse Riding",
+      "date": "2024-08-10",
+      "id": "20240810_000000000"
+    },
+    {
+      "category": "Entertainment",
+      "amount": "28.75",
+      "description": "Horse Riding Permit",
+      "date": "2024-08-10",
+      "id": "20240810_000000001"
+    },
+    {
+      "category": "Gas",
+      "amount": "23.54",
+      "description": "Costco Edison Gas @ 3.64/Gal Premium -> Audi",
+      "date": "2024-08-10",
+      "id": "20240810_000000002"
+    },
+    {
+      "category": "Groceries",
+      "amount": "5.29",
+      "description": "Costco Edison: Milk",
+      "date": "2024-08-11",
+      "id": "20240811_000000000"
+    },
+    {
+      "category": "Other",
+      "amount": "136.99",
+      "description": "Dashcam",
+      "date": "2024-08-11",
+      "id": "20240811_000000001"
+    },
+    {
+      "category": "Food",
+      "amount": "25.00",
+      "description": "Happy Lamb with Jin",
+      "date": "2024-08-13",
+      "id": "20240813_000000000"
+    },
+    {
+      "category": "Other",
+      "amount": "51.65",
+      "description": "MVC Personalized Plates",
+      "date": "2024-08-14",
+      "id": "20240814_000000000"
+    },
+    {
+      "category": "Entertainment",
+      "amount": "5.00",
+      "description": "Rutgers Cinema Deadpool & Wolverine with Jin",
+      "date": "2024-08-15",
+      "id": "20240815_000000000"
+    },
+    {
+      "category": "Food",
+      "amount": "25.00",
+      "description": "Dunhuang with Jin",
+      "date": "2024-08-15",
+      "id": "20240815_000000001"
+    },
+    {
+      "category": "Groceries",
+      "amount": "12.56",
+      "description": "Shoprite: Milk, HD, HDBun, Broccoli",
+      "date": "2024-08-18",
+      "id": "20240818_000000000"
+    },
+    {
+      "category": "Food",
+      "amount": "2.64",
+      "description": "Soda at subway",
+      "date": "2024-08-22",
+      "id": "20240822_000000000"
+    },
+    {
+      "category": "Groceries",
+      "amount": "15.99",
+      "description": "Shoprite: Soda",
+      "date": "2024-08-24",
+      "id": "20240824_000000000"
+    },
+    {
+      "category": "Gas",
+      "amount": "31.03",
+      "description": "Costco Edison 3.04/gal for Toyota",
+      "date": "2024-08-25",
+      "id": "20240825_000000000"
+    },
+    {
+      "category": "Gas",
+      "date": "2024-08-27",
+      "amount": "39.76",
+      "description": "Costco Edison Premium Gas 3.64/gal Audi",
+      "id": "20240827_000000000"
+    },
+    {
+      "category": "Utilities",
+      "amount": "83.39",
+      "description": "August Utilities",
+      "date": "2024-08-31",
+      "id": "20240831_000000000"
+    },
+    {
+      "category": "Gas",
+      "amount": "31.83",
+      "description": "Costco Edison gas @ 2.956/gal corolla",
+      "date": "2024-09-04",
+      "id": "20240904_000000000"
+    },
+    {
+      "category": "Other",
+      "amount": "50.00",
+      "description": "Ticket for Yiqun",
+      "date": "2024-09-04",
+      "id": "20240904_000000001"
+    },
+    {
+      "category": "Car Related",
+      "amount": "193.28",
+      "description": "Car Insurance for September",
+      "date": "2024-09-05",
+      "id": "20240905_000000000"
+    },
+    {
+      "category": "Car Related",
+      "amount": "1005.12",
+      "description": "Audi Payment September",
+      "date": "2024-09-05",
+      "id": "20240905_000000001"
+    },
+    {
+      "category": "Gas",
+      "date": "2024-09-08",
+      "amount": "10.00",
+      "description": "Gas for Corolla",
+      "id": "20240908_000000000"
+    },
+    {
+      "category": "Entertainment",
+      "amount": "80.50",
+      "description": "Bowling and KTV",
+      "date": "2024-09-13",
+      "id": "20240913_000000000"
+    },
+    {
+      "category": "Food",
+      "amount": "5.33",
+      "description": "McDonalds at NB",
+      "date": "2024-09-13",
+      "id": "20240913_000000001"
+    },
+    {
+      "category": "Food",
+      "amount": "50.00",
+      "description": "Happy Cusine with Alex at Staten Island",
+      "date": "2024-09-28",
+      "id": "20240928_000000000"
+    },
+    {
+      "category": "Other",
+      "amount": "25.00",
+      "description": "EZ Pass",
+      "date": "2024-09-28",
+      "id": "20240928_000000001"
+    },
+    {
+      "category": "Other",
+      "amount": "13.45",
+      "description": "Amazon Buy Chinese Plate",
+      "date": "2024-09-28",
+      "id": "20240928_000000002"
+    },
+    {
+      "category": "Gas",
+      "amount": "25.00",
+      "description": "Gas for Corolla at Costco Edison @ $2.68/gal",
+      "date": "2024-10-03",
+      "id": "20241003_000000000"
+    },
+    {
+      "category": "Hair",
+      "amount": "175.81",
+      "description": "La Mod Hair Salon: 150 Perm + 25 Tip + 0.81 Card Charge",
+      "date": "2024-10-03",
+      "id": "20241003_000000001"
+    },
+    {
+      "category": "Car Related",
+      "amount": "1005.12",
+      "description": "Audi Loan October",
+      "date": "2024-10-09",
+      "id": "20241009_000000000"
+    },
+    {
+      "category": "Car Related",
+      "amount": "193.28",
+      "description": "October Insurance",
+      "date": "2024-10-09",
+      "id": "20241009_000000001"
+    },
+    {
+      "category": "Food",
+      "amount": "5.33",
+      "description": "McDonalds at NB after comming back from Hoboken/JC/Joker Movie",
+      "date": "2024-10-11",
+      "id": "20241011_000000000"
+    },
+    {
+      "category": "Luxury",
+      "amount": "1800.00",
+      "description": "Christian Dior Overshirt",
+      "date": "2024-10-16",
+      "id": "20241016_000000000"
+    },
+    {
+      "category": "Gas",
+      "amount": "44.44",
+      "description": "Costco Princeton Gas 3.44/gal Premium for Audi",
+      "date": "2024-10-17",
+      "id": "20241017_000000000"
+    },
+    {
+      "category": "Food",
+      "amount": "40.00",
+      "description": "Happy Lamb with Su ZhenYu,Xing ZiYe, Zhang KeQi",
+      "date": "2024-10-19",
+      "id": "20241019_000000000"
+    },
+    {
+      "category": "Entertainment",
+      "amount": "35.00",
+      "description": "Alstede Farms with 3 girls",
+      "date": "2024-10-25",
+      "id": "20241025_000000000"
+    },
+    {
+      "category": "Food",
+      "amount": "31.00",
+      "description": "Xiang Shui Shan Zhuang with 3 girls",
+      "date": "2024-10-25",
+      "id": "20241025_000000001"
+    },
+    {
+      "category": "Gas",
+      "amount": "25.57",
+      "description": "Costco North Brunswick Gas Premium Audi 3.36/gal",
+      "date": "2024-10-25",
+      "id": "20241025_000000002"
+    },
+    {
+      "category": "Entertainment",
+      "amount": "104.00",
+      "description": "Shooting at RSTP Union, Glock19 AR15",
+      "date": "2024-10-26",
+      "id": "20241026_000000000"
+    },
+    {
+      "category": "Food",
+      "amount": "17.50",
+      "description": "Jin Xi Jiu Dian Morning Tea",
+      "date": "2024-10-26",
+      "id": "20241026_000000001"
+    },
+    {
+      "category": "Food",
+      "amount": "15.77",
+      "description": "McDonalds for 4 near six flags",
+      "date": "2024-10-26",
+      "id": "20241026_000000002"
+    },
+    {
+      "category": "Gas",
+      "amount": "20.00",
+      "description": "Gas for corolla at trenton 2.79/gal",
+      "date": "2024-10-27",
+      "id": "20241027_000000000"
+    },
+    {
+      "category": "Clothing",
+      "amount": "89.90",
+      "description": "Zara Varsity Jacket",
+      "date": "2024-10-30",
+      "id": "20241030_000000000"
+    },
+    {
+      "category": "Clothing",
+      "amount": "180.24",
+      "description": "Calvin Klein: 2 Jeans, 2 T-Shirt, 1 Jean Jacket",
+      "date": "2024-10-30",
+      "id": "20241030_000000001"
+    },
+    {
+      "category": "Luxury",
+      "amount": "690.00",
+      "description": "Balenciaga T-Shirt",
+      "date": "2024-10-30",
+      "id": "20241030_000000002"
+    },
+    {
+      "category": "Luxury",
+      "amount": "167.40",
+      "description": "Dior Sauvage Perfume",
+      "date": "2024-10-30",
+      "id": "20241030_000000003"
+    },
+    {
+      "category": "Other",
+      "amount": "41.55",
+      "description": "Clothing rack and hair water spray",
+      "date": "2024-10-31",
+      "id": "20241031_000000000"
+    },
+    {
+      "category": "Entertainment",
+      "amount": "79.97",
+      "description": "Six Flags Maze Express Pass One day",
+      "date": "2024-11-01",
+      "id": "20241101_000000000"
+    },
+    {
+      "category": "Entertainment",
+      "amount": "2.00",
+      "description": "Six Flags Locker for King Da Kada One time",
+      "date": "2024-11-01",
+      "id": "20241101_000000001"
+    },
+    {
+      "category": "Gas",
+      "amount": "20.00",
+      "description": "Picerno Gas for Corolla 2.75/gal",
+      "date": "2024-11-02",
+      "id": "20241102_000000000"
+    },
+    {
+      "category": "Groceries",
+      "amount": "30.36",
+      "description": "Yardville BuyRite: Jack Daniels Southern Peach 3*6pk for 1.69/Bottle",
+      "date": "2024-11-02",
+      "id": "20241102_000000001"
+    },
+    {
+      "category": "Groceries",
+      "amount": "35.18",
+      "description": "Yardville BuyRite: Jack Daniels Southern Peach 24pk for 1.47/Bottle",
+      "date": "2024-11-02",
+      "id": "20241102_000000002"
+    },
+    {
+      "category": "Clothing",
+      "amount": "590.00",
+      "description": "Alexander McQueen Shoes",
+      "date": "2024-11-04",
+      "id": "20241104_000000000"
+    },
+    {
+      "category": "Car Related",
+      "amount": "193.28",
+      "description": "November Insurance",
+      "date": "2024-11-06",
+      "id": "20241106_000000000"
+    },
+    {
+      "category": "Car Related",
+      "date": "2024-11-07",
+      "amount": "1005.12",
+      "description": "November Loan Payment",
+      "id": "20241107_000000000"
+    },
+    {
+      "category": "Food",
+      "amount": "1.07",
+      "description": "McDonalds Hamilton: 10pc Chicken Nuggets",
+      "date": "2024-11-07",
+      "id": "20241107_000000001"
+    },
+    {
+      "category": "NJSP Related",
+      "date": "2024-11-07",
+      "amount": "2.69",
+      "description": "Staples: Print out NJSP forms",
+      "id": "20241107_000000002"
+    },
+    {
+      "category": "Food",
+      "amount": "1.62",
+      "description": "McDonalds across from Madison Square Garden, 1 Soda",
+      "date": "2024-11-08",
+      "id": "20241108_000000000"
+    },
+    {
+      "category": "Food",
+      "amount": "61.00",
+      "description": "Ootoya (Japanese Food) with Yi",
+      "date": "2024-11-08",
+      "id": "20241108_000000001"
+    },
+    {
+      "category": "Transport",
+      "amount": "32.20",
+      "description": "New Brunswick to New York Penn Round Trip",
+      "date": "2024-11-08",
+      "id": "20241108_000000002"
+    },
+    {
+      "category": "Transport",
+      "amount": "2.90",
+      "description": "NYC MTA Subway",
+      "date": "2024-11-08",
+      "id": "20241108_000000003"
+    },
+    {
+      "category": "Entertainment",
+      "amount": "32.88",
+      "description": "Evol Night Club",
+      "date": "2024-11-09",
+      "id": "20241109_000000000"
+    },
+    {
+      "category": "Gas",
+      "amount": "22.04",
+      "description": "Costco Princeton Regular 2.66/gal",
+      "date": "2024-11-09",
+      "id": "20241109_000000001"
+    },
+    {
+      "category": "Gas",
+      "amount": "25.00",
+      "description": "Wawa Gas: Super 93, 3.49/gal? for Audi",
+      "date": "2024-11-09",
+      "id": "20241109_000000002"
+    },
+    {
+      "category": "Food",
+      "date": "2024-11-14",
+      "amount": "1.07",
+      "description": "McDonalds Robbinsville: 10 Nuggets",
+      "id": "20241114_000000000"
+    },
+    {
+      "category": "NJSP Related",
+      "date": "2024-11-14",
+      "amount": "45.00",
+      "description": "AFC Urgent Care Hamilton: PPD",
+      "id": "20241114_000000001"
+    },
+    {
+      "category": "Food",
+      "amount": "1.07",
+      "description": "McDonalds Somerset: 10pc nuggets",
+      "date": "2024-11-16",
+      "id": "20241116_000000000"
+    },
+    {
+      "category": "Food",
+      "amount": "1.59",
+      "description": "McDonalds Somerset: Large Sprite",
+      "date": "2024-11-16",
+      "id": "20241116_000000001"
+    },
+    {
+      "category": "Food",
+      "amount": "21.00",
+      "description": "SiHai (JiangHu) Edison: ZiRanYangRou, BaoChaoBaoCai, XiaRenGanGuo",
+      "date": "2024-11-16",
+      "id": "20241116_000000002"
+    },
+    {
+      "category": "Gas",
+      "amount": "20.00",
+      "description": "Costco Princeton Gas Regular @ 2.70/gal",
+      "date": "2024-11-22",
+      "id": "20241122_000000000"
+    },
+    {
+      "category": "NJSP Related",
+      "amount": "135.00",
+      "description": "AFC Urgent Care Hamilton: Physical",
+      "date": "2024-11-22",
+      "id": "20241122_000000001"
+    },
+    {
+      "category": "NJSP Related",
+      "date": "2024-11-22",
+      "amount": "4.36",
+      "description": "Staples: Print out NJSP forms",
+      "id": "20241122_000000002"
+    },
+    {
+      "category": "Other",
+      "amount": "111.70",
+      "description": "Costco: 6month supply of contacts both eyes",
+      "date": "2024-11-22",
+      "id": "20241122_000000003"
+    },
+    {
+      "category": "Food",
+      "amount": "40.00",
+      "description": "Happy Lamb with Ziwen and Alex Liu",
+      "date": "2024-11-23",
+      "id": "20241123_000000000"
+    },
+    {
+      "category": "Food",
+      "amount": "19.00",
+      "description": "Livi Dining Commons with Ziwen",
+      "date": "2024-11-23",
+      "id": "20241123_000000001"
+    },
+    {
+      "category": "Gas",
+      "date": "2024-11-23",
+      "amount": "30.00",
+      "description": "Costco Edison Gas Premium @ ",
+      "id": "20241123_000000002"
+    },
+    {
+      "category": "Groceries",
+      "date": "2024-11-27",
+      "amount": "18.13",
+      "description": "ShopRite Hamilton: 4x12 Soda for 17+Tax",
+      "id": "20241127_000000000"
+    },
+    {
+      "category": "Gas",
+      "amount": "9.24",
+      "description": "Costco Edison: Premium Gas @2.70/gal",
+      "date": "2024-11-29",
+      "id": "20241129_000000000"
+    },
+    {
+      "category": "Hair",
+      "amount": "35.00",
+      "description": "New Beauty Art Salon (WuDu)",
+      "date": "2024-11-29",
+      "id": "20241129_000000001"
+    },
+    {
+      "category": "Food",
+      "date": "2024-11-30",
+      "amount": "39.00",
+      "description": "Happy Lamb with Clara and Grace",
+      "id": "20241130_000000000"
+    },
+    {
+      "category": "Car Related",
+      "amount": "1005.12",
+      "description": "December Car Loan",
+      "date": "2024-12-03",
+      "id": "20241203_000000000"
+    },
+    {
+      "category": "Fines",
+      "amount": "56.65",
+      "description": "Parking Ticket Trenton",
+      "date": "2024-12-04",
+      "id": "20241204_000000000"
+    },
+    {
+      "category": "Car Related",
+      "amount": "193.28",
+      "description": "December Insurance",
+      "date": "2024-12-06",
+      "id": "20241206_000000000"
+    },
+    {
+      "category": "Other",
+      "amount": "601.83",
+      "description": "Uniden R8 and Cigarette Lighter Adapter",
+      "date": "2024-12-06",
+      "id": "20241206_000000001"
+    },
+    {
+      "category": "NJSP Related",
+      "amount": "56.25",
+      "description": "Sweatshirt Nike",
+      "date": "2024-12-12",
+      "id": "20241212_000000000"
+    },
+    {
+      "category": "Gas",
+      "amount": "15.00",
+      "description": "Picernos 2.78/gal Regular",
+      "date": "2024-12-12",
+      "id": "20241212_000000001"
+    },
+    {
+      "category": "Food",
+      "amount": "2.45",
+      "description": "10 pc. Chicken McNuggets (50% off coupon)",
+      "date": "2024-12-14",
+      "id": "20241214_000000000"
+    },
+    {
+      "category": "Food",
+      "amount": "1.59",
+      "description": "Large Coke + Large Fries (Coupon: Free Fry with purchase of soda)",
+      "date": "2024-12-14",
+      "id": "20241214_000000001"
+    },
+    {
+      "category": "Food",
+      "amount": "0.53",
+      "description": "McDonalds Double Cheese Burger",
+      "date": "2024-12-14",
+      "id": "20241214_000000002"
+    },
+    {
+      "category": "Gas",
+      "amount": "39.89",
+      "description": "Costco Edison: Premium $3.29/gal",
+      "date": "2024-12-14",
+      "id": "20241214_000000003"
+    },
+    {
+      "category": "Gas",
+      "amount": "20.00",
+      "description": "Picernos Regular 2.76/gal",
+      "date": "2024-12-18",
+      "id": "20241218_000000000"
+    },
+    {
+      "category": "Entertainment",
+      "amount": "38.22",
+      "description": "NYC Trip: MET, Subway, McDonalds,Parking,Bus",
+      "date": "2024-12-21",
+      "id": "20241221_000000000"
+    },
+    {
+      "category": "Other",
+      "amount": "29.82",
+      "description": "Walmart Motor Oil 0W-16 for Corolla Oil Change",
+      "date": "2024-12-26",
+      "id": "20241226_000000000"
+    },
+    {
+      "category": "Other",
+      "amount": "52.24",
+      "description": "Jiffy Lube: Corolla Maintence",
+      "date": "2024-12-26",
+      "id": "20241226_000000001"
+    },
+    {
+      "category": "Student Loan",
+      "amount": "103.66",
+      "description": "January Student Loan",
+      "date": "2025-01-01",
+      "id": "20241218_000000001"
+    },
+    {
+      "category": "Food",
+      "amount": "55.00",
+      "description": "花小娇火锅\n\n推荐指数：2/5 （难吃）\n汤还好喝，但是性价比巨低，花椒鸡一般般，和牛6片非常薄的，居然要30刀？比小羊贵又没有小羊好吃。",
+      "date": "2025-01-01",
+      "id": "20250101_000000000"
+    },
+    {
+      "category": "Food",
+      "date": "2025-01-02",
+      "amount": "27.85",
+      "description": "Sakana Sushi New Brunswick (All You Can Eat, 3 rounds)",
+      "id": "20250102_000000000"
+    },
+    {
+      "category": "Gas",
+      "amount": "25.00",
+      "description": "Picernos Regular 2.69/gal",
+      "date": "2025-01-02",
+      "id": "20250102_000000001"
+    },
+    {
+      "category": "Car Related",
+      "amount": "1005.12",
+      "description": "January Car Loan",
+      "date": "2025-01-04",
+      "id": "20250104_000000000"
+    },
+    {
+      "category": "NJSP Related",
+      "amount": "100.00",
+      "description": "Piscataway YMCA: Trooper Readiness (Aquatics Class)",
+      "date": "2025-01-04",
+      "id": "20250104_000000001"
+    },
+    {
+      "category": "NJSP Related",
+      "amount": "0.31",
+      "description": "CVS Hamilton: Print Applicant Change of Information Form",
+      "date": "2025-01-04",
+      "id": "20250103_114912000"
+    },
+    {
+      "category": "Car Related",
+      "amount": "171.44",
+      "description": "January Insurance",
+      "date": "2025-01-05",
+      "id": "20250104_230244003"
+    },
+    {
+      "category": "Food",
+      "amount": "46.00",
+      "description": "Outback Steak House:\n1 Bread (Free) + 1 Coke Zero and Refill (3.99) + RibEye Steak and CoCo Shrimp (34.29)\n122.45 Total of 3 before Tip\nWould NOT recommend.",
+      "date": "2025-01-06",
+      "id": "20250105_213001201"
+    },
+    {
+      "category": "Food",
+      "amount": "0.00",
+      "description": "PopEyes Chicken Strip Meal of two, total 30.90, Jin paid check",
+      "date": "2025-01-06",
+      "id": "20250105_213107711"
+    },
+    {
+      "category": "Entertainment",
+      "amount": "9.50",
+      "description": "RU Cinema: Mufasa Movie\nNon-Matinee (before 2PM)",
+      "date": "2025-01-06",
+      "id": "20250105_213201771"
+    },
+    {
+      "category": "Gas",
+      "amount": "20.00",
+      "description": "Picernos 2.80/gal Regular",
+      "date": "2025-01-09",
+      "id": "20250108_100746146"
+    },
+    {
+      "category": "Food",
+      "amount": "35.00",
+      "description": "Sakana Premium\n\n推荐指数： 0/5\n吃撑到吐了！恶心！",
+      "date": "2025-01-15",
+      "id": "20250114_215539827"
+    },
+    {
+      "category": "Gas",
+      "amount": "20.00",
+      "description": "Elta Gas\nRegular 2.679/gal",
+      "date": "2025-01-16",
+      "id": "20250115_215900411"
+    },
+    {
+      "category": "NJSP Related",
+      "amount": "788.81",
+      "description": "Academy Awareness Weekend Required Equipments",
+      "date": "2025-01-18",
+      "id": "20250117_144010422"
+    },
+    {
+      "category": "Gas",
+      "amount": "24.48",
+      "description": "Costco Princeton: Regular $2.799/gal",
+      "date": "2025-01-22",
+      "id": "20250121_161100931"
+    },
+    {
+      "category": "Hair",
+      "amount": "30.00",
+      "description": "New Art Beauty Salon 25+5",
+      "date": "2025-01-25",
+      "id": "20250124_093701754"
+    },
+    {
+      "category": "Other",
+      "amount": "32.00",
+      "description": "Piscataway YMCA: Joiner Fee",
+      "date": "2025-01-29",
+      "id": "20250128_220653566"
+    },
+    {
+      "category": "Gas",
+      "amount": "20.00",
+      "description": "Delta gas Trenton: $2.79/gal Regular",
+      "date": "2025-01-30",
+      "id": "20250129_220541755"
+    },
+    {
+      "category": "Gas",
+      "amount": "20.00",
+      "description": "Wawa Hamilton: $3.79/gal Super",
+      "date": "2025-01-31",
+      "id": "20250130_153003149"
+    },
+    {
+      "category": "NJSP Related",
+      "amount": "2.09",
+      "description": "Staples Hamilton: Print W4 2025",
+      "date": "2025-01-31",
+      "id": "20250130_182245846"
+    },
+    {
+      "category": "NJSP Related",
+      "amount": "37.89",
+      "description": "Walmart Hamilton: Duffle Bag and Toiletry Travel Bag",
+      "date": "2025-01-31",
+      "id": "20250130_182314805"
+    },
+    {
+      "category": "Student Loan",
+      "amount": "103.66",
+      "description": "February Student Loan",
+      "date": "2025-02-01",
+      "id": "20250115_220212810"
+    },
+    {
+      "category": "Other",
+      "amount": "32.00",
+      "description": "Piscataway YMCA: February Membership",
+      "date": "2025-02-01",
+      "id": "20250131_141537088"
+    },
+    {
+      "category": "Car Related",
+      "amount": "1005.12",
+      "description": "February Car Loan",
+      "date": "2025-02-01",
+      "id": "20250131_171618121"
+    },
+    {
+      "category": "NJSP Related",
+      "amount": "1002.48",
+      "description": "NJSP Academy Items from American Uniform & Supply",
+      "date": "2025-02-04",
+      "id": "20250203_171345260"
+    },
+    {
+      "category": "NJSP Related",
+      "amount": "54.71",
+      "description": "Title MMA Head Gear",
+      "date": "2025-02-04",
+      "id": "20250203_180653150"
+    },
+    {
+      "category": "NJSP Related",
+      "amount": "6.04",
+      "description": "Swim Cap and Soap Container",
+      "date": "2025-02-04",
+      "id": "20250203_180715484"
+    },
+    {
+      "category": "NJSP Related",
+      "amount": "229.88",
+      "description": "NJSP academy stuff from amazon",
+      "date": "2025-02-04",
+      "id": "20250203_180809526"
+    },
+    {
+      "category": "NJSP Related",
+      "amount": "65.97",
+      "description": "Cross Trainer Sneakers",
+      "date": "2025-02-04",
+      "id": "20250203_180918759"
+    },
+    {
+      "category": "Car Related",
+      "amount": "1063.50",
+      "description": "6 Month Insurance 2/05/25-8/05/2025\n177.25/mo",
+      "date": "2025-02-05",
+      "id": "20250204_171805148"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "103.80",
+      "description": "(赠送)MeeTU Floral: Designer Standard\nBase: $89\nTax: $5.90\nTip: $8.90\n",
+      "date": "2025-02-07",
+      "id": "20250206_144716212"
+    },
+    {
+      "category": "Gas",
+      "amount": "20.00",
+      "description": "Wawa Gas",
+      "date": "2025-02-08",
+      "id": "20250207_144226708"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "121.75",
+      "description": "Hampton Inn & Suites\nBoston/Waltham\n2/8/25-2/9/25 One Night",
+      "date": "2025-02-08",
+      "id": "20250207_144518209"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "57.97",
+      "description": "Hunan Cuisine, Boston MA\n请余昊颜",
+      "date": "2025-02-08",
+      "id": "20250207_145030076"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "26.00",
+      "description": "MILLENNIUM GARAGE. Boston",
+      "date": "2025-02-08",
+      "id": "20250207_145634782"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "23.17",
+      "description": "McDonald's Boston North Station \n1x Fish\n1x Deluxe Spicy Chicken\n1x 20 Mc Nuggets\n1x Large Sham Shake\n\n请余昊颜",
+      "date": "2025-02-09",
+      "id": "20250208_145152741"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "15.41",
+      "description": "GongCha Boston: Lychee Slush x2\n请余昊颜",
+      "date": "2025-02-09",
+      "id": "20250208_145457609"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "20.00",
+      "description": "Parking North Station Boston (4hr45)",
+      "date": "2025-02-09",
+      "id": "20250208_145551709"
+    },
+    {
+      "category": "Gas",
+      "amount": "29.99",
+      "description": "Exxon 2723 WELLESLEY\t\nBoston MA",
+      "date": "2025-02-09",
+      "id": "20250208_145835352"
+    },
+    {
+      "category": "Gas",
+      "amount": "24.98",
+      "description": "Exxon WILBUR CROSS PKW\n$4.159/gal 93\nConnecticut",
+      "date": "2025-02-09",
+      "id": "20250208_145900942"
+    },
+    {
+      "category": "Fines",
+      "amount": "13.60",
+      "description": "New Jersey Turnpike Authority\nInsufficient Funds Slip: Lost Ticket (Maximum Toll)",
+      "date": "2025-02-11",
+      "id": "20250210_172843375"
+    },
+    {
+      "category": "Gas",
+      "amount": "31.89",
+      "description": "Costco Edison: Premium $3.229/Gal",
+      "date": "2025-02-11",
+      "id": "20250210_172957962"
+    },
+    {
+      "category": "Food",
+      "amount": "5.33",
+      "description": "McDonalds Edison: \n1x McChicken Meal Deal\n1x Free Medium Fries (Coupon)",
+      "date": "2025-02-11",
+      "id": "20250210_173043988"
+    },
+    {
+      "category": "Gas",
+      "amount": "9.15",
+      "description": "Costco Edison: Premium $3.229/gal",
+      "date": "2025-02-13",
+      "id": "20250212_180711555"
+    },
+    {
+      "category": "NJSP Related",
+      "amount": "6.80",
+      "description": "Staples: Paper Lamination\n\n2 Sheets $2.49ea\nExpress Guarantee $1.49\nTax $0.33",
+      "date": "2025-02-13",
+      "id": "20250212_180833214"
+    },
+    {
+      "category": "NJSP Related",
+      "amount": "86.49",
+      "description": "American Uniform and Supply Academy Stuff 2",
+      "date": "2025-02-13",
+      "id": "20250212_180944578"
+    },
+    {
+      "category": "NJSP Related",
+      "amount": "28.76",
+      "description": "Amazon: Mouth Guard one SET + 2 day shipping 6.99",
+      "date": "2025-02-13",
+      "id": "20250213_003233776"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "8.51",
+      "description": "Walmart: Large Magnum Condom",
+      "date": "2025-02-14",
+      "id": "20250213_003307676"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "40.00",
+      "description": "LAZ Parking Boston (200 Newbury Street):\nHas Attendant, 2-10 hrs $40",
+      "date": "2025-02-14",
+      "id": "20250213_003451174"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "266.30",
+      "description": "Residence Inn Hotel 2 nights",
+      "date": "2025-02-14",
+      "id": "20250213_003911590"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "40.91",
+      "description": "(赠送)Posman Books: 2 Jelly Cat Gift for 余昊颜",
+      "date": "2025-02-14",
+      "id": "20250213_003959119"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "69.42",
+      "description": "HAJU Kitchen Boston: Korean Food\n1x 部队火锅\n1x Med Fried Wings\n15% Tip",
+      "date": "2025-02-14",
+      "id": "20250213_004112272"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "12.74",
+      "description": "CVS Boston: Standard Size Condom",
+      "date": "2025-02-14",
+      "id": "20250213_004142532"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "20.00",
+      "description": "Residence Inn Parking 2 nights",
+      "date": "2025-02-14",
+      "id": "20250213_004206365"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "16.00",
+      "description": "Laz Parking (Lot): Titanic \nWeekend $16 Flat Rate",
+      "date": "2025-02-15",
+      "id": "20250214_151050353"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "53.11",
+      "description": "(赠送)CVS Boston: Plan B One Step 紧急避孕药 ($49.99 + TAX)",
+      "date": "2025-02-15",
+      "id": "20250214_151810998"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "33.39",
+      "description": "BB.Q Chicken\nSecret Sauce Boneless (Small 8pcs) - $13\nBulgogi Rice Bowl - $14.95\nPeace Tea Lemonade - $3.25\n\nTip - $0\nTax - $2.19",
+      "date": "2025-02-15",
+      "id": "20250214_152135907"
+    },
+    {
+      "category": "NJSP Related",
+      "amount": "0.89",
+      "description": "Staples Dedham MA: Print out concussion certificate",
+      "date": "2025-02-15",
+      "id": "20250214_180033167"
+    },
+    {
+      "category": "Gas",
+      "amount": "42.46",
+      "description": "Costco Dedham: Premium $3.599/gal",
+      "date": "2025-02-15",
+      "id": "20250214_180120429"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "26.00",
+      "description": "Millennium Garage (AMC Causeway 19 Boston)",
+      "date": "2025-02-16",
+      "id": "20250215_134054994"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "47.92",
+      "description": "云南过桥米线 Ten Seconds Yunnan Rice Noodles:\n2x 麻辣牛腩米线\n$37.95+$2.66TAX+$7.31TIPS",
+      "date": "2025-02-16",
+      "id": "20250215_135002965"
+    },
+    {
+      "category": "NJSP Related",
+      "amount": "0.60",
+      "description": "Staples Hamilton: Print out TITLE refund papers",
+      "date": "2025-02-23",
+      "id": "20250222_174326419"
+    },
+    {
+      "category": "Gas",
+      "amount": "42.80",
+      "description": "Costco Edison: Premium @ 3.22/gal",
+      "date": "2025-02-23",
+      "id": "20250222_174414990"
+    },
+    {
+      "category": "Food",
+      "amount": "23.74",
+      "description": "Hoja Asian Fusion\nCumin Beef 17.99 孜然牛肉\nPassion Fruit Tea 5.75 百香果茶",
+      "date": "2025-02-23",
+      "id": "20250222_174437650"
+    },
+    {
+      "category": "Car Related",
+      "amount": "1005.12",
+      "description": "March Car Loan",
+      "date": "2025-03-01",
+      "id": "20250228_162323946"
+    },
+    {
+      "category": "Student Loan",
+      "amount": "103.66",
+      "description": "March Loan",
+      "date": "2025-03-01",
+      "id": "20250228_165601904"
+    },
+    {
+      "category": "Other",
+      "amount": "60.00",
+      "description": "POLICE APP: RUPD Application",
+      "date": "2025-03-04",
+      "id": "20250303_100105567"
+    },
+    {
+      "category": "Other",
+      "amount": "85.29",
+      "description": "Amazon Smart Scale",
+      "date": "2025-03-04",
+      "id": "20250303_111213758"
+    },
+    {
+      "category": "Other",
+      "amount": "35.00",
+      "description": "Police App: Piscataway PD Application",
+      "date": "2025-03-05",
+      "id": "20250304_170343169"
+    },
+    {
+      "category": "Car Related",
+      "amount": "3.90",
+      "description": "Walmart Hamilton: Walmart Brand Windshield Washer Fluid",
+      "date": "2025-03-07",
+      "id": "20250306_190400694"
+    },
+    {
+      "category": "Other",
+      "amount": "1.41",
+      "description": "Walmart Hamilton: Equate Tweezers",
+      "date": "2025-03-07",
+      "id": "20250306_190445381"
+    },
+    {
+      "category": "Food",
+      "amount": "46.00",
+      "description": "Hunan Manor 湘水山庄\n干锅手撕包菜 $15.95\n金汤肥牛 $25.95\n黄焖肘子 $29.95\n白饭x2 $2\n$73.85 + $5.02 Tax = $78.87\n$14.83 Tip (18%)\nWith hym",
+      "date": "2025-03-08",
+      "id": "20250307_221451503"
+    },
+    {
+      "category": "Other",
+      "amount": "180.00",
+      "description": "健华会计税务公司\n",
+      "date": "2025-03-14",
+      "id": "20250313_181823825"
+    },
+    {
+      "category": "Other",
+      "amount": "0.52",
+      "description": "Best Buy: 两条数据线",
+      "date": "2025-03-19",
+      "id": "20250318_223504905"
+    },
+    {
+      "category": "Gas",
+      "amount": "20.00",
+      "description": "Costco North Brunswick: Regular $2.639/gal",
+      "date": "2025-03-24",
+      "id": "20250323_123448685"
+    },
+    {
+      "category": "Other",
+      "amount": "107.77",
+      "description": "Amazon",
+      "date": "2025-03-24",
+      "id": "20250323_123559672"
+    },
+    {
+      "category": "Other",
+      "amount": "135.00",
+      "description": "AFC Urgent Care: Pre Employment Physical",
+      "date": "2025-03-30",
+      "id": "20250329_173755246"
+    },
+    {
+      "category": "Student Loan",
+      "amount": "103.66",
+      "description": "April Student Loan",
+      "date": "2025-04-01",
+      "id": "20250331_135355281"
+    },
+    {
+      "category": "Car Related",
+      "amount": "1005.12",
+      "description": "April Car Loan",
+      "date": "2025-04-01",
+      "id": "20250331_211932372"
+    },
+    {
+      "category": "Gas",
+      "amount": "20.00",
+      "description": "Costco North Brunswick: Regular @ $2.699/gal",
+      "date": "2025-04-01",
+      "id": "20250331_192316752"
+    },
+    {
+      "category": "Food",
+      "amount": "11.00",
+      "description": "Hoja Asian Fusion: LaoJin 打折 BBQ Pork Rice Plate",
+      "date": "2025-04-05",
+      "id": "20250404_180913829"
+    },
+    {
+      "category": "Gas",
+      "amount": "26.61",
+      "description": "Costco North Brunswick: Premium @ $3.259/Gal",
+      "date": "2025-04-05",
+      "id": "20250404_180954378"
+    },
+    {
+      "category": "Gas",
+      "amount": "10.00",
+      "description": "Costco North Brunswick: Regular @ $2.759/gal",
+      "date": "2025-04-09",
+      "id": "20250408_211341421"
+    },
+    {
+      "category": "Food",
+      "amount": "32.64",
+      "description": "S&Y Mini Hotpot 蜀式冒菜\n1x冒菜单：中辣，雪花牛肉（6.49），腐竹（4.49），莲藕片（4.49），土豆片（4.49），豆芽（4.49），肥牛卷（5.49），脆黄喉（5.49）\n1x重庆辣子鸡\nSubtotal: $52.38\nTax: $3.47\nTotal: $55.85\n18% Tip($27.93+$4.71)",
+      "date": "2025-04-11",
+      "id": "20250410_195343517"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "146.19",
+      "description": "Courtyard by Marriott 1 night Expedia",
+      "date": "2025-04-12",
+      "id": "20250411_153546155"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "28.90",
+      "description": "(请)Rice Burg \nChicken Katsu Bowl $13\nMarinated Chicken Bowl $13",
+      "date": "2025-04-12",
+      "id": "20250411_153618054"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "13.74",
+      "description": "(请)McDonalds Norwood\n1 10pc Nuggets $5.89\n2 Large Soda $7.38\n2 Sundae $7.38\n8折 -3.21\n12.84+0.90 = $13.74",
+      "date": "2025-04-12",
+      "id": "20250411_153713448"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "34.67",
+      "description": "Costco Dedham: Premium @ $3.399/gal\n",
+      "date": "2025-04-13",
+      "id": "20250412_153202989"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "12.00",
+      "description": "Boston University Lot A: Weekend Max Rate",
+      "date": "2025-04-13",
+      "id": "20250412_153419810"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "14.00",
+      "description": "Boston University Recreation Center: Swim with YHY",
+      "date": "2025-04-13",
+      "id": "20250412_153752762"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "52.59",
+      "description": "(请)Boston Soup Dumplings\n猪肉小笼包 $14\n麻辣牛腩面 $18\n重庆小面猪肉末 $15\nSubTotal $47\nTax $3.29\nTotal 50.29\n- $4.70 (饭团95折)\n$45.59+$7 Tip (15%) = $52.59",
+      "date": "2025-04-13",
+      "id": "20250412_153824099"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "32.04",
+      "description": "(请)McDonalds Newton Needham\n1 Filet-O-Fish $5.79\n1 10pcs Nuggets $6.19\n1 Large Soda $1.39\n2 Oreo McFlurry $10.58\n$29.94 + $2.10 tax = $32.04",
+      "date": "2025-04-13",
+      "id": "20250412_153904871"
+    },
+    {
+      "category": "Food",
+      "amount": "18.80",
+      "description": "谢姐食堂 Edison Noodle House:\n谢姐小炒 15.99\n蒜炒A菜 13.99\nSubtotal 29.98\nTax 1.99\nTotal 31.97, Tip 5.57\nJin and me A",
+      "date": "2025-04-16",
+      "id": "20250415_212414608"
+    },
+    {
+      "category": "Other",
+      "amount": "35.00",
+      "description": "Police App: Oradell Police Department",
+      "date": "2025-04-20",
+      "id": "20250419_141259011"
+    },
+    {
+      "category": "Gas",
+      "amount": "15.00",
+      "description": "Costco North Brunswick: Regular @ $2.669/Gal",
+      "date": "2025-04-21",
+      "id": "20250420_203558591"
+    },
+    {
+      "category": "Gas",
+      "amount": "30.40",
+      "description": "Costco North Brunswick: Premium $3.259/Gal",
+      "date": "2025-04-22",
+      "id": "20250421_185451788"
+    },
+    {
+      "category": "Gas",
+      "amount": "17.46",
+      "description": "Costco North Brunswick: Premium $3.259/Gal",
+      "date": "2025-04-25",
+      "id": "20250424_230306913"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "110.11",
+      "description": "Hyatt House (Expedia)",
+      "date": "2025-04-26",
+      "id": "20250425_230800903"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "54.57",
+      "description": "(请)Cake",
+      "date": "2025-04-26",
+      "id": "20250425_230814607"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "20.00",
+      "description": "(请)Starbucks Brunch GC load",
+      "date": "2025-04-26",
+      "id": "20250425_204327842"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "79.60",
+      "description": "(请)Uniqlo 情侣装",
+      "date": "2025-04-26",
+      "id": "20250425_204448055"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "20.03",
+      "description": "Exxon Wellesley Super93 $3.99/gal",
+      "date": "2025-04-26",
+      "id": "20250425_235743018"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "49.10",
+      "description": "Sichuan Gourmet House:\n水煮牛肉 22.95\n青椒土豆丝 12.95\n2x 白米饭 4\nSubTotal 39.90\nTax 2.80\nTotal 42.70 + 6.40 Tip",
+      "date": "2025-04-27",
+      "id": "20250426_232346694"
+    },
+    {
+      "category": "Gas",
+      "amount": "41.47",
+      "description": "Costco North Brunswick: Premium $3.259/gal",
+      "date": "2025-04-28",
+      "id": "20250427_203903041"
+    },
+    {
+      "category": "Student Loan",
+      "amount": "103.66",
+      "description": "May Student Loan",
+      "date": "2025-05-01",
+      "id": "20250430_152223483"
+    },
+    {
+      "category": "Car Related",
+      "amount": "1005.12",
+      "description": "May Car Loan",
+      "date": "2025-05-01",
+      "id": "20250430_132135965"
+    },
+    {
+      "category": "Gas",
+      "amount": "37.86",
+      "description": "Costco North Brunswick: Premium $3.259/gal",
+      "date": "2025-05-07",
+      "id": "20250506_184813779"
+    },
+    {
+      "category": "Other",
+      "amount": "23.00",
+      "description": "YMCA May",
+      "date": "2025-05-12",
+      "id": "20250511_210413650"
+    },
+    {
+      "category": "Gas",
+      "amount": "37.39",
+      "description": "Costco North Brunswick: Premium $3.229/Gal",
+      "date": "2025-05-15",
+      "id": "20250514_210628752"
+    },
+    {
+      "category": "Food",
+      "amount": "13.50",
+      "description": "Noodle is Calling: Mala Beef Casserole (12.95+tax) paid jin 13.50",
+      "date": "2025-05-22",
+      "id": "20250521_221740189"
+    },
+    {
+      "category": "Food",
+      "amount": "30.53",
+      "description": "小食代 Tasty Moment\n2x 鲜肉小笼包 $19.9\n糖醋小排 $16.95\n手撕包菜 $12.95\n$49.80 + $3.30 Tax = 53.10\n~26.55 ea + 3.98 Tip = 30.53",
+      "date": "2025-05-22",
+      "id": "20250521_003939431"
+    },
+    {
+      "category": "Food",
+      "amount": "5.33",
+      "description": "McDonalds Somerset: \n$5 Meal Deal",
+      "date": "2025-05-24",
+      "id": "20250523_004043869"
+    },
+    {
+      "category": "Gas",
+      "amount": "43.10",
+      "description": "Costco Edison: Premium $3.299/Gal",
+      "date": "2025-05-24",
+      "id": "20250523_004559436"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "157.93",
+      "description": "Courtyard Boston Natick",
+      "date": "2025-05-25",
+      "id": "20250524_004125871"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "44.84",
+      "description": "Hunan Cuisine 异国他湘 Boston MA:\n水煮牛肉 @22.95\n手撕包菜 @15.95\n2 白米饭 @1.5ea\n41.90 + 2.94 = 44.84",
+      "date": "2025-05-25",
+      "id": "20250524_004406273"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "10.00",
+      "description": "Memorial Day $10 Ticket Any line",
+      "date": "2025-05-25",
+      "id": "20250524_004449634"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "16.64",
+      "description": "Tiger Sugar\n2x Large Mange Passionfruit Tea",
+      "date": "2025-05-26",
+      "id": "20250525_105111827"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "21.40",
+      "description": "Potluck Cafe 三菜一汤\n2* 三菜一汤\nSubtotal: $20\nTax: $1.40\nTotal: $21.40",
+      "date": "2025-05-26",
+      "id": "20250525_105225752"
+    },
+    {
+      "category": "Gas",
+      "amount": "15.01",
+      "description": "Exxon Mobil: Premium @ $4.159/Gal",
+      "date": "2025-05-26",
+      "id": "20250525_185350554"
+    },
+    {
+      "category": "Gas",
+      "amount": "38.21",
+      "description": "Costco North Brunswick: Premium $3.229/Gal",
+      "date": "2025-05-28",
+      "id": "20250527_151120158"
+    },
+    {
+      "category": "Other",
+      "amount": "25.00",
+      "description": "EZ Pass",
+      "date": "2025-05-28",
+      "id": "20250527_151319600"
+    },
+    {
+      "category": "Other",
+      "amount": "5.00",
+      "description": "Notary for Piscataway PD",
+      "date": "2025-05-31",
+      "id": "20250530_145113747"
+    },
+    {
+      "category": "Other",
+      "amount": "5.00",
+      "description": "Piscataway PD Notary",
+      "date": "2025-05-31",
+      "id": "20250530_181701559"
+    },
+    {
+      "category": "Car Related",
+      "amount": "1005.12",
+      "description": "June Car Loan",
+      "date": "2025-06-01",
+      "id": "20250531_222854246"
+    },
+    {
+      "category": "Student Loan",
+      "amount": "103.66",
+      "description": "June Student Loan",
+      "date": "2025-06-01",
+      "id": "20250531_222928134"
+    },
+    {
+      "category": "Other",
+      "amount": "35.00",
+      "description": "June YMCA",
+      "date": "2025-06-01",
+      "id": "20250531_181620772"
+    },
+    {
+      "category": "Other",
+      "amount": "0.31",
+      "description": "Piscataway PD license copy print CVS",
+      "date": "2025-06-01",
+      "id": "20250531_181718617"
+    },
+    {
+      "category": "Gas",
+      "amount": "43.01",
+      "description": "Costco North Brunswick: Premium $3.299/Gal",
+      "date": "2025-06-07",
+      "id": "20250606_203743488"
+    },
+    {
+      "category": "Car Related",
+      "amount": "73.64",
+      "description": "NJMVC: Vehicle Registeration",
+      "date": "2025-06-14",
+      "id": "20250613_132232474"
+    },
+    {
+      "category": "Gas",
+      "amount": "41.87",
+      "description": "Costco North Brunswick: Premium $3.299/Gal",
+      "date": "2025-06-19",
+      "id": "20250618_221453595"
+    },
+    {
+      "category": "Gas",
+      "amount": "41.45",
+      "description": "Costco North Brunswick: Premium $3.299/Gal",
+      "date": "2025-06-30",
+      "id": "20250629_184701801"
+    },
+    {
+      "category": "Car Related",
+      "amount": "1005.12",
+      "description": "July Car Loan",
+      "date": "2025-07-01",
+      "id": "20250630_140453998"
+    },
+    {
+      "category": "Gas",
+      "amount": "41.41",
+      "description": "Costco North Brunswick: Premium $3.259/Gal",
+      "date": "2025-07-11",
+      "id": "20250710_231804576"
+    },
+    {
+      "category": "Other",
+      "amount": "0.93",
+      "description": "CVS Hamilton: 3 Black and White sheets @ 0.29 ea\n$0.93 ",
+      "date": "2025-07-15",
+      "id": "20250714_203902257"
+    },
+    {
+      "category": "Student Loan",
+      "amount": "103.66",
+      "description": "July Student Loan",
+      "date": "2025-07-15",
+      "id": "20250714_204432922"
+    },
+    {
+      "category": "Other",
+      "amount": "29.69",
+      "description": "Amazon: BareSkin Condoms 24pk $11.18\nVIPERTEK Handcuffs $22.98\nTax $2.26\nTotal 36.42 - Gift Card Amount $6.73",
+      "date": "2025-07-17",
+      "id": "20250716_204323676"
+    },
+    {
+      "category": "Transport",
+      "amount": "29.00",
+      "description": "MTA Interview:\n2x NewarkPenn <--> New Brunswick: $11.50 ea\n2x Path WTC <--> Newark Penn: $3 ea\n",
+      "date": "2025-07-17",
+      "id": "20250716_205845109"
+    },
+    {
+      "category": "Other",
+      "amount": "55.25",
+      "description": "Amazon:\nContact Lens Case  $5.99\nDelay Spray $59.95 - $6 -$8.99 = $44.96\nBioTrue Hydration Plus 2pk $18.97 -$0.95 -$5.98 = $12.04\nTax: $4.18\nGC Amount: -$11.92\nGrand Total: $55.25",
+      "date": "2025-07-21",
+      "id": "20250720_160137927"
+    },
+    {
+      "category": "Gas",
+      "amount": "42.41",
+      "description": "Costco North Brunswick: Premium $3.259/Gal",
+      "date": "2025-07-22",
+      "id": "20250721_185006590"
+    },
+    {
+      "category": "Car Related",
+      "amount": "1005.12",
+      "description": "August Car Loan",
+      "date": "2025-08-01",
+      "id": "20250731_222448234"
+    },
+    {
+      "category": "Gas",
+      "amount": "41.23",
+      "description": "Costco North Brunswick: Premium $3.259/Gal",
+      "date": "2025-08-01",
+      "id": "20250731_142449395"
+    },
+    {
+      "category": "Other",
+      "amount": "168.90",
+      "description": "Happy Whale Rep:\n1x Balenciaga Yellow Tape TSHIRT\n1x Balenciaga White Tape TSHIRT\n1x Balenciaga Political Campaign Embroidered TSHIRT\n1x Balenciaga Regular Enbriodered TSHIRT",
+      "date": "2025-08-01",
+      "id": "20250731_142715722"
+    },
+    {
+      "category": "Car Related",
+      "amount": "899.36",
+      "description": "Half Year Car Insurance One Time Payment",
+      "date": "2025-08-05",
+      "id": "20250804_144825033"
+    },
+    {
+      "category": "Other",
+      "amount": "4.62",
+      "description": "Health Insurance September",
+      "date": "2025-08-06",
+      "id": "20250806_144419923"
+    },
+    {
+      "category": "Gas",
+      "amount": "37.58",
+      "description": "Costco North Brunswick: Premium $3.259/Gal",
+      "date": "2025-08-12",
+      "id": "20250812_184645467"
+    },
+    {
+      "category": "Student Loan",
+      "amount": "103.66",
+      "description": "August Student Loan (Recurring)",
+      "date": "2025-08-15",
+      "id": "20250815_114809250"
+    },
+    {
+      "category": "Gas",
+      "amount": "41.38",
+      "description": "Costco North Brunswick: Premium $3.259/Gal",
+      "date": "2025-08-22",
+      "id": "20250822_153850466"
+    },
+    {
+      "category": "Gas",
+      "amount": "28.42",
+      "description": "Costco North Brunswick: Regular $2.859/Gal",
+      "date": "2025-08-26",
+      "id": "20250826_184637994"
+    },
+    {
+      "category": "Hair",
+      "amount": "32.00",
+      "description": "雾都理发店：\n25 Base +7 Tip=32",
+      "date": "2025-08-29",
+      "id": "20250829_205248038"
+    },
+    {
+      "category": "Other",
+      "amount": "53.94",
+      "description": "Amazon:Foam Cannon, Car Wash, Cloth, Opti Free, Car Wax Spray",
+      "date": "2025-08-30",
+      "id": "20250830_205617941"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "79.95",
+      "description": "(赠送) Victoria's Secret:\nSexy 套装 for 余昊颜 ",
+      "date": "2025-08-30",
+      "id": "20250831_210228254"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "309.64",
+      "description": "The Verve Hotel Boston Natick, Tapestry Collection by Hilton\n2 Nights",
+      "date": "2025-08-30",
+      "id": "20250831_210425543"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "25.66",
+      "description": "(请)\nSarku Japan\n2* Terayaki Chicken Meal (Entree+2pc Spring Roll+Small Fountain Drink)\n11.99 each\nTax 1.68",
+      "date": "2025-08-30",
+      "id": "20250830_112624613"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "12.83",
+      "description": "(请) Sarku Japan Chicken Terayaki Meal",
+      "date": "2025-08-31",
+      "id": "20250831_110148889"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "7.17",
+      "description": "(请) Starbucks Natick: Grande Pink Drink",
+      "date": "2025-08-31",
+      "id": "20250831_110222439"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "2.00",
+      "description": "West Natick Parking Weekends Rate",
+      "date": "2025-08-31",
+      "id": "20250831_110244660"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "10.00",
+      "description": "Train Ticket Labor Day Weekend",
+      "date": "2025-08-31",
+      "id": "20250831_110305252"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "4.80",
+      "description": "(请) Train Ticket Red Line 2x$2.4  Back from MIT to Boston",
+      "date": "2025-08-31",
+      "id": "20250831_110340435"
+    },
+    {
+      "category": "Car Related",
+      "amount": "1005.12",
+      "description": "September Car Loan (Recurring)",
+      "date": "2025-09-01",
+      "id": "20250832_105809276"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "12.83",
+      "description": "(请) Sarku Japan Chicken Terayaki Meal",
+      "date": "2025-09-01",
+      "id": "20250832_110403536"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "3.63",
+      "description": "(请) McDonalds Natick mall: Fudge Sundae",
+      "date": "2025-09-01",
+      "id": "20250832_110436824"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "28.00",
+      "description": "(请) Lyft Back From Boston, to Wellesley Square",
+      "date": "2025-09-01",
+      "id": "20250832_110509545"
+    },
+    {
+      "category": "Relationship Related",
+      "amount": "39.98",
+      "description": "Mobil Wellesley: Super 93 $4.199/Gal",
+      "date": "2025-09-01",
+      "id": "20250832_110548644"
+    },
+    {
+      "category": "Gas",
+      "amount": "31.00",
+      "description": "Costco North Brunswick: Regular $2.899/Gal",
+      "date": "2025-09-05",
+      "id": "20250905_185840890"
+    },
+    {
+      "category": "Food",
+      "amount": "39.87",
+      "description": "Happy Lamb Edison:\nFriday Night/Weekend: $31.99 + $4.24 Tax\nSubtotal: $34.11\nTip: $5.76",
+      "date": "2025-09-12",
+      "id": "20250912_110114136"
+    },
+    {
+      "category": "Student Loan",
+      "amount": "103.66",
+      "description": "September Student Loan (Recurring)",
+      "date": "2025-09-15",
+      "id": "20250915_202654792"
+    }
+  ],
+  "income": [
+    {
+      "before_tax": "805.59",
+      "after_tax": "703.14",
+      "description": "6/14 Costco",
+      "tax_percentage": 12.7173872565449,
+      "date": "2024-06-14",
+      "id": "20240614_000000001"
+    },
+    {
+      "before_tax": "1054.64",
+      "after_tax": "901.02",
+      "description": "First paycheck Amazon DSP",
+      "tax_percentage": 14.566107866191317,
+      "date": "2024-06-21",
+      "id": "20240621_000000000"
+    },
+    {
+      "before_tax": "911.22",
+      "after_tax": "704.39",
+      "description": "Costco Last Paycheck",
+      "tax_percentage": 22.698140953886004,
+      "date": "2024-06-22",
+      "id": "20240622_000000002"
+    },
+    {
+      "before_tax": "1066.33",
+      "after_tax": "910.13",
+      "description": "Second Paycheck Everon",
+      "tax_percentage": 14.648373392852113,
+      "date": "2024-07-05",
+      "id": "20240705_000000000"
+    },
+    {
+      "before_tax": "1452.44",
+      "after_tax": "1208.63",
+      "description": "Everon Paycheck 3",
+      "tax_percentage": 16.78623557599625,
+      "date": "2024-07-19",
+      "id": "20240719_000000001"
+    },
+    {
+      "before_tax": "916.73",
+      "after_tax": "791.87",
+      "description": "Everon Paycheck",
+      "tax_percentage": 13.620149880553708,
+      "date": "2024-08-02",
+      "id": "20240802_000000000"
+    },
+    {
+      "before_tax": "1900.81",
+      "after_tax": "1541.13",
+      "description": "Oct 11 Pay: Schedetto Logistics",
+      "tax_percentage": 18.92245937258326,
+      "date": "2024-10-11",
+      "id": "20241011_000000001"
+    },
+    {
+      "before_tax": "1619.37",
+      "after_tax": "1333.61",
+      "description": "Scudetto 2nd paycheck",
+      "tax_percentage": 17.646368649536548,
+      "date": "2024-10-25",
+      "id": "20241025_000000003"
+    },
+    {
+      "before_tax": "1786.53",
+      "after_tax": "1456.86",
+      "description": "11/8 Scedetto Pay",
+      "tax_percentage": 18.45309062820104,
+      "date": "2024-11-08",
+      "id": "20241108_000000004"
+    },
+    {
+      "before_tax": "1651.91",
+      "after_tax": "1357.62",
+      "description": "Scedetto Pay 11/22",
+      "tax_percentage": 17.815135207123888,
+      "date": "2024-11-22",
+      "id": "20241122_000000004"
+    },
+    {
+      "before_tax": "1577.98",
+      "after_tax": "1303.08",
+      "description": "Scudetto Dec 6",
+      "tax_percentage": 17.42100660337901,
+      "date": "2024-12-06",
+      "id": "20241206_000000002"
+    },
+    {
+      "before_tax": "2375.59",
+      "after_tax": "1891.14",
+      "description": "Dec 20 Scudetto",
+      "tax_percentage": 20.392828728863147,
+      "date": "2024-12-20",
+      "id": "20241220_000000000"
+    },
+    {
+      "before_tax": "1970.22",
+      "after_tax": "1585.16",
+      "description": "Jan 3 Scedetto",
+      "tax_percentage": 19.54401031356904,
+      "date": "2025-01-03",
+      "id": "20250103_000000000"
+    },
+    {
+      "before_tax": "1726.78",
+      "after_tax": "1406.79",
+      "description": "Jan 17 Scudetto",
+      "date": "2025-01-17",
+      "id": "20250116_233429265",
+      "tax_percentage": 18.531023060262456
+    },
+    {
+      "before_tax": "1815.83",
+      "after_tax": "1472.03",
+      "description": "Jan 31 Scudetto",
+      "date": "2025-01-31",
+      "id": "20250130_153152911",
+      "tax_percentage": 18.93349046992284
+    },
+    {
+      "before_tax": "1061.14",
+      "after_tax": "903.21",
+      "description": "Feb 14 Scudetto",
+      "date": "2025-02-14",
+      "id": "20250213_005451667",
+      "tax_percentage": 14.883050304389622
+    },
+    {
+      "before_tax": "400.37",
+      "after_tax": "359.78",
+      "description": "Feb 28 Scudetto",
+      "date": "2025-02-28",
+      "id": "20250227_180748898",
+      "tax_percentage": 10.138122236930847
+    },
+    {
+      "before_tax": "26.51",
+      "after_tax": "23.84",
+      "description": "March 14 Scudetto",
+      "date": "2025-03-14",
+      "id": "20250313_181510148",
+      "tax_percentage": 10.071671067521695
+    },
+    {
+      "before_tax": "303",
+      "after_tax": "303",
+      "description": "IRS Tax Relief",
+      "date": "2025-03-21",
+      "id": "20250320_123423742",
+      "tax_percentage": 0
+    },
+    {
+      "before_tax": "1681.41",
+      "after_tax": "1385.36",
+      "description": "LinkW April 4",
+      "date": "2025-04-04",
+      "id": "20250403_184231111",
+      "tax_percentage": 17.60724629923696
+    },
+    {
+      "before_tax": "199",
+      "after_tax": "199",
+      "description": "Tax Relief State of New Jersey",
+      "date": "2025-04-09",
+      "id": "20250408_211447972",
+      "tax_percentage": 0
+    },
+    {
+      "before_tax": "1699.93",
+      "after_tax": "1398.95",
+      "description": "LinkW April 18",
+      "date": "2025-04-18",
+      "id": "20250417_151430512",
+      "tax_percentage": 17.705434929673576
+    },
+    {
+      "before_tax": "587.50",
+      "after_tax": "526.89",
+      "description": "New Jersey State Police: 5 days in Academy with $117.50 per day\nCheck Date: 2/28/25\nPay Period end date: 2/21/25",
+      "date": "2025-04-18",
+      "id": "20250417_132338255",
+      "tax_percentage": 10.316595744680853
+    },
+    {
+      "before_tax": "1699.74",
+      "after_tax": "1398.79",
+      "description": "LinkW May 5",
+      "date": "2025-05-05",
+      "id": "20250504_110947824",
+      "tax_percentage": 17.70564909927401
+    },
+    {
+      "before_tax": "1739.93",
+      "after_tax": "1428.26",
+      "description": "LinkW May 20",
+      "date": "2025-05-20",
+      "id": "20250519_221645678",
+      "tax_percentage": 17.91278959498371
+    },
+    {
+      "before_tax": "1805.16",
+      "after_tax": "1476.03",
+      "description": "LinkW June 5",
+      "date": "2025-06-05",
+      "id": "20250604_203935843",
+      "tax_percentage": 18.232732832546706
+    },
+    {
+      "before_tax": "1608.92",
+      "after_tax": "1330.98",
+      "description": "LinkW June 20 ",
+      "date": "2025-06-20",
+      "id": "20250619_155103533",
+      "tax_percentage": 17.274942197250333
+    },
+    {
+      "before_tax": "1893.13",
+      "after_tax": "1540.50",
+      "description": "LinkW July 3",
+      "date": "2025-07-03",
+      "id": "20250702_205136876",
+      "tax_percentage": 18.626824359658347
+    },
+    {
+      "before_tax": "2237.10",
+      "after_tax": "1792.48",
+      "description": "LinkW July 18",
+      "date": "2025-07-18",
+      "id": "20250717_174729832",
+      "tax_percentage": 19.87483795985874
+    },
+    {
+      "before_tax": "2038.37",
+      "after_tax": "1646.89",
+      "description": "LinkW August 5",
+      "date": "2025-08-05",
+      "id": "20250804_144943953",
+      "tax_percentage": 19.20554168281518
+    },
+    {
+      "before_tax": "2154.32",
+      "after_tax": "1731.85",
+      "description": "LinkW August 20\n\n$180 July KPI",
+      "date": "2025-08-20",
+      "id": "20250820_153703914",
+      "tax_percentage": 19.610364291284498
+    },
+    {
+      "before_tax": "1961.13",
+      "after_tax": "1590.29",
+      "description": "LinkW September 5",
+      "date": "2025-09-05",
+      "id": "20250905_153631018",
+      "tax_percentage": 18.909506254047418
+    }
+  ],
+  "totalChecking": 6001
+}
