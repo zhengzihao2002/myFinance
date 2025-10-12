@@ -2013,7 +2013,7 @@ const HomePage = () => {
             总余额
           </h2>
           <p style={{ fontSize: "50px", fontWeight: "bold" }}>
-            {maskDollar(totalChecking !== null ? `$${totalChecking.toFixed(2)}` : "加载中...")}
+            {maskDollar(totalChecking !== null ? `$${Number(totalChecking).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "加载中...")}
           </p>
 
           {/* Adjustment Section */}
