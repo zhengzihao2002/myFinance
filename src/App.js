@@ -1144,9 +1144,10 @@ const HomePage = () => {
         hasCheckedDue = true;
 
         const data = await fetchScheduledPrepays();
+        if (!Array.isArray(data) || data.length === 0) return; // ✅ Prevents looping over null or empty
         const today = new Date().toISOString().split("T")[0];
         let updated = false;
-
+        
         for (const prepay of data) {
           if (prepay.date <= today) {
             // Step 1: Convert to real expense
@@ -2936,7 +2937,7 @@ const [scheduledPrepays, setScheduledPrepays] = useState([]);
         if (!response.ok) throw new Error("Failed to fetch");
 
         const data = await response.json();
-        setScheduledPrepays(data || []);
+        setScheduledPrepays(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("Error loading scheduled prepays:", err);
       }
