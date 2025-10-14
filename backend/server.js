@@ -413,7 +413,54 @@ app.post("/api/add-category", (req, res) => {
     });
   });
 });
+app.post("/api/change-category",(req,res)=>{
+  const {from,to} = req.body; 
 
+  if(!from||!to){
+    return res.status(500).send("Missing 'from' or 'to' category.")
+  }
+
+  fs.readFile(dataFilePath, "utf8", (err, data) => {
+    if (err) {
+      console.error("❌ Failed to read data.json:", err);
+      return res.status(500).send("Failed to read data file.");
+    }
+
+    let jsonData;
+    try {
+      jsonData = JSON.parse(data);
+    } catch (parseErr) {
+      console.error("❌ Invalid JSON in data.json:", parseErr);
+      return res.status(500).send("Invalid JSON format.");
+    }
+
+    // ✅ Make replacements
+    let changedCount = 0;
+
+    ["expenses", "income"].forEach((section) => {
+      if (Array.isArray(jsonData[section])) {
+        jsonData[section] = jsonData[section].map((item) => {
+          if (item.category === from) {
+            changedCount++;
+            return { ...item, category: to };
+          }
+          return item;
+        });
+      }
+    });
+
+    // ✅ Write updated file
+    fs.writeFile(dataFilePath, JSON.stringify(jsonData, null, 2), (writeErr) => {
+      if (writeErr) {
+        console.error("❌ Failed to write updated data.json:", writeErr);
+        return res.status(500).send("Failed to write file.");
+      }
+
+      console.log(`✅ Changed ${changedCount} transactions from '${from}' to '${to}'.`);
+      res.status(200).send(`Successfully changed ${changedCount} transactions from '${from}' to '${to}'.`);
+    });
+  });
+});
 app.post("/api/delete-categories", (req, res) => {
   const { categoriesToDelete } = req.body;
   if (!Array.isArray(categoriesToDelete) || categoriesToDelete.length === 0) {

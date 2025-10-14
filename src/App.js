@@ -139,7 +139,7 @@ const HomePage = () => {
 
   
 
-  const { data,addExpense } = useContext(DataContext); // Access global expense data from context
+  const { data,addExpense,reloadData } = useContext(DataContext); // Access global expense data from context
   const [isModalOpenCategory, setIsModalOpenCategory] = useState(false);
   const [modalContentCategory, setModalContentCategory] = useState("");
   const [isModalOpenOther, setIsModalOpenOther] = useState(false);
@@ -1929,7 +1929,7 @@ const HomePage = () => {
         <div className="front">
           <div style={{ marginBottom: "40px" }}>
             <h2 className="zcool-qingke-huangyou-regular" style={{ fontSize: "50px" }}>
-              记账本 v2.1.0
+              myFinance v2.1.0
             </h2>
           </div>
           <div className="button-group">
@@ -2304,6 +2304,8 @@ const HomePage = () => {
                         } else {
                           alert("添加失败，请重试！");
                         }
+                        //加载新类别
+                        loadCategoriesData();
                       }}
                       style={{
                         padding: "8px 16px",
@@ -2353,20 +2355,44 @@ const HomePage = () => {
 
                     if (selectedCategories.length === 0) {
                       alert("请选择要删除的类别！");
-                    } else {
-                      // Send to backend to delete
-                      const res = await fetch("http://localhost:5001/api/delete-categories", {
+                      return;
+                    }
+
+                    try {
+                      // 🔁 Step 1: Change all transactions in those categories to "Other"
+                      for (const cat of selectedCategories) {
+                        const res = await fetch("http://localhost:5001/api/change-category", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ from: cat, to: "Other" }),
+                        });
+                        if (!res.ok) {
+                          console.error(`Failed to change category '${cat}' to 'Other'`);
+                        }
+                      }
+
+                      // 🗑️ Step 2: Delete those categories from categories.json
+                      const deleteRes = await fetch("http://localhost:5001/api/delete-categories", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ categoriesToDelete: selectedCategories }),
                       });
-                      if (res.ok) {
-                        alert(`删除的类别: ${selectedCategories.join(", ")}`);
-                        // Optionally reload categories here
-                        loadCategoriesData();
+
+                      if (deleteRes.ok) {
+                        alert(`删除并已将交易改为 Other 的类别: ${selectedCategories.join(", ")}`);
                       } else {
-                        alert("删除失败，请重试！");
+                        alert("删除类别失败，请重试！");
                       }
+
+                      // 🔄 Step 3: Reload new category list
+                      loadCategoriesData();
+
+                      // Step 4: Reload data
+                      await reloadData(); // ✅ refresh transactions immediately
+
+                    } catch (err) {
+                      console.error("Error deleting categories:", err);
+                      alert("发生错误，请重试。");
                     }
                   }}
                   style={{
@@ -2380,6 +2406,7 @@ const HomePage = () => {
                 >
                   删除
                 </button>
+
                 </div>
               )}
             </div>
@@ -6227,13 +6254,28 @@ const App = () => {
     });
   };
 
-  const addPrepay = () =>{
+  // reload data
+  const reloadData = async () => {
+    try {
+      const response = await fetch("http://localhost:5001/api/get-data");
+      if (!response.ok) throw new Error("Failed to fetch data");
 
-  }
+      const jsonData = await response.json();
+      const sortedData = {  // Useless？ since when display, we also sort? we never rough display?
+        ...jsonData,
+        expenses: jsonData.expenses.sort((a, b) => new Date(a.date) - new Date(b.date)),
+        income: jsonData.income.sort((a, b) => new Date(a.date) - new Date(b.date)),
+      };
+      setData(sortedData);
+    } catch (err) {
+      console.error("Error reloading data:", err);
+    }
+  };
+
 
 
   return (
-    <DataContext.Provider value={{ data, addExpense, updateExpense, addIncome,updateIncome,deleteIncome,deleteExpense }}>
+    <DataContext.Provider value={{ data, addExpense, updateExpense, addIncome,updateIncome,deleteIncome,deleteExpense,reloadData }}>
       <Router>
         <Routes>
           <Route path="/" element={<HomePage />} />
