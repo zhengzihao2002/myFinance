@@ -515,7 +515,8 @@ const HomePage = () => {
   
   const handleAutoSelectTopLeft = (range) => {
     if (range === "按月显示") {
-      const currentMonth = new Date().toLocaleString("default", { month: "long" });
+      //const currentMonth = new Date().toLocaleString("default", { month: "long" });
+      const currentMonth = new Date().toLocaleString("zh-CN", { month: "long" });
       setSubOptionTopLeft(currentMonth);
     } else if (range === "按季度显示") {
       const currentQuarter = `Q${Math.ceil((new Date().getMonth() + 1) / 3)}`;
@@ -1372,10 +1373,10 @@ const HomePage = () => {
                     onChange={(e) => setSubOptionTopLeft(e.target.value)}
                     disabled={["前3个月", "前6个月", "前12个月"].includes(timeRangeTopLeft)}
                   >
-                    <option value="">请选择</option>
                     {timeRangeTopLeft === "按月显示" &&
                       [...Array(new Date().getMonth() + 1).keys()].map((month) => {
-                        const monthName = new Date(0, month).toLocaleString("default", { month: "long" });
+                        //const monthName = new Date(0, month).toLocaleString("default", { month: "long" }); // default language by system
+                        const monthName = new Date(0, month).toLocaleString("zh-CN", { month: "long" });
                         return (
                           <option key={month} value={monthName}>
                             {monthName}
