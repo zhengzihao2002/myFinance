@@ -1274,7 +1274,15 @@ const HomePage = () => {
     setTotalChecking(newTotal);
   };
 
+  const [checkedCategories, setCheckedCategories] = useState([]); // Track which are checked
 
+  const handleCheckboxChange = (category) => {
+    setCheckedCategories((prev) =>
+      prev.includes(category)
+        ? prev.filter((c) => c !== category) // uncheck if already checked
+        : [...prev, category] // check if not already checked
+    );
+  };
   
 
   return (
@@ -2334,6 +2342,8 @@ const HomePage = () => {
                         type="checkbox"
                         id={`delete-category-${index}`}
                         value={category}
+                        checked={checkedCategories.includes(category)} // ✅ controlled by state
+                        onChange={() => handleCheckboxChange(category)} // ✅ toggles state
                         style={{ transform: "scale(1.2)" }}
                       />
                       <label htmlFor={`delete-category-${index}`} style={{ fontSize: "16px" }}>
@@ -2385,9 +2395,12 @@ const HomePage = () => {
                       }
 
                       // 🔄 Step 3: Reload new category list
-                      loadCategoriesData();
+                      await loadCategoriesData();
 
-                      // Step 4: Reload data
+                      // ✅ Step 4: Clear checkboxes
+                      setCheckedCategories([]); // <-- this automatically unchecks all boxes
+
+                      // Step 5: Reload data
                       await reloadData(); // ✅ refresh transactions immediately
 
                     } catch (err) {
