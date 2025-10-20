@@ -1,0 +1,50 @@
+{
+  "expenses": [
+    {
+      "category": "NJSP Related",
+      "amount": "6.80",
+      "description": "Staples: Paper Lamination\n\n2 Sheets $2.49ea\nExpress Guarantee $1.49\nTax $0.33",
+      "date": "2025-02-13",
+      "id": "20250212_180833214"
+    },
+    {
+      "category": "NJSP Related",
+      "amount": "86.49",
+      "description": "American Uniform and Supply Academy Stuff 2",
+      "date": "2025-02-13",
+      "id": "20250212_180944578"
+    },
+    {
+      "category": "Gas",
+      "amount": "42.80",
+      "description": "Costco Edison: Premium @ 3.22/gal",
+      "date": "2025-02-23",
+      "id": "20250222_174414990"
+    },
+    {
+      "category": "Food",
+      "amount": "23.74",
+      "description": "Hoja Asian Fusion\nCumin Beef 17.99 孜然牛肉\nPassion Fruit Tea 5.75 百香果茶",
+      "date": "2025-02-23",
+      "id": "20250222_174437650"
+    }
+  ],
+  "income": [
+    {
+      "before_tax": "2375.59",
+      "after_tax": "1891.14",
+      "description": "Dec 20 Scudetto",
+      "tax_percentage": 20.392828728863147,
+      "date": "2024-12-20",
+      "id": "20241220_000000000"
+    },
+    {
+      "before_tax": "1970.22",
+      "after_tax": "1585.16",
+      "description": "Jan 3 Scedetto",
+      "tax_percentage": 19.54401031356904,
+      "date": "2025-01-03",
+      "id": "20250103_000000000"
+    }
+  ]
+}
