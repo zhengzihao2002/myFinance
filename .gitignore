@@ -1,7 +1,5 @@
-userData/
+# Other standard ignores
 node_modules/
 dist/
 .env
-.DS_Store
-
 .DS_Store
