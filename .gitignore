@@ -1,3 +1,5 @@
+userData/backup/*
+
 # Other standard ignores
 node_modules/
 dist/
