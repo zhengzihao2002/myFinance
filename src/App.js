@@ -405,12 +405,59 @@ const HomePage = () => {
     filtered = data.expenses;
   
     if (timeRange == "按月显示" && subOption) {
-      filtered = filtered.filter(
-        (exp) =>{
-          return exp.date.substring(0,4) == currentYear &&
-          new Date(exp.date).toLocaleString("default", { month: "long" }) == subOption
-        }
-      );
+      // Normalize subOption to a month index (0-11) so we don't rely on localized month name comparisons
+      let selectedMonthIndex = null;
+
+      // If subOption is numeric (either 0-11 or 1-12), handle both cases
+      if (/^\d+$/.test(subOption)) {
+        const n = Number(subOption);
+        if (n >= 1 && n <= 12) selectedMonthIndex = n - 1; // 1-12 -> 0-11
+        else if (n >= 0 && n <= 11) selectedMonthIndex = n; // already 0-11
+      } else {
+        // Support Chinese month names and English month names
+        const chinese = {
+          一月: 0,
+          二月: 1,
+          三月: 2,
+          四月: 3,
+          五月: 4,
+          六月: 5,
+          七月: 6,
+          八月: 7,
+          九月: 8,
+          十月: 9,
+          十一月: 10,
+          十二月: 11,
+        };
+        const english = {
+          January: 0,
+          February: 1,
+          March: 2,
+          April: 3,
+          May: 4,
+          June: 5,
+          July: 6,
+          August: 7,
+          September: 8,
+          October: 9,
+          November: 10,
+          December: 11,
+        };
+
+        selectedMonthIndex = chinese[subOption] ?? english[subOption] ?? null;
+      }
+
+      if (selectedMonthIndex === null) {
+        // If we couldn't parse the month, return no results for clarity
+        filtered = [];
+      } else {
+        filtered = filtered.filter((exp) => {
+          return (
+            exp.date.substring(0, 4) == currentYear &&
+            new Date(exp.date).getMonth() === selectedMonthIndex
+          );
+        });
+      }
     } else if (timeRange == "按季度显示" && subOption) {
       const quarterMonths = {
         Q1: [0, 1, 2],

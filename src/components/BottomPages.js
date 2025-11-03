@@ -61,7 +61,8 @@ export function ExpenseSlide({
             <option value="">请选择</option>
             {timeRange === "按月显示" &&
               [...Array(new Date().getMonth() + 1).keys()].map((month) => {
-                const monthName = new Date(0, month).toLocaleString("default", { month: "long" });
+                // const monthName = new Date(0, month).toLocaleString("default", { month: "long" });
+                const monthName = new Date(0, month).toLocaleString("zh-CN", { month: "long" });
                 return (
                   <option key={month} value={monthName}>
                     {monthName}
