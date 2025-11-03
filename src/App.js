@@ -1,5 +1,6 @@
-import React, { useState ,useEffect,createContext,useContext,useRef} from "react"; // Import useState
+import React, { useState ,useEffect,createContext,useContext,useRef,useMemo} from "react"; // Import useState
 import { Chart } from "react-google-charts";
+import BottomPages, { ExpenseSlide, IncomeSlide } from "./components/BottomPages";
 import { v4 as uuidv4 } from "uuid"; // Import UUID library
 import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from "react-router-dom";
 import { Settings, LogOut } from "lucide-react"; // nice modern icons
@@ -247,7 +248,55 @@ const HomePage = () => {
   const [chartData, setChartData] = useState([["Expenses", "Dollars"]]);
   const [chartTitle, setChartTitle] = useState("支出概览 - 全部显示");
   const [chartError, setChartError] = useState(false);
-  //reset error when chartData or options change
+  // bottom box page: 0 = 支出概览, 1 = 收入概览
+  const [bottomPage, setBottomPage] = useState(0);
+
+  // compute last 12 months (excluding current month) for income series
+  const incomeSeriesData = useMemo(() => {
+    const labels = [];
+    const values = [];
+    const now = new Date();
+    for (let i = 12; i >= 1; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      labels.push(d.toLocaleString(undefined, { month: "short" }));
+  const total = Number(getMonthlyTotal(data.income, d.getMonth() + 1, d.getFullYear())) || 0;
+      values.push(total);
+    }
+    return { labels, values };
+  }, [data.income]);
+
+  // keyboard navigation & touch swipe for bottom pages
+  const touchStartX = useRef(null);
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "ArrowLeft") setBottomPage((p) => Math.max(0, p - 1));
+      if (e.key === "ArrowRight") setBottomPage((p) => Math.min(1, p + 1));
+    };
+    const onTouchStart = (e) => {
+      touchStartX.current = e.touches && e.touches[0] ? e.touches[0].clientX : null;
+    };
+    const onTouchEnd = (e) => {
+      if (touchStartX.current === null) return;
+      const endX = e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientX : null;
+      if (endX === null) return;
+      const dx = endX - touchStartX.current;
+      if (dx > 50) setBottomPage(0); // swipe right -> previous
+      if (dx < -50) setBottomPage(1); // swipe left -> next
+      touchStartX.current = null;
+    };
+
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchend", onTouchEnd);
+    };
+  }, []);
+  
+  
+
   const currentYear = new Date().getFullYear(); // Get the current year
   let options = {
     // title: timeRange,
@@ -1745,184 +1794,80 @@ const HomePage = () => {
 
           {/* <div className="right-box">Compare last month to the month before that of income and expense,of each up or down by how many percent and showing the total in dollars. OR which category has gone up highest in percent, if not all has gone down</div> */}
         </div>
-        <div className="bottom-box" style={{ display: "flex", flexDirection: "column", height: "100%",position:"relative" }}>
-          {/* Title Section */}
+        <div className="bottom-box" style={{ display: "flex", flexDirection: "column", height: "100%", position: "relative" }}>
+          {/* Title Section (changes with page) */}
           <div
             className="title-section panel_title"
             style={{
-              // flex: "0 0 15%", // Takes 15% of height
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
               marginBottom: "10px",
-              // backgroundColor:"lightskyblue", // for testing purposes
-              position:"absolute",
-              top:"30px",
+              position: "absolute",
+              top: "30px",
             }}
           >
-            支出概览 ({["按月显示", "按季度显示", "按年显示"].includes(timeRange) ? subOption || "未选择" : timeRange})
+            {bottomPage === 0 ? (
+              `支出概览 (${["按月显示", "按季度显示", "按年显示"].includes(timeRange) ? subOption || "未选择" : timeRange})`
+            ) : (
+              "收入概览"
+            )}
           </div>
 
-          {/* Content Section */}
+          {/* Content Section (switch pages without 3D flip) */}
           <div
             className="content-section"
             style={{
-              //flex: "0 0 75%", // Takes 75% of height
-              height: "100%", // Ensures it fills the remaining space
+              height: "100%",
               display: "flex",
-              // gap: "20px",
               padding: "20px",
-              width:"100%",
-              marginTop:"50px",
-              // overflow:"hidden",
-              // position:"absolute",
-              // top:"10px",
-              // backgroundColor: "lightgreen", // Make background transparent
+              width: "100%",
+              marginTop: "50px",
+              position: "relative",
             }}
           >
-            {/* Left Side: Filters and Button */}
-            <div
-              className="filter-controls"
-              style={{
-                flex: "0 0 20%", // Takes 20% of width
-                display: "flex",
-                flexDirection: "column",
-                gap: "15px",
-                justifyContent: "flex-start", // Aligns items at the top
-                justifyContent: "center",
-                alignItems: "flex-start", // Left-aligned horizontally
-                overflow: "hidden", // Prevents overflow
-                position: "relative",
-              }}
-            >
-              {/* 时间段 Combo Box */}
-              <label className="panel_font_size" style={{ width: "100%" }}>
-                时间段:
-                <select
-                  className="panel_selector_size"
-                  value={timeRange}
-                  onChange={(e) => {
-                    const newValue = e.target.value;
-                    setTimeRange(newValue);
-                    setSubOption(""); // Reset sub-option when time range changes
-                    handleAutoSelectBottom(newValue); // Automatically select the current option
-                  }}
-                >
-                  <option value="全部显示">全部显示</option>
-                  <option value="按月显示">按月显示</option>
-                  <option value="按季度显示">按季度显示</option>
-                  <option value="按年显示">按年显示</option>
-                  <option value="前3个月">前3个月</option>
-                  <option value="前6个月">前6个月</option>
-                </select>
-              </label>
-
-              {/* 子选项 Combo Box */}
-              <label className="panel_font_size" style={{ width: "100%" }}>
-                子选项:
-                <select
-                  className="panel_selector_size"
-                  value={subOption}
-                  onChange={(e) => {
-                    setSubOption(e.target.value);
-                  }}
-                  disabled={["前3个月", "前6个月", "全部显示"].includes(timeRange)}
-                >
-                  <option value="">请选择</option>
-                  {timeRange === "按月显示" &&
-                  [...Array(new Date().getMonth() + 1).keys()].map((month) => {
-                    const monthName = new Date(0, month).toLocaleString("default", { month: "long" });
-                    return (
-                      <option key={month} value={monthName}>
-                        {monthName}
-                      </option>
-                    );
-                  })}
-                {timeRange === "按季度显示" &&
-                  (() => {
-                    const currentQuarter = Math.floor(new Date().getMonth() / 3) + 1;
-                    return Array.from({ length: currentQuarter }, (_, i) => `Q${i + 1}`).map((quarter) => (
-                      <option key={quarter} value={quarter}>
-                        {quarter}
-                      </option>
-                    ));
-                  })()
-                }
-                  {timeRange === "按年显示" &&
-                    availableYears.map((year) => (
-                      <option key={year} value={year}>
-                        {year}
-                      </option>
-                    ))}
-                </select>
-              </label>
-
-              {/* 筛选 Button */}
-              {/* <button
-                onClick={filterExpenses}
-                style={{
-                  backgroundColor: "#4CAF50",
-                  color: "white",
-                  padding: "10px 20px",
-                  fontSize: "13px",
-                  fontWeight: "bold",
-                  border: "none",
-                  borderRadius: "5px",
-                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                  cursor: "pointer",
-                  transition: "background-color 0.3s ease, transform 0.2s ease",
-                  width: "100%",
-                }}
-                onMouseOver={(e) => {
-                  e.target.style.backgroundColor = "#45A049";
-                  e.target.style.transform = "scale(1.05)";
-                }}
-                onMouseOut={(e) => {
-                  e.target.style.backgroundColor = "#4CAF50";
-                  e.target.style.transform = "scale(1)";
-                }}
-              >
-                筛选
-              </button> */}
-            </div>
-
-            {/* Right Side: Pie Chart */}
-            <div
-              className="chart-container"
-              style={{
-                flex: "0 0 80%", // Takes 70% of width
-                flex: "1", // Let this take up the remaining space
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                // position:"absolute",
-                // right:"10px",
-                // top:"-70px",
-                backgroundColor:"transparent",
-                overflow:"visible",
-              }}
-            >
-              {(!navigator.onLine || chartError) ? (
-                <div>
-                  NO INTERNET<br />CHART NOT AVAILABLE
-                </div>
-              ) : (
-                <Chart
-                  chartType="PieChart"
-                  data={chartData}
+            {bottomPage === 0 ? (
+              <div style={{ height: "100%", display: "flex", width: "100%" }}>
+                <ExpenseSlide
+                  timeRange={timeRange}
+                  subOption={subOption}
+                  setTimeRange={setTimeRange}
+                  setSubOption={setSubOption}
+                  handleAutoSelectBottom={handleAutoSelectBottom}
+                  availableYears={availableYears}
+                  chartData={chartData}
                   options={options}
-                  width={"700px"}
-                  height={"350px"}
-                  chartEvents={[
-                    {
-                      eventName: "error",
-                      callback: () => setChartError(true),
-                    },
-                  ]}
-                  onError={() => setChartError(true)}
+                  chartError={chartError}
+                  setChartError={setChartError}
                 />
-              )}
-            </div>
+              </div>
+            ) : (
+              <div style={{ height: "100%", display: "flex", width: "100%", alignItems: "center", justifyContent: "center" }}>
+                <IncomeSlide seriesData={incomeSeriesData} height={350} />
+              </div>
+            )}
+
+            {/* Page navigation arrows removed from here to avoid layout reflow */}
+          </div>
+          
+          {/* Page navigation arrows (bottom-right) — positioned relative to bottom-box to avoid reflows */}
+          <div style={{ position: "absolute", right: "12px", bottom: "12px", display: "flex", gap: "8px" }}>
+            <button
+              aria-label="上一页"
+              onClick={() => setBottomPage((p) => Math.max(0, p - 1))}
+              disabled={bottomPage === 0}
+              style={{ padding: "6px 10px", borderRadius: "6px", cursor: bottomPage === 0 ? "not-allowed" : "pointer", minWidth: 40 }}
+            >
+              ◀
+            </button>
+            <button
+              aria-label="下一页"
+              onClick={() => setBottomPage((p) => Math.min(1, p + 1))}
+              disabled={bottomPage === 1}
+              style={{ padding: "6px 10px", borderRadius: "6px", cursor: bottomPage === 1 ? "not-allowed" : "pointer", minWidth: 40 }}
+            >
+              ▶
+            </button>
           </div>
         </div>
 
