@@ -258,8 +258,8 @@ const HomePage = () => {
     const now = new Date();
     for (let i = 12; i >= 1; i--) {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      labels.push(d.toLocaleString(undefined, { month: "short" }));
-  const total = Number(getMonthlyTotal(data.income, d.getMonth() + 1, d.getFullYear())) || 0;
+      labels.push(d.toLocaleString("zh-CN", { month: "short" }));
+      const total = Number(getMonthlyTotal(data.income, d.getMonth() + 1, d.getFullYear())) || 0;
       values.push(total);
     }
     return { labels, values };
@@ -1091,87 +1091,7 @@ const HomePage = () => {
     }
   };
 
-  // Drag Handlers (Only for drag Mode)
-  // const handleMouseDown = (e) => {
-  //   // Click motion downwards  
-  //   if (animationType !== "drag") return; // Only allow dragging in drag mode
-  //   setDragStartY(e.clientY);
-  //   dragDistance.current = 0;
-  // };
 
-  // const handleMouseMove = (e) => {
-  //   if (dragStartY !== null) {
-  //     let distance = e.clientY - dragStartY; // Calculate vertical drag
-  //     console.log(distance);
-      
-  //     dragDistance.current = distance;
-  //     panelRef.current.style.transform = `translateY(${distance}px)`; // Move panel in real time
-  //   }
-  // };
-
-  // const handleMouseUp = () => {
-  //   if (animationType === "drag") {
-  //     console.log(`Dragged ${dragDistance.current}px vertically`);
-  
-  //     if (Math.abs(dragDistance.current) > 250) {
-  //       if (panelRef.current) {
-  //         panelRef.current.style.transition = "transform 0.8s ease-out";
-  
-  //         if (dragDistance.current < 0) {
-  //           // 🔹 Dragged UP → Move to bottom panel
-  //           panelRef.current.style.transform = `translateY(-100%)`; 
-            
-  //           setTimeout(() => {
-  //             //setIsFlipped(true); // 🔥 Switch panel state only after transition
-  //             // panelRef.current.style.transition = ""; // Remove transition
-  //             // panelRef.current.style.transform = "translateY(0)"; // Reset for next transition
-  //           }, 801);
-  //         } else {
-  //           // 🔹 Dragged DOWN → Move to top panel
-  //           panelRef.current.style.transform = `translateY(100%)`;
-  
-  //           setTimeout(() => {
-  //             setIsFlipped(false);
-  //             panelRef.current.style.transition = "";
-  //             panelRef.current.style.transform = "translateY(0)";
-  //           }, 800);
-  //         }
-  //       }
-  //     } else {
-  //       // 🔹 If drag was too small, smoothly return to original position
-  //       if (panelRef.current) {
-  //         console.log("Revert to original");
-          
-  //         panelRef.current.style.transition = "transform 0.8s ease-out";
-  //         panelRef.current.style.transform = "translateY(0)";
-  //       }
-  //     }
-  
-  //     dragDistance.current = 0;
-  //   }
-  
-  //   setDragStartY(null);
-  // };
-  
-  
-  
-  
-  
-  
-
-  // Attach event listeners for dragging
-  // useEffect(() => {
-  //   if (animationType === "drag") {
-  //     window.addEventListener("mousedown", handleMouseDown);
-  //     window.addEventListener("mousemove", handleMouseMove);
-  //     window.addEventListener("mouseup", handleMouseUp);
-  //   }
-  //   return () => {
-  //     window.removeEventListener("mousedown", handleMouseDown);
-  //     window.removeEventListener("mousemove", handleMouseMove);
-  //     window.removeEventListener("mouseup", handleMouseUp);
-  //   };
-  // }, [animationType, dragStartY]);
 
 
   const maskDollar = (str) => {
@@ -4390,8 +4310,84 @@ const ShowExpensePage = () => {
       });
       console.log("FINAL:", finalExpenses);
 
+      // Build a human-friendly prefix based on the active time filter so the
+      // grand-total row shows context (e.g. "11月 总共消费", "2025 总共消费",
+      // "Q4 总共消费", "前3个月 总共消费").
+      const buildContextPrefix = () => {
+        if (!filterOption || filterOption === "显示全部") return "";
+
+        // Monthly: try to derive a numeric month (1-12) when possible, otherwise
+        // fall back to the raw label (which may already be localized like "十一月").
+        if (filterOption === "按月显示") {
+          const monthNamesCN = {
+            一月: 0,
+            二月: 1,
+            三月: 2,
+            四月: 3,
+            五月: 4,
+            六月: 5,
+            七月: 6,
+            八月: 7,
+            九月: 8,
+            十月: 9,
+            十一月: 10,
+            十二月: 11,
+          };
+          const monthsEn = [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+          ];
+
+          let mIndex = null;
+          if (typeof subOption === "string") {
+            const maybeNum = parseInt(subOption, 10);
+            if (!Number.isNaN(maybeNum)) {
+              // numeric string like "11" or "2025-11" -> take first number
+              mIndex = maybeNum - 1;
+            } else if (monthNamesCN.hasOwnProperty(subOption)) {
+              mIndex = monthNamesCN[subOption];
+            } else {
+              const enIndex = monthsEn.indexOf(subOption);
+              if (enIndex !== -1) mIndex = enIndex;
+            }
+          }
+
+          if (mIndex !== null && mIndex !== undefined && mIndex >= 0 && mIndex <= 11) {
+            return `${mIndex + 1}月`;
+          }
+
+          // fallback to raw label
+          return subOption || "";
+        }
+
+        // Quarter, Year, or rolling windows: show the subOption or the filterOption
+        if (filterOption === "按季度显示") return subOption || ""; // e.g. Q4
+        if (filterOption === "按年份显示") return subOption || ""; // e.g. 2025
+        if (
+          filterOption === "前3个月" ||
+          filterOption === "前6个月" ||
+          filterOption === "前12个月"
+        )
+          return filterOption;
+
+        return "";
+      };
+
+      const prefix = buildContextPrefix();
+      const prefixWithSpace = prefix ? `${prefix} ` : "";
+
       const totalExpensesRow = {
-        category: `总共消费: $${totalExpenses.toFixed(2)}`,
+         category: `${prefixWithSpace}总共消费: $${totalExpenses.toFixed(2)}`,
         amount: "",
         date: "",
         description: "",
@@ -4982,7 +4978,7 @@ const ShowExpensePage = () => {
                   ),
                   color: (
                     expense.category && // Ensure category is defined
-                    (expense.category.startsWith("总共消费") || expense.category.startsWith("Total Expenses"))
+                    (expense.category.includes("总共消费") || expense.category.includes("Total Expenses"))
                   ) ? "red" : ""
                 }}
               >
@@ -5598,7 +5594,8 @@ const ShowIncomePage = () => {
                       // Update `subOption` etc with a default based on the new `filterOption`
                       // no need to update sortType since if unclicked default ascending, exactly which default radio is, once click desc, state updates.
                       if (newFilterOption == "按月显示") {
-                        const currentMonth = new Date().toLocaleString("default", { month: "long" });
+                        // Use zh-CN so the generated month name matches the Chinese option values
+                        const currentMonth = new Date().toLocaleString("zh-CN", { month: "long" });
                         setSubOption(currentMonth); // Default to current month
                         setShowType("Category sum")
                       } else if (newFilterOption == "按季度显示") {
