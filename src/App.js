@@ -1769,9 +1769,13 @@ const HomePage = () => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              marginBottom: "10px",
-              position: "absolute",
-              top: "30px",
+              boxSizing: "border-box",
+              width: "100%",
+              minHeight: "50px",
+              maxHeight: "120px",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
             }}
           >
             {bottomPage === 0 ? (
@@ -1785,16 +1789,15 @@ const HomePage = () => {
           <div
             className="content-section"
             style={{
-              height: "100%",
+              flex: 1,
               display: "flex",
-              padding: "20px",
               width: "100%",
-              marginTop: "50px",
               position: "relative",
+              overflow: "hidden",
+              minHeight: 0,
             }}
           >
             {bottomPage === 0 ? (
-              <div style={{ height: "100%", display: "flex", width: "100%" }}>
                 <ExpenseSlide
                   timeRange={timeRange}
                   subOption={subOption}
@@ -1807,11 +1810,8 @@ const HomePage = () => {
                   chartError={chartError}
                   setChartError={setChartError}
                 />
-              </div>
             ) : (
-              <div style={{ height: "100%", display: "flex", width: "100%", alignItems: "center", justifyContent: "center" }}>
-                <IncomeSlide seriesData={incomeSeriesData} height={350} />
-              </div>
+                <IncomeSlide rawIncome={data.income} height={350} />
             )}
 
             {/* Page navigation arrows removed from here to avoid layout reflow */}
@@ -1849,7 +1849,7 @@ const HomePage = () => {
         <div className="front">
           <div style={{ marginBottom: "40px" }}>
             <h2 className="zcool-qingke-huangyou-regular" style={{ fontSize: "50px" }}>
-              myFinance v2.1.0
+              myFinance v2.2.0
             </h2>
           </div>
           <div className="button-group">
@@ -3706,23 +3706,7 @@ const [scheduledPrepays, setScheduledPrepays] = useState([]);
   );
 };
 
-// const BudgetPage = () => {
-//   /* shows budget  */
 
-//   return (
-//     <div class="body">
-//       <div className="expense-page page_bigger">
-//         <h1 className="h-nobold" style={{ fontSize: "60px" }}>财务规划</h1>
-//         Under construction, please check back later.
-//         <div className="button-group">
-//           <Link to="/">
-//             <button className="action-btn1">退出</button>
-//           </Link>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
 const BudgetPage = () => {
   return (
     <div className="budget-page">
@@ -4667,19 +4651,19 @@ const ShowExpensePage = () => {
                       // Update `subOption` etc with a default based on the new `filterOption`
                       // no need to update sortType since if unclicked default ascending, exactly which default radio is, once click desc, state updates.
                       if (newFilterOption == "按月显示") {
-                        const currentMonth = new Date().toLocaleString("default", { month: "long" });
+                        const currentMonth = new Date().toLocaleString("zh-CN", { month: "long" });
                         
                         setSubOption(currentMonth); // Default to "一月" for months, backend ONLY
-                        setShowType("Category sum")
+                        setShowType("List all Category Expenses")
                       } else if (newFilterOption == "按季度显示") {
                         setSubOption("Q1"); // Default to "Q1" for quarters
-                        setShowType("Category sum")
+                        setShowType("List all Category Expenses")
                       } else if (newFilterOption == "按年份显示") {
                         setSubOption(years[0]?.toString() || ""); // Default to the first year or empty
-                        setShowType("Category sum")
+                        setShowType("List all Category Expenses")
                       }else if(newFilterOption == "前3个月" ||newFilterOption == "前12个月"||newFilterOption == "前6个月" ){
                         setSubOption("");
-                        setShowType("Category sum")
+                        setShowType("List all Category Expenses")
                       } else {
                         setSubOption(""); // Clear `subOption` for other cases
                         setShowType("")
@@ -4789,8 +4773,8 @@ const ShowExpensePage = () => {
                   >
                     {filterOption !="显示全部" && (
                       <>
-                      <option value="Category sum">类别总和</option>
                       <option value="List all Category Expenses">列出所有类别支出</option>
+                      <option value="Category sum">类别总和</option>
                       <option value="List all Expenses by Date">按日期列出所有支出</option>
                       </>
                     )}
