@@ -146,7 +146,7 @@ export function ExpenseSlide({
 }
 
 // IncomeSlide: simple line chart using react-google-charts to avoid extra deps
-export function IncomeSlide({ seriesData, rawIncome = null, height = null, onViewModeChange = null }) {
+export function IncomeSlide({ seriesData, rawIncome = null,rawExpenses = null, height = null, onViewModeChange = null }) {
   
   // Local view mode: either 按月显示 or 按年显示
   const [viewMode, setViewMode] = useState('按月显示');
@@ -174,6 +174,50 @@ export function IncomeSlide({ seriesData, rawIncome = null, height = null, onVie
   };
 
   const baseSeries = rawIncome && Array.isArray(rawIncome) ? buildBaseSeriesFromRaw(rawIncome) : seriesData;
+
+
+
+  // Build expense data (monthly or yearly)
+  const buildExpenseSeries = (expenses) => {
+    if (!Array.isArray(expenses)) return { labels: [], values: [] };
+
+    const now = new Date();
+    if (viewMode === "按月显示") {
+      const labels = [];
+      const values = [];
+      for (let i = 12; i >= 1; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const label = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+        labels.push(label);
+
+        const total = expenses.reduce((sum, rec) => {
+          if (!rec?.date) return sum;
+          const [y, m] = rec.date.split("-").map(Number);
+          if (y === d.getFullYear() && m === d.getMonth() + 1) {
+            return sum + (Number(rec.amount ?? 0) || 0);
+          }
+          return sum;
+        }, 0);
+        values.push(total);
+      }
+      return { labels, values };
+    } else if (viewMode === "按年显示") {
+      const yearlyTotals = {};
+      expenses.forEach((rec) => {
+        if (!rec?.date) return;
+        const [y] = rec.date.split("-").map(Number);
+        if (!isNaN(y)) yearlyTotals[y] = (yearlyTotals[y] || 0) + (Number(rec.amount ?? 0) || 0);
+      });
+      const years = Object.keys(yearlyTotals).sort((a, b) => a - b);
+      return { labels: years, values: years.map((y) => yearlyTotals[y]) };
+    }
+    return { labels: [], values: [] };
+  };
+
+  const expenseSeries = buildExpenseSeries(rawExpenses || []);
+
+
+
 
   // Transform data based on view mode
   const transformData = (rawData, mode) => {
@@ -266,14 +310,28 @@ export function IncomeSlide({ seriesData, rawIncome = null, height = null, onVie
   //   ["Month", "收入"],
   //   ...displayData.labels.map((label, idx) => [label, displayData.values[idx] || 0]),
   // ];
+  // const data = [
+  // ["Month", "收入", "平均增长趋势"],
+  //   ...displayData.labels.map((label, idx) => [
+  //     label,
+  //     displayData.values[idx] || 0,
+  //     smoothedValues[idx] || null,
+  //   ]),
+  // ];
   const data = [
-  ["Month", "收入", "平均增长趋势"],
-    ...displayData.labels.map((label, idx) => [
+  ["Month", "收入", "平均增长趋势", "支出"],
+  ...displayData.labels.map((label, idx) => {
+    const expenseIndex = expenseSeries.labels.indexOf(label);
+    const expenseValue = expenseIndex >= 0 ? expenseSeries.values[expenseIndex] : null;
+    return [
       label,
-      displayData.values[idx] || 0,
-      smoothedValues[idx] || null,
-    ]),
-  ];
+      displayData.values[idx] || 0,     // income
+      smoothedValues[idx] || null,      // moving avg
+      expenseValue || 0,                // expenses
+    ];
+  }),
+];
+
 
   // Container ref for measuring available space so chart can size to the section
   const containerRef = useRef(null);
@@ -307,32 +365,61 @@ export function IncomeSlide({ seriesData, rawIncome = null, height = null, onVie
 
   const trendColor = getTrendColor(displayData.values || []);
 
-  // const options = {
-  //   legend: 'none',
-  //   backgroundColor: 'transparent',
-  //   hAxis: { 
-  //     title: viewMode === '按年显示' ? '年份' : 'Month',
-  //     slantedText: false,
-  //   },
-  //   vAxis: { title: '收入' },
-  //   colors: [trendColor],
-  //   pointSize: 4,
-  //   chartArea: { left: 60, right: 20, top: 20, bottom: 40 },
-  // };
-  const options = {
-    legend: { position: 'bottom' },
-    backgroundColor: 'transparent',
-    hAxis: { title: viewMode === '按年显示' ? '年份' : 'Month', slantedText: false },
-    vAxis: { title: '收入' },
-    colors: [trendColor, '#8888ff'], // first line dynamic, second line soft blue
-    pointSize: 3,
-    lineWidth: 2,
-    chartArea: { left: 60, right: 20, top: 20, bottom: 40 },
-    series: {
-      0: { targetAxisIndex: 0 },
-      1: { curveType: 'function', lineWidth: 3, color: '#8888ff' }, // smoother look
-    },
-  };
+// const options = {
+//   legend: {
+//     position: 'bottom', // ✅ show legend below chart
+//     textStyle: { fontSize: 12 },
+//   },
+//   backgroundColor: 'transparent',
+//   hAxis: {
+//     title: viewMode === '按年显示' ? '年份' : '月份',
+//     slantedText: false,
+//     textStyle: { fontSize: 16 }, 
+//   },
+//   vAxis: {
+//     title: '收入',
+//     showTextEvery: 1,
+//     textStyle: { fontSize: 16 }, 
+//     titleTextStyle: { fontSize: 12 },
+//     textPosition: 'out', // ✅ ensures y-axis labels always drawn
+//   },
+//   colors: [trendColor, '#88bfff'],
+//   pointSize: 4,
+//   chartArea: {
+//     left: 90,   // ✅ give room for y-axis numbers
+//     right: 20,
+//     top: 20,
+//     bottom: 60, // ✅ extra space for legend
+//   },
+// };
+
+const options = {
+  legend: {
+    position: 'bottom',
+    textStyle: { fontSize: 12 },
+  },
+  backgroundColor: 'transparent',
+  hAxis: {
+    title: viewMode === '按年显示' ? '年份' : '月份',
+    slantedText: false,
+    textStyle: { fontSize: 14 },
+  },
+  vAxis: {
+    title: '金额',
+    showTextEvery: 1,
+    textStyle: { fontSize: 14 },
+    titleTextStyle: { fontSize: 12 },
+    textPosition: 'out',
+  },
+  colors: [trendColor, '#88bfff', '#ff4444'], // ✅ income, avg, expense
+  pointSize: 4,
+  chartArea: { left: 90, right: 20, top: 20, bottom: 60 },
+};
+
+
+
+
+
 
 
   const handleViewChange = (e) => {

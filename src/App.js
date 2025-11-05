@@ -1811,7 +1811,12 @@ const HomePage = () => {
                   setChartError={setChartError}
                 />
             ) : (
-                <IncomeSlide rawIncome={data.income} height={350} />
+                <IncomeSlide 
+                  rawIncome={data.income} 
+                  rawExpenses={data.expenses}  
+                  height={350} 
+                />
+
             )}
 
             {/* Page navigation arrows removed from here to avoid layout reflow */}
