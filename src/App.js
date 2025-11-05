@@ -1,6 +1,6 @@
 import React, { useState ,useEffect,createContext,useContext,useRef,useMemo} from "react"; // Import useState
 import { Chart } from "react-google-charts";
-import BottomPages, { ExpenseSlide, IncomeSlide } from "./components/BottomPages";
+import BottomPages, { ExpenseSlide, IncomeSlide,IncomeExpenseCompare } from "./components/BottomPages";
 import { v4 as uuidv4 } from "uuid"; // Import UUID library
 import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from "react-router-dom";
 import { Settings, LogOut } from "lucide-react"; // nice modern icons
@@ -1778,11 +1778,14 @@ const HomePage = () => {
               whiteSpace: "nowrap",
             }}
           >
-            {bottomPage === 0 ? (
-              `支出概览 (${["按月显示", "按季度显示", "按年显示"].includes(timeRange) ? subOption || "未选择" : timeRange})`
-            ) : (
-              "收入概览"
-            )}
+            {bottomPage === 0
+              ? `支出概览 (${["按月显示", "按季度显示", "按年显示"].includes(timeRange)
+                  ? subOption || "未选择"
+                  : timeRange
+                })`
+              : bottomPage === 1
+              ? "收入概览"
+              : "收支对比"}
           </div>
 
           {/* Content Section (switch pages without 3D flip) */}
@@ -1798,45 +1801,62 @@ const HomePage = () => {
             }}
           >
             {bottomPage === 0 ? (
-                <ExpenseSlide
-                  timeRange={timeRange}
-                  subOption={subOption}
-                  setTimeRange={setTimeRange}
-                  setSubOption={setSubOption}
-                  handleAutoSelectBottom={handleAutoSelectBottom}
-                  availableYears={availableYears}
-                  chartData={chartData}
-                  options={options}
-                  chartError={chartError}
-                  setChartError={setChartError}
-                />
+              <ExpenseSlide
+                timeRange={timeRange}
+                subOption={subOption}
+                setTimeRange={setTimeRange}
+                setSubOption={setSubOption}
+                handleAutoSelectBottom={handleAutoSelectBottom}
+                availableYears={availableYears}
+                chartData={chartData}
+                options={options}
+                chartError={chartError}
+                setChartError={setChartError}
+              />
+            ) : bottomPage === 1 ? (
+              <IncomeSlide rawIncome={data.income} height={350} />
             ) : (
-                <IncomeSlide 
-                  rawIncome={data.income} 
-                  rawExpenses={data.expenses}  
-                  height={350} 
-                />
-
+              <IncomeExpenseCompare
+                rawIncome={data.income}
+                rawExpenses={data.expenses}
+                height={350}
+              />
             )}
-
-            {/* Page navigation arrows removed from here to avoid layout reflow */}
           </div>
           
-          {/* Page navigation arrows (bottom-right) — positioned relative to bottom-box to avoid reflows */}
-          <div style={{ position: "absolute", right: "12px", bottom: "12px", display: "flex", gap: "8px" }}>
+          {/* Page Navigation */}
+          <div
+            style={{
+              position: "absolute",
+              right: "12px",
+              bottom: "12px",
+              display: "flex",
+              gap: "8px",
+            }}
+          >
             <button
               aria-label="上一页"
               onClick={() => setBottomPage((p) => Math.max(0, p - 1))}
               disabled={bottomPage === 0}
-              style={{ padding: "6px 10px", borderRadius: "6px", cursor: bottomPage === 0 ? "not-allowed" : "pointer", minWidth: 40 }}
+              style={{
+                padding: "6px 10px",
+                borderRadius: "6px",
+                cursor: bottomPage === 0 ? "not-allowed" : "pointer",
+                minWidth: 40,
+              }}
             >
               ◀
             </button>
             <button
               aria-label="下一页"
-              onClick={() => setBottomPage((p) => Math.min(1, p + 1))}
-              disabled={bottomPage === 1}
-              style={{ padding: "6px 10px", borderRadius: "6px", cursor: bottomPage === 1 ? "not-allowed" : "pointer", minWidth: 40 }}
+              onClick={() => setBottomPage((p) => Math.min(2, p + 1))} // ✅ changed max to 2
+              disabled={bottomPage === 2}
+              style={{
+                padding: "6px 10px",
+                borderRadius: "6px",
+                cursor: bottomPage === 2 ? "not-allowed" : "pointer",
+                minWidth: 40,
+              }}
             >
               ▶
             </button>
