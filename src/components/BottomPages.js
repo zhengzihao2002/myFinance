@@ -250,9 +250,29 @@ export function IncomeSlide({ seriesData, rawIncome = null, height = null, onVie
   const displayData = transformData(baseSeries || { labels: [], values: [] }, viewMode);
   
   // Build chart data rows
+  // Compute simple moving average for smoothing
+  const computeMovingAverage = (values, windowSize = 3) => {
+    const result = [];
+    for (let i = 0; i < values.length; i++) {
+      const start = Math.max(0, i - windowSize + 1);
+      const subset = values.slice(start, i + 1);
+      const avg = subset.reduce((sum, v) => sum + v, 0) / subset.length;
+      result.push(avg);
+    }
+    return result;
+  };
+  const smoothedValues = computeMovingAverage(displayData.values || [], 3);
+  // const data = [
+  //   ["Month", "收入"],
+  //   ...displayData.labels.map((label, idx) => [label, displayData.values[idx] || 0]),
+  // ];
   const data = [
-    ["Month", "收入"],
-    ...displayData.labels.map((label, idx) => [label, displayData.values[idx] || 0]),
+  ["Month", "收入", "平均增长趋势"],
+    ...displayData.labels.map((label, idx) => [
+      label,
+      displayData.values[idx] || 0,
+      smoothedValues[idx] || null,
+    ]),
   ];
 
   // Container ref for measuring available space so chart can size to the section
@@ -280,25 +300,40 @@ export function IncomeSlide({ seriesData, rawIncome = null, height = null, onVie
     if (!values || values.length === 0) return '#1976d2';
     const first = values.find((v) => v != null) ?? 0;
     const last = [...values].reverse().find((v) => v != null) ?? 0;
-    if (last > first) return '#21CE99'; // green-ish
-    if (last < first) return '#FF4D4F'; // red-ish
+    if (last > first) return '#00C805'; // green-ish
+    if (last < first) return '#FF5000'; // red-ish
     return '#1976d2'; // neutral blue fallback
   };
 
   const trendColor = getTrendColor(displayData.values || []);
 
+  // const options = {
+  //   legend: 'none',
+  //   backgroundColor: 'transparent',
+  //   hAxis: { 
+  //     title: viewMode === '按年显示' ? '年份' : 'Month',
+  //     slantedText: false,
+  //   },
+  //   vAxis: { title: '收入' },
+  //   colors: [trendColor],
+  //   pointSize: 4,
+  //   chartArea: { left: 60, right: 20, top: 20, bottom: 40 },
+  // };
   const options = {
-    legend: 'none',
+    legend: { position: 'bottom' },
     backgroundColor: 'transparent',
-    hAxis: { 
-      title: viewMode === '按年显示' ? '年份' : 'Month',
-      slantedText: false,
-    },
+    hAxis: { title: viewMode === '按年显示' ? '年份' : 'Month', slantedText: false },
     vAxis: { title: '收入' },
-    colors: [trendColor],
-    pointSize: 4,
+    colors: [trendColor, '#8888ff'], // first line dynamic, second line soft blue
+    pointSize: 3,
+    lineWidth: 2,
     chartArea: { left: 60, right: 20, top: 20, bottom: 40 },
+    series: {
+      0: { targetAxisIndex: 0 },
+      1: { curveType: 'function', lineWidth: 3, color: '#8888ff' }, // smoother look
+    },
   };
+
 
   const handleViewChange = (e) => {
     const v = e.target.value;
@@ -311,6 +346,13 @@ export function IncomeSlide({ seriesData, rawIncome = null, height = null, onVie
     if (onViewModeChange) onViewModeChange(viewMode, displayData.labels || []);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [viewMode, JSON.stringify(displayData.labels || [])]);
+
+
+
+
+
+  
+
 
   return (
     <div
