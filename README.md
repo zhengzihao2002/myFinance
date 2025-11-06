@@ -237,6 +237,3 @@ myFinance is built to **empower you to manage your money visually and safely** �
 
 Whether you’re budgeting monthly, comparing income trends, or logging your expenses after a trip — myFinance keeps your financial world transparent, private, and simple.
 
----
-
-Would you like me to generate a **developer-focused version** of the README (explaining component architecture and API structure for contributors)? It would complement this consumer-facing manual perfectly.
