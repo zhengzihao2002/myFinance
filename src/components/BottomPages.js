@@ -125,6 +125,7 @@ export function ExpenseSlide({
                 width: '70%',
                 height: '90%'
               },
+              tooltip: { trigger: 'selection' }, // ✅ click-to-show tooltip (no flicker)
               legend: {
                 alignment: 'center',
                 position: 'right',
