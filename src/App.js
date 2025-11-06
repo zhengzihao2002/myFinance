@@ -1581,9 +1581,16 @@ const HomePage = () => {
             </div>
 
             {/* Content */}
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", width: "100%" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", width: "100%"}}>
               {/* Expenses */}
-              <div className="panel_font_size" style={{ marginBottom: "10px", minHeight: "31px" }}>
+              <div className="panel_font_size" style={{
+    marginBottom: "10px",
+    height: "31px",             // ✅ FIXED height instead of minHeight
+    lineHeight: "31px",         // ✅ Keeps vertical centering
+    overflow: "hidden",         // ✅ Prevent vertical growth
+    whiteSpace: "nowrap",       // ✅ Prevent wrapping
+    textOverflow: "ellipsis",   // ✅ Adds "..." if it can’t fit
+  }}>
                 <strong
                   style={{
                     display: "inline-block",
@@ -1626,7 +1633,14 @@ const HomePage = () => {
               </div>
 
               {/* Income */}
-              <div className="panel_font_size" style={{ marginBottom: "10px", minHeight: "31px" }}>
+              <div className="panel_font_size" style={{
+    marginBottom: "10px",
+    height: "31px",             // ✅ FIXED height instead of minHeight
+    lineHeight: "31px",         // ✅ Keeps vertical centering
+    overflow: "hidden",         // ✅ Prevent vertical growth
+    whiteSpace: "nowrap",       // ✅ Prevent wrapping
+    textOverflow: "ellipsis",   // ✅ Adds "..." if it can’t fit
+  }}>
                 <strong
                   style={{
                     display: "inline-block",
@@ -1669,7 +1683,14 @@ const HomePage = () => {
               </div>
 
               {/* Highest Category Increase */}
-              <div className="panel_font_size" style={{ marginBottom: "10px", minHeight: "31px" }}>
+              <div className="panel_font_size" style={{
+    marginBottom: "10px",
+    height: "31px",             // ✅ FIXED height instead of minHeight
+    lineHeight: "31px",         // ✅ Keeps vertical centering
+    overflow: "hidden",         // ✅ Prevent vertical growth
+    whiteSpace: "nowrap",       // ✅ Prevent wrapping
+    textOverflow: "ellipsis",   // ✅ Adds "..." if it can’t fit
+  }}>
                 <strong
                   style={{
                     display: "inline-block",
@@ -1712,7 +1733,14 @@ const HomePage = () => {
               </div>
 
               {/* Highest Category Decrease */}
-              <div className="panel_font_size" style={{ marginBottom: "10px", minHeight: "31px" }}>
+              <div className="panel_font_size" style={{
+    marginBottom: "10px",
+    height: "31px",             // ✅ FIXED height instead of minHeight
+    lineHeight: "31px",         // ✅ Keeps vertical centering
+    overflow: "hidden",         // ✅ Prevent vertical growth
+    whiteSpace: "nowrap",       // ✅ Prevent wrapping
+    textOverflow: "ellipsis",   // ✅ Adds "..." if it can’t fit
+  }}>
                 <strong
                   style={{
                     display: "inline-block",
