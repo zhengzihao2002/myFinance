@@ -768,7 +768,7 @@ body.no-transition .flip-container .back {
   display: flex;
   align-items: center;
   justify-content: center;
-  
+  border-radius: 10px;
 }
 
 .button-box {

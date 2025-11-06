@@ -1300,9 +1300,46 @@ const HomePage = () => {
     );
   };
   
+  const [visibleWatermark, setVisibleWaterMark] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setVisibleWaterMark(false), 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="homepage-container">
+      <div
+      style={{
+        position: "absolute",
+        bottom: "8px",
+        left: "50%",
+        transform: "translateX(-50%)",
+        fontFamily: "'Cinzel', 'Playfair Display', serif",
+        fontSize: "11px",
+        letterSpacing: "1.5px",
+        fontWeight: 500,
+        fontStyle: "italic",
+        userSelect: "none",
+        pointerEvents: "none",
+        opacity: visibleWatermark ? 0.9 : 0,
+        transition: "opacity 0.5s ease-in-out",
+        color: lightMode === "dark" ? "#d4af37" : "#4b4b4b",
+        background:
+          lightMode === "dark"
+            ? "linear-gradient(90deg, #d4af37, #f8e473, #d4af37)"
+            : "none",
+        WebkitBackgroundClip: lightMode === "dark" ? "text" : "unset",
+        WebkitTextFillColor: lightMode === "dark" ? "transparent" : "unset",
+        textShadow:
+          lightMode === "light"
+            ? "0 1px 2px rgba(0,0,0,0.25)"
+            : "0 0 4px rgba(255,255,255,0.2)",
+      }}
+    >
+      Designed by Zihao Zheng in NYC
+    </div>
+
       <button
         className={`icon-button ${!showButtons ? "icon-fade-out" : ""}`}
         onClick={(e) => {
@@ -1892,7 +1929,7 @@ const HomePage = () => {
         </div>
 
       </div>
-      <div className="homepage-right" style={{overflow:"hidden"}}>
+      <div className="homepage-right">
       <div
         className={`flip-container ${animationType === "flip" ? "flip-mode" : "slide-mode"} ${isFlipped ? "flipped" : ""} ${isReadyToFlip ? "ready-to-flip" : ""}`}
         onClick={handleBoxClick}
