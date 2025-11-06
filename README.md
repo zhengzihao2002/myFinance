@@ -14,6 +14,22 @@
 
 Designed for simplicity and power, it combines **modern UI, interactive charts**, and **automated backups** to give you full visibility into your financial life — without giving up your privacy.
 
+
+---
+## 📸 App Screenshots
+
+### 🏠 Home Pages
+![Homepage 1](images/Homepage1.png)
+![Homepage 2](images/Homepage2.png)
+![Homepage 3](images/Homepage3.png)
+
+### 💰 Expense & Income Recording
+![Record Expense Page](images/RecordExpensePage.png)
+![Record Income Page](images/RecordIncomePage.png)
+
+### 📊 Display Pages
+![Display Expense Page](images/DisplayExpensePage.png)
+![Display Income Page](images/DisplayIncomePage.png)
 ---
 
 ## 🧭 Key Features
