@@ -1,5 +1,5 @@
 {
-  "name": "myFinance",
+  "name": "myfinance",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -8,6 +8,7 @@
     "@mui/icons-material": "^7.3.4",
     "@mui/material": "^7.3.4",
     "@mui/x-charts": "^8.16.0",
+    "@supabase/supabase-js": "^2.81.0",
     "cors": "^2.8.5",
     "cra-template": "1.2.0",
     "lucide-react": "^0.539.0",
@@ -53,5 +54,13 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhengzihao2002/myFinance.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zhengzihao2002/myFinance/issues"
+  },
+  "homepage": "https://github.com/zhengzihao2002/myFinance#readme"
 }
