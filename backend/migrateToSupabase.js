@@ -1,14 +1,32 @@
 // migrateToSupabase.js (ES module)
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 import { createClient } from "@supabase/supabase-js";
-import 'dotenv/config';
+import dotenv from "dotenv";
+
+// Fix __dirname in ES module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load .env from parent folder
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
+console.log("Loaded Supabase URL:", process.env.SUPABASE_URL);
+
+
+
 
 /* ====== CONFIG - EDIT IF NEEDED ====== */
-const SUPABASE_URL = "https://zwphnhkflteadtqfxifo.supabase.co";
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY; // Service role key - server only
-const USER_ID = "7a3fb4a7-5d6b-4fe5-9e4b-665425f6483b"; // target user UUID in your Supabase
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_SECRET_KEY; // Service role key - server only
+const USER_ID = "ef917371-bec7-4528-acb7-236460d81b3e"; // target user UUID in your Supabase
 
+if (!SUPABASE_URL || !SUPABASE_KEY) {
+  console.error("❌ Missing Supabase credentials. Check your .env file.");
+  process.exit(1);
+}
+
+// Create client
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { persistSession: false },
 });
@@ -275,12 +293,36 @@ async function migrateCategories(categoriesObj, user_id) {
   return batchInsert("categories", rows);
 }
 
+/* ====== CLEAR EXISTING TABLES ====== */
+async function clearTables() {
+  console.log("\n⚠️  Clearing existing data from tables...");
+
+  // Order matters due to foreign key dependencies (child → parent)
+  const tables = [
+    "expenses",
+    "incomes",
+    "prepays",
+    "checking_history",
+    "categories",
+  ];
+
+  for (const table of tables) {
+    const { error } = await supabase.from(table).delete().neq("id", "00000000-0000-0000-0000-000000000000");
+    if (error) {
+      console.error(`❌ Failed clearing ${table}:`, error.message);
+    } else {
+      console.log(`✅ Cleared table: ${table}`);
+    }
+  }
+
+  console.log("✅ All target tables cleared.\n");
+}
 /* ====== main migrate() ====== */
 async function migrate() {
   console.log("🚀 Starting migration...");
 
-  const baseDir = path.join(__dirname, "../UserData");  const dataFile = path.join(baseDir, "data.json");
-
+  const baseDir = path.join(__dirname, "../UserData");
+  const dataFile = path.join(baseDir, "data.json");
   const prepayFile = path.join(baseDir, "prepay_schedule.json");
   const recentFile = path.join(baseDir, "recentTransactions.json");
   const categoriesFile = path.join(baseDir, "categories.json");
@@ -290,7 +332,10 @@ async function migrate() {
   const transactions = safeParseJSON(recentFile) || { CheckingRecent100: [] };
   const categories = safeParseJSON(categoriesFile) || {};
 
-  // Run migration pieces (sequentially so we can debug easier)
+  /* 🔥 CLEAR OLD DATA FIRST */
+  await clearTables();
+
+  /* 🧩 MIGRATE NEW DATA */
   await migrateExpenses(data.expenses || [], USER_ID);
   await migrateIncomes(data.income || [], USER_ID);
   await migratePrepays(prepays || [], USER_ID);
