@@ -4697,6 +4697,59 @@ const ShowExpensePage = () => {
 
 
 
+// Add state to track expanded categories
+const [expandedCategories, setExpandedCategories] = useState({});
+
+// Function to toggle category expansion
+const toggleCategory = (categoryName) => {
+  setExpandedCategories(prev => ({
+    ...prev,
+    [categoryName]: !prev[categoryName]
+  }));
+};
+
+// Function to check if a row is a header (but not a total summary)
+const isHeaderRow = (expense) => {
+  return expense.actions === null && expense.amount === "";
+};
+
+// Function to check if a row is a total summary row
+const isTotalSummaryRow = (expense) => {
+  return expense.category && 
+         (expense.category.includes("总共消费") || 
+          expense.category.includes("Total Expenses"));
+};
+
+// Function to check if a row is a clickable category header
+const isClickableHeader = (expense) => {
+  return isHeaderRow(expense) && !isTotalSummaryRow(expense);
+};
+
+// Function to check if a row should be visible
+const shouldShowRow = (expense, index, allExpenses) => {
+  // Always show header rows and total summary rows
+  if (isHeaderRow(expense)) {
+    return true;
+  }
+  
+  // Find the parent header for this transaction
+  for (let i = index - 1; i >= 0; i--) {
+    if (isClickableHeader(allExpenses[i])) {
+      // This is the parent header
+      return expandedCategories[allExpenses[i].category];
+    }
+    // Stop if we hit a total summary row
+    if (isTotalSummaryRow(allExpenses[i])) {
+      break;
+    }
+  }
+  
+  return true; // Show by default if no header found
+};
+
+
+
+
   return (
     <div className="modify-expense-container">
       {/* Header Section */}
@@ -5033,6 +5086,116 @@ const ShowExpensePage = () => {
 
         {/* Expense Rows */}
         <div className="table-body">
+          {filterExpenses().map((expense, index, allExpenses) => {
+              const isHeader = isHeaderRow(expense);
+              const isClickable = isClickableHeader(expense);
+              const shouldShow = shouldShowRow(expense, index, allExpenses);
+              const isExpanded = expandedCategories[expense.category];
+              
+              return (
+                <div 
+                  className="table-row" 
+                  key={index}
+                  data-has-actions={expense.actions !== null ? "true" : undefined}
+                  data-clickable-header={isClickable ? "true" : undefined}
+                  data-expanded={isClickable && isExpanded ? "true" : undefined}
+                  data-collapsed={!isHeader && !shouldShow ? "true" : undefined}
+                  onClick={isClickable ? () => toggleCategory(expense.category) : undefined}
+                  style={{
+                    cursor: isClickable ? "pointer" : "default",
+                    ...(isClickable ? { userSelect: "none" } : {}),
+                    // Smooth transition for collapsing/expanding rows
+                    ...(!isHeader ? {
+                      maxHeight: shouldShow ? '45px' : '0',
+                      opacity: shouldShow ? 1 : 0,
+                      overflow: 'hidden',
+                      transition: 'max-height 0.3s ease-out, opacity 0.3s ease-out, padding 0.3s ease-out, margin 0.3s ease-out',
+                      paddingTop: shouldShow ? undefined : '0',
+                      paddingBottom: shouldShow ? undefined : '0',
+                      marginTop: shouldShow ? undefined : '0',
+                      marginBottom: shouldShow ? undefined : '0',
+                      borderWidth: shouldShow ? undefined : '0'
+                    } : {})
+                  }}
+                >
+                  {/* Hide index for Category sum */}
+                  <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}>
+                    {appliedFilters.showType === "Category sum" || appliedFilters.showType === "List all Category Expenses" 
+                      ? (isClickable ? (
+                          <svg 
+                            width="16" 
+                            height="16" 
+                            viewBox="0 0 16 16" 
+                            style={{
+                              transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+                              transition: 'transform 0.3s ease-out',
+                              fill: 'currentColor',
+                              flexShrink: 0
+                            }}
+                          >
+                            <path d="M6 4l4 4-4 4V4z" />
+                          </svg>
+                        ) : "") 
+                      : (index + 1)}
+                  </div>
+                  
+                  <div 
+                    style={{
+                      ...(
+                        appliedFilters.showType === "List all Category Expenses" && expense.actions == null 
+                        ? { overflow: "visible", fontWeight: "bold", fontSize: "25px" } 
+                        : {}
+                      ),
+                      color: (
+                        expense.category && 
+                        (expense.category.includes("总共消费") || expense.category.includes("Total Expenses"))
+                      ) ? "red" : "",
+                      ...(isClickable ? {
+                        // transition: 'color 0.2s ease-out'
+                      } : {})
+                    }}
+                  >
+                    {categoriesTranslation[expense.category]||expense.category}
+                  </div>
+
+                  <div>{expense.date}</div>
+
+                  {/* Only show amount if it's not the empty rows */}
+                  <div>
+                    {(appliedFilters.showType === "List all Category Expenses" && expense.actions !== null && categories.includes(expense.category)) || (expense.category !== "" && appliedFilters.showType === "Category sum")||(appliedFilters.showType === "List all Expenses by Date")||(appliedFilters.filterOption === "显示全部")
+                      ? `$${expense.amount}` 
+                      : ("")}
+                  </div>
+
+                  <div className="description" data-fulltext={expense.description}>
+                    {expense.description}
+                  </div>
+
+                  <div>
+                    {expense.actions !== null && (
+                      <>
+                        <button className="action-btn" onClick={(e) => {
+                          e.stopPropagation();
+                          handleModifyClick(expense);
+                        }}>
+                          修改 
+                        </button>
+                        <button className="action-btn" onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteClick(expense);
+                        }}>
+                          删除
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           {filterExpenses().map((expense, index) => (
             <div className="table-row" key={index}
               data-has-actions={expense.actions !== null ? "true" : undefined}
@@ -5089,6 +5252,7 @@ const ShowExpensePage = () => {
               </div>
             </div>
           ))}
+
         </div>
       </div>
 

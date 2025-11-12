@@ -198,9 +198,124 @@ body.no-transition .flip-container .back {
 .table-row[data-has-actions="true"]:hover {
   background-color: #e0e0e0; /* or any darker color you want */
 }
+/* Expense Display Section */
+.expense-display {
+  height: 87%;
+  background-color: #f8f8f8;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  display: block; /* Changed from flex to block to stack header and body */
+  font-size: 18px;
+  color: #777;
+  overflow-y: auto;
+  position: relative;
+
+  
+}
+/* Table Header */
+.expense-display .table-header {
+  display: grid; /* Grid layout for consistent column widths */
+  grid-template-columns: 
+    minmax(50px, 1fr) /* 编号 */
+    minmax(100px, 2fr) /* 类别 */
+    minmax(100px, 2fr) /* 日期 */
+    minmax(100px, 2fr) /* 金额 */
+    minmax(200px, 7fr) /* 描述 */
+    minmax(80px, 2fr); /* 操作 */
+  gap: 10px; /* Add spacing between columns */
+  position: sticky;
+  top: 0;
+  background-color: #ddd;
+  border-bottom: 2px solid #ccc;
+  font-weight: bold;
+  z-index: 1;
+  text-align: center;
+  padding: 10px 20px;
+  align-items: center; /* Centers content vertically within each cell */
+}
+/* Table Header Column Centering */
+.expense-display .table-header > div {
+  display: flex;
+  /* justify-content: center; Centers text horizontally */
+  align-items: center; /* Centers text vertically */
+  white-space: nowrap; /* Prevents text wrapping */
+  /* text-align: center; */
+  text-align: left;
+}
+/* Table Body */
+.expense-display .table-body {
+  padding: 10px 20px; /* No extra padding needed */
+}
+.expense-display .table-row {
+  display: grid; /* Grid layout for consistent column widths */
+  grid-template-columns: 
+    minmax(50px, 1fr) /* 编号 */
+    minmax(100px, 2fr) /* 类别 */
+    minmax(100px, 2fr) /* 日期 */
+    minmax(100px, 2fr) /* 金额 */
+    minmax(200px, 7fr) /* 描述 */
+    minmax(80px, 2fr); /* 操作 */
+  gap: 10px; /* Add spacing between columns */
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+  overflow: hidden;
+}
+/* Row Column Content Alignment */
+.expense-display .table-row > div {
+  /* text-align: center; Centers text within each column */
+  text-align: left;
+  white-space: nowrap; /* Prevents text wrapping */
+  /*overflow: hidden; /* Hides overflowing content */
+  text-overflow: ellipsis; /* Adds ellipsis for long text */
+}
+/* Action Buttons */
+.expense-display .action-btn {
+  padding: 5px 10px;
+  font-size: 14px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  background-color: #4CAF50;
+  color: white;
+  width: 80px; /* Fixed width to ensure consistency */
+}
+/* Action Buttons Container */
+.expense-display .table-row > div:last-child {
+  display: flex;
+  justify-content: center; /* Center action buttons */
+  gap: 10px; /* Add space between buttons */
+}
+/* Hover Effect for Action Buttons */
+.expense-display .action-btn:hover {
+  background-color: #45a049;
+}
 
 
+@keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 
+  .table-row[data-clickable-header="true"]:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+    transition: background-color 0.2s ease-out;
+  }
+
+  .table-row[data-clickable-header="true"]:active {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+  
+  .table-row[data-collapsed="true"] {
+    pointer-events: none;
+  }
 
 
 
@@ -1383,84 +1498,7 @@ input[type="number"] {
   background-color: #e04343;
 }
 
-/* Expense Display Section */
-.expense-display {
-  height: 87%;
-  background-color: #f8f8f8;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-top: 20px;
-  display: block; /* Changed from flex to block to stack header and body */
-  font-size: 18px;
-  color: #777;
-  overflow-y: auto;
-  position: relative;
 
-  
-}
-
-/* Table Header */
-/* Table Header */
-.expense-display .table-header {
-  display: grid; /* Grid layout for consistent column widths */
-  grid-template-columns: 
-    minmax(50px, 1fr) /* 编号 */
-    minmax(100px, 2fr) /* 类别 */
-    minmax(100px, 2fr) /* 日期 */
-    minmax(100px, 2fr) /* 金额 */
-    minmax(200px, 7fr) /* 描述 */
-    minmax(80px, 2fr); /* 操作 */
-  gap: 10px; /* Add spacing between columns */
-  position: sticky;
-  top: 0;
-  background-color: #ddd;
-  border-bottom: 2px solid #ccc;
-  font-weight: bold;
-  z-index: 1;
-  text-align: center;
-  padding: 10px 20px;
-  align-items: center; /* Centers content vertically within each cell */
-}
-
-/* Table Header Column Centering */
-.expense-display .table-header > div {
-  display: flex;
-  /* justify-content: center; Centers text horizontally */
-  align-items: center; /* Centers text vertically */
-  white-space: nowrap; /* Prevents text wrapping */
-  /* text-align: center; */
-  text-align: left;
-}
-
-/* Table Body */
-.expense-display .table-body {
-  padding: 10px 20px; /* No extra padding needed */
-}
-
-.expense-display .table-row {
-  display: grid; /* Grid layout for consistent column widths */
-  grid-template-columns: 
-    minmax(50px, 1fr) /* 编号 */
-    minmax(100px, 2fr) /* 类别 */
-    minmax(100px, 2fr) /* 日期 */
-    minmax(100px, 2fr) /* 金额 */
-    minmax(200px, 7fr) /* 描述 */
-    minmax(80px, 2fr); /* 操作 */
-  gap: 10px; /* Add spacing between columns */
-  align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid #eee;
-  overflow: hidden;
-}
-
-/* Row Column Content Alignment */
-.expense-display .table-row > div {
-  /* text-align: center; Centers text within each column */
-  text-align: left;
-  white-space: nowrap; /* Prevents text wrapping */
-  overflow: hidden; /* Hides overflowing content */
-  text-overflow: ellipsis; /* Adds ellipsis for long text */
-}
 .overflow-show {
   overflow: auto; /* or any other overflow value you want (e.g., 'scroll', 'hidden') */
 }
@@ -1478,29 +1516,7 @@ input[type="number"] {
   z-index: 10000;
   pointer-events: none; /* So it doesn’t interfere with other elements */
 }
-/* Action Buttons */
-.expense-display .action-btn {
-  padding: 5px 10px;
-  font-size: 14px;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  background-color: #4CAF50;
-  color: white;
-  width: 80px; /* Fixed width to ensure consistency */
-}
 
-/* Action Buttons Container */
-.expense-display .table-row > div:last-child {
-  display: flex;
-  justify-content: center; /* Center action buttons */
-  gap: 10px; /* Add space between buttons */
-}
-
-/* Hover Effect for Action Buttons */
-.expense-display .action-btn:hover {
-  background-color: #45a049;
-}
 
 
 .header-left {
