@@ -5196,7 +5196,9 @@ const shouldShowRow = (expense, index, allExpenses) => {
                 </div>
               );
             })}
-          {filterExpenses().map((expense, index) => (
+
+          
+          {false && (filterExpenses().map((expense, index) => (
             <div className="table-row" key={index}
               data-has-actions={expense.actions !== null ? "true" : undefined}
             >
@@ -5251,7 +5253,7 @@ const shouldShowRow = (expense, index, allExpenses) => {
               )}
               </div>
             </div>
-          ))}
+          )))}
 
         </div>
       </div>
