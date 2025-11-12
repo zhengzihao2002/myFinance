@@ -54,13 +54,5 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/zhengzihao2002/myFinance.git"
-  },
-  "bugs": {
-    "url": "https://github.com/zhengzihao2002/myFinance/issues"
-  },
-  "homepage": "https://github.com/zhengzihao2002/myFinance#readme"
+  "license": "ISC"
 }

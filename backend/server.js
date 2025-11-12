@@ -1,14 +1,19 @@
-const express = require("express");
-const fs = require("fs");
-const path = require("path");
-const cors = require("cors");
-const { exec } = require("child_process");
-const { log } = require("console");
+import express from "express";
+import fs from "fs";
+import path from "path";
+import cors from "cors";
+import { exec } from "child_process";
+import { log } from "console";
+import { fileURLToPath } from "url";
 
+// Recreate __dirname for ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
 
 // TIME HERE IS IN UTC
 
