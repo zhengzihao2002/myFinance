@@ -4115,6 +4115,17 @@ const RecordIncomePage = () => {
 const ShowExpensePage = () => {
   const { data, updateExpense,deleteExpense } = useContext(DataContext); // Access global data and updater
 
+
+  // Wait for data to load before rendering
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
+  const [isCategoriesInitialized, setIsCategoriesInitialized] = useState(false);
+  useEffect(() => {
+    if (data && data.expenses && data.expenses.length > 0) {
+      setIsDataLoaded(true);
+    }
+  }, [data]);
+
+
   // 暂存 States: May contain clicked but not saved (means we don't want)
   const [filterOption, setFilterOption] = useState(""); // Combo box value, default all will be set in a usestate hook below somewhere, above return
   const [subOption, setSubOption] = useState(""); // Sub combo box value
@@ -4696,59 +4707,74 @@ const ShowExpensePage = () => {
   }, []);
 
 
-
-// Add state to track expanded categories
-const [expandedCategories, setExpandedCategories] = useState({});
-
-// Function to toggle category expansion
-const toggleCategory = (categoryName) => {
-  setExpandedCategories(prev => ({
-    ...prev,
-    [categoryName]: !prev[categoryName]
-  }));
-};
-
-// Function to check if a row is a header (but not a total summary)
-const isHeaderRow = (expense) => {
-  return expense.actions === null && expense.amount === "";
-};
-
-// Function to check if a row is a total summary row
-const isTotalSummaryRow = (expense) => {
-  return expense.category && 
-         (expense.category.includes("总共消费") || 
-          expense.category.includes("Total Expenses"));
-};
-
-// Function to check if a row is a clickable category header
-const isClickableHeader = (expense) => {
-  return isHeaderRow(expense) && !isTotalSummaryRow(expense);
-};
-
-// Function to check if a row should be visible
-const shouldShowRow = (expense, index, allExpenses) => {
-  // Always show header rows and total summary rows
-  if (isHeaderRow(expense)) {
-    return true;
-  }
-  
-  // Find the parent header for this transaction
-  for (let i = index - 1; i >= 0; i--) {
-    if (isClickableHeader(allExpenses[i])) {
-      // This is the parent header
-      return expandedCategories[allExpenses[i].category];
+  // DATA TABLE (List by category table) FUNCTIONS
+  // Add state to track expanded categories - initialize as empty
+  const [expandedCategories, setExpandedCategories] = useState({});
+  // Initialize all categories as collapsed on first render
+  // Initialize all categories as collapsed on first render
+  React.useEffect(() => {
+    if (!isDataLoaded) return; // Don't initialize until data is loaded
+    
+    const expenses = filterExpenses();
+    const initialState = {};
+    
+    expenses.forEach(expense => {
+      if (isClickableHeader(expense)) {
+        initialState[expense.category] = false;
+      }
+    });
+    
+    if (Object.keys(initialState).length > 0) {
+      setExpandedCategories(initialState);
     }
-    // Stop if we hit a total summary row
-    if (isTotalSummaryRow(allExpenses[i])) {
-      break;
+    
+    setIsCategoriesInitialized(true);
+  }, [isDataLoaded, appliedFilters]); // Add isDataLoaded as dependency
+  // Function to toggle category expansion
+  const toggleCategory = (categoryName) => {
+    setExpandedCategories(prev => ({
+      ...prev,
+      [categoryName]: !prev[categoryName]
+    }));
+  };
+  // Function to check if a row is a header (but not a total summary)
+  const isHeaderRow = (expense) => {
+    return expense.actions === null && expense.amount === "";
+  };
+  // Function to check if a row is a total summary row
+  const isTotalSummaryRow = (expense) => {
+    return expense.category && 
+          (expense.category.includes("总共消费") || 
+            expense.category.includes("Total Expenses"));
+  };
+  // Function to check if a row is a clickable category header
+  const isClickableHeader = (expense) => {
+    return isHeaderRow(expense) && !isTotalSummaryRow(expense);
+  };
+  // Function to check if a row should be visible
+  const shouldShowRow = (expense, index, allExpenses) => {
+    // Always show header rows and total summary rows
+    if (isHeaderRow(expense)) {
+      return true;
     }
-  }
-  
-  return true; // Show by default if no header found
-};
+    
+    // Find the parent header for this transaction
+    for (let i = index - 1; i >= 0; i--) {
+      if (isClickableHeader(allExpenses[i])) {
+        // This is the parent header - explicitly check for true
+        return expandedCategories[allExpenses[i].category] === true;
+      }
+      // Stop if we hit a total summary row
+      if (isTotalSummaryRow(allExpenses[i])) {
+        break;
+      }
+    }
+    
+    return false; // Default to collapsed if no header found
+  };
 
 
-
+// BUG: when enter this page from somewhere else, it starts expanded then suddenly collapse in 0.3s which is the transition time
 
   return (
     <div className="modify-expense-container">
@@ -5086,7 +5112,7 @@ const shouldShowRow = (expense, index, allExpenses) => {
 
         {/* Expense Rows */}
         <div className="table-body">
-          {filterExpenses().map((expense, index, allExpenses) => {
+          {appliedFilters.showType == "List all Category Expenses" &&true&&isDataLoaded && isCategoriesInitialized &&filterExpenses().map((expense, index, allExpenses) => {
               const isHeader = isHeaderRow(expense);
               const isClickable = isClickableHeader(expense);
               const shouldShow = shouldShowRow(expense, index, allExpenses);
@@ -5198,7 +5224,7 @@ const shouldShowRow = (expense, index, allExpenses) => {
             })}
 
           
-          {false && (filterExpenses().map((expense, index) => (
+          {appliedFilters.showType != "List all Category Expenses" && true&&isDataLoaded && isCategoriesInitialized&& (filterExpenses().map((expense, index) => (
             <div className="table-row" key={index}
               data-has-actions={expense.actions !== null ? "true" : undefined}
             >
@@ -5362,6 +5388,15 @@ const shouldShowRow = (expense, index, allExpenses) => {
 
 const ShowIncomePage = () => {  
   const { data, updateIncome,deleteIncome } = useContext(DataContext); // Access global data and updater
+
+  // Wait for data to load before rendering
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
+  useEffect(() => {
+    if (data && data.income && data.income.length > 0) {
+      setIsDataLoaded(true);
+    }
+  }, [data]);
+
 
   // 暂存 States: May contain clicked but not saved (means we don't want)
   const [filterOption, setFilterOption] = useState(""); // Combo box value, default all will be set in a usestate hook below somewhere, above return
@@ -6125,7 +6160,7 @@ const ShowIncomePage = () => {
 
         {/* Income Rows */}
         <div className="table-body">
-          {filterIncome().map((income, index) => (
+          {isDataLoaded && (filterIncome().map((income, index) => (
             <div className="table-row" key={index}
               data-has-actions={income.actions !== null ? "true" : undefined}
             >
@@ -6181,7 +6216,7 @@ const ShowIncomePage = () => {
                 )}
               </div>
             </div>
-          ))}
+          )))}
         </div>
 
 
