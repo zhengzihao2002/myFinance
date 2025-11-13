@@ -211,7 +211,8 @@ body.no-transition .flip-container .back {
   overflow-y: auto;
   position: relative;
 
-  
+  overflow-y: auto;
+  scrollbar-gutter: stable; /* Reserves space for scrollbar */
 }
 /* Table Header */
 .expense-display .table-header {
