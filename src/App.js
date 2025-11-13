@@ -4126,6 +4126,10 @@ const ShowExpensePage = () => {
   }, [data]);
 
 
+
+
+
+
   // 暂存 States: May contain clicked but not saved (means we don't want)
   const [filterOption, setFilterOption] = useState(""); // Combo box value, default all will be set in a usestate hook below somewhere, above return
   const [subOption, setSubOption] = useState(""); // Sub combo box value
@@ -4480,7 +4484,7 @@ const ShowExpensePage = () => {
       };
 
       // Mirror the grand-total row at top *and* bottom
-      finalExpenses.unshift(totalExpensesRow); // Top
+      // finalExpenses.unshift(totalExpensesRow); // Top
       finalExpenses.push(totalExpensesRow);   // Bottom
 
       return finalExpenses;
@@ -4711,7 +4715,6 @@ const ShowExpensePage = () => {
   // Add state to track expanded categories - initialize as empty
   const [expandedCategories, setExpandedCategories] = useState({});
   // Initialize all categories as collapsed on first render
-  // Initialize all categories as collapsed on first render
   React.useEffect(() => {
     if (!isDataLoaded) return; // Don't initialize until data is loaded
     
@@ -4774,13 +4777,54 @@ const ShowExpensePage = () => {
   };
   const [prevShowType, setPrevShowType] = useState(appliedFilters.showType);
 
+
+
+  // Previous showtype tracking to prevent auto expand collapse when mode changes to show by cateogry
   useEffect(() => {
     if (prevShowType !== appliedFilters.showType) {
       setPrevShowType(appliedFilters.showType);
     }
   }, [appliedFilters.showType]);
 
-// BUG: when enter this page from somewhere else, it starts expanded then suddenly collapse in 0.3s which is the transition time
+
+
+    // Add auto-expand state with localStorage
+  const [autoExpand, setAutoExpand] = useState(() => {
+    const storedAutoExpand = localStorage.getItem("autoExpand");
+    return storedAutoExpand !== null ? JSON.parse(storedAutoExpand) : false;
+  });
+  // Save auto-expand state to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("autoExpand", JSON.stringify(autoExpand));
+  }, [autoExpand]);
+  // Auto-expand all categories when autoExpand is enabled
+  useEffect(() => {
+    if (autoExpand && isDataLoaded && isCategoriesInitialized) {
+      const expenses = filterExpenses();
+      const expandAll = {};
+      
+      expenses.forEach(expense => {
+        if (isClickableHeader(expense)) {
+          expandAll[expense.category] = true;
+        }
+      });
+      
+      setExpandedCategories(expandAll);
+    } else if (!autoExpand && isDataLoaded && isCategoriesInitialized) {
+      // Collapse all when unchecked
+      const expenses = filterExpenses();
+      const collapseAll = {};
+      
+      expenses.forEach(expense => {
+        if (isClickableHeader(expense)) {
+          collapseAll[expense.category] = false;
+        }
+      });
+      
+      setExpandedCategories(collapseAll);
+    }
+  }, [autoExpand, isDataLoaded, isCategoriesInitialized, appliedFilters]);
+
 
   return (
     <div className="modify-expense-container">
@@ -4790,11 +4834,31 @@ const ShowExpensePage = () => {
           <h2>支出明细</h2>
         </div>
         <div className="header-right">
+          <label style={{ 
+            display: "inline-flex", 
+            alignItems: "center", 
+            marginRight: "15px",
+            cursor: "pointer",
+            fontSize: "16px"
+          }}>
+            <input
+              type="checkbox"
+              checked={autoExpand}
+              onChange={(e) => setAutoExpand(e.target.checked)}
+              style={{ 
+                height: "18px", 
+                width: "18px", 
+                marginRight: "8px",
+                cursor: "pointer"
+              }}
+            />
+            自动展开
+          </label>
           <button
             className="sort-btn"
             onClick={() => setSortDialogVisible(true)}
           >
-            排序
+            查找
           </button>
           <Link to="/">
             <button className="exit-btn">退出</button>
