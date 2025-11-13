@@ -1939,7 +1939,7 @@ const HomePage = () => {
         <div className="front">
           <div style={{ marginBottom: "40px" }}>
             <h2 className="zcool-qingke-huangyou-regular" style={{ fontSize: "50px" }}>
-              myFinance v2.2.0
+              myFinance v2.2.1
             </h2>
           </div>
           <div className="button-group">
