@@ -82,31 +82,8 @@ function getLocalDateString() {
   return `${year}-${month}-${day}`;
 }
 const changeLightMode = (newlightMode) => {
-  console.log("CHANGED!");
-  
-  // store in local storage so it could be accessed in other pages
   localStorage.setItem("lightMode", newlightMode);
-  
-  if (newlightMode=="dark") {
-    // Dark Mode
-    document.body.style.backgroundColor = "rgba(28, 28, 30, 0.9)"; // Softer dark background
-
-    document.querySelectorAll(".left-box, .right-box, .bottom-box, .flip-container .front, .flip-container .back").forEach(el => {
-      el.style.backgroundColor = "rgba(119, 119, 119, 0.8)";
-    });
-    document.querySelectorAll('.homepage-container [class^="icon-button"] span').forEach(el => {
-      el.style.color = "white";
-    });
-  } else {
-    // Light Mode
-    document.body.style.backgroundColor = "";
-    document.querySelectorAll(".left-box, .right-box, .bottom-box, .flip-container .front, .flip-container .back").forEach(el => {
-      el.style.backgroundColor = "#f8f8f8";
-    });
-    document.querySelectorAll('.homepage-container [class^="icon-button"] span').forEach(el => {
-      el.style.color = "black";
-    });
-  }
+  document.documentElement.setAttribute('data-theme', newlightMode);
 };
 
 function parseDate(dateString) {

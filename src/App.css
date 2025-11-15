@@ -9,6 +9,32 @@
   --bgc-duration: 0.6s;
   --bgc-ease: ease;
 }
+
+body,
+.left-box,
+.right-box,
+.bottom-box,
+.flip-container .front,
+.flip-container .back,
+.homepage-container [class^="icon-button"] span {
+  transition: background-color var(--bgc-duration) var(--bgc-ease),
+              color var(--bgc-duration) var(--bgc-ease);
+}
+
+/* Light mode styles (for elements not in inline CSS) */
+.left-box,
+.right-box,
+.bottom-box,
+.flip-container .front,
+.flip-container .back {
+  background-color: #f8f8f8;
+}
+
+.homepage-container [class^="icon-button"] span {
+  color: black;
+}
+
+
 .hidden {
   display: none!important;
 }
@@ -32,7 +58,6 @@
   animation: draw 0.6s ease-in-out forwards;
   z-index: 999; /* optional */
 }
-
 .checkmark path {
   fill: none;
   stroke: rgba(0, 128, 0, 0.5);
@@ -48,7 +73,6 @@
   stroke-dashoffset: 100;
   animation: drawCheck 2.5s ease forwards;
 }
-
 @keyframes drawCheck {
   /* to {
     stroke-dashoffset: 0;
@@ -72,28 +96,6 @@
   font-weight: 400;
   font-style: normal;
 }
-body {
-  /* background-color: #1C1C1E; Apple dark mode background */
-  /* color: #FFFFFF; Optional: set text color to white */
-}
-body,
-.left-box,
-.right-box,
-.bottom-box,
-.flip-container .front,
-.flip-container .back {
-  transition: background-color var(--bgc-duration) var(--bgc-ease);
-}
-/* Disable transitions initially */
-body.no-transition,
-body.no-transition .left-box,
-body.no-transition .right-box,
-body.no-transition .bottom-box,
-body.no-transition .flip-container .front,
-body.no-transition .flip-container .back {
-  transition: none !important;
-}
-
 
 
 
