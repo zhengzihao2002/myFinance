@@ -1,7 +1,7 @@
 import React, { useState ,useEffect,createContext,useContext,useRef,useMemo} from "react"; // Import useState
 import { Chart } from "react-google-charts";
 import BottomPages, { ExpenseSlide, IncomeSlide,IncomeExpenseCompare } from "./components/BottomPages";
-import { v4 as uuidv4 } from "uuid"; // Import UUID library
+import { parse, v4 as uuidv4 } from "uuid"; // Import UUID library
 import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from "react-router-dom";
 import { Settings, LogOut } from "lucide-react"; // nice modern icons
 import "./App.css";
@@ -109,6 +109,14 @@ const changeLightMode = (newlightMode) => {
   }
 };
 
+function parseDate(dateString) {
+  const [year, month, day] = dateString.split("-");
+  return {
+    year: Number(year),
+    month: Number(month),
+    day: Number(day)
+  };
+}
 
 
 
@@ -452,12 +460,14 @@ const HomePage = () => {
         filtered = [];
       } else {
         filtered = filtered.filter((exp) => {
+          
           return (
-            exp.date.substring(0, 4) == currentYear &&
-            new Date(exp.date).getMonth() === selectedMonthIndex
+            parseDate(exp.date).year == currentYear &&
+            parseDate(exp.date).month === selectedMonthIndex+1
           );
         });
       }
+      
     } else if (timeRange == "按季度显示" && subOption) {
       const quarterMonths = {
         Q1: [0, 1, 2],
@@ -469,8 +479,8 @@ const HomePage = () => {
       filtered = filtered.filter(
         (exp) =>
           // before: new Date(exp.date).getFullYear(), after:exp.date.substring(0,4)
-          exp.date.substring(0,4) == currentYear &&
-          selectedQuarter.includes(new Date(exp.date).getMonth())
+          parseDate(exp.date).year== currentYear &&
+          selectedQuarter.includes(parseDate(exp.date).month - 1)
       );
     } else if (timeRange == "按年显示" && subOption) {
       filtered = filtered.filter(
