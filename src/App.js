@@ -721,13 +721,13 @@ const HomePage = () => {
   
       if (response.ok) {
         // Send another request to update CheckingRecent100
-        const requestId = uuidv4(); // Generate a unique request ID
+        const secondRequestId  = uuidv4(); // Generate a unique request ID
         const last100Response = await fetch("http://localhost:5001/api/update-checking-last100", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ newTransaction,requestId }),
+          body: JSON.stringify({ newTransaction,requestId: secondRequestId  }),
         });
   
         if (last100Response.ok) {
@@ -791,13 +791,13 @@ const HomePage = () => {
   
       if (response.ok) {
         // Send another request to update CheckingRecent100
-        const requestId = uuidv4(); // Generate a unique request ID
+        const secondRequestId = uuidv4(); // Generate a unique request ID
         const last100Response = await fetch("http://localhost:5001/api/update-checking-last100", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ newTransaction }),
+          body: JSON.stringify({ newTransaction,requestId: secondRequestId }),
         });
   
         if (last100Response.ok) {
