@@ -6,9 +6,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "migrate": "node migrateToSupabase.js",
-    "build": "echo 'Nothing to build for backend'"
-
+    "migrate": "node migrateToSupabase.js"
   },
   "keywords": [],
   "author": "Zihao Zheng",
