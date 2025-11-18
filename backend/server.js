@@ -1,3 +1,7 @@
+import dotenv from "dotenv";
+dotenv.config();
+
+
 import express from "express";
 import fs from "fs";
 import path from "path";
@@ -6,6 +10,15 @@ import { exec } from "child_process";
 import { log } from "console";
 import { fileURLToPath } from "url";
 
+
+import {
+  getExpensesFromDB,
+  getIncomeFromDB,
+  getPrepaysFromDB,
+  getCheckingHistoryFromDB,
+  getCategoriesFromDB
+} from "./util/dbFetch.js";
+
 // Recreate __dirname for ESM
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,6 +26,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 app.use(cors());
 app.use(express.json());
+
 
 
 // TIME HERE IS IN UTC
@@ -706,8 +720,82 @@ app.post("/api/update-prepay-date", (req, res) => {
 });
 
 
+// 🔥 One endpoint returns all local-format data
+app.get("/api/fullData", async (req, res) => {
+  try {
+    const userId = req.query.user_id;
+    if (!userId) return res.status(400).json({ error: "Missing user_id" });
+
+    const [expenses, income, prepay_schedule, checking, categories] =
+      await Promise.all([
+        getExpensesFromDB(userId),
+        getIncomeFromDB(userId),
+        getPrepaysFromDB(userId),
+        getCheckingHistoryFromDB(userId),
+        getCategoriesFromDB(userId)
+      ]);
+
+    res.json({
+      categories,
+      data: {
+        expenses,
+        income
+      },
+      prepay_schedule,
+      recentTransactions: checking
+    });
+
+  } catch (err) {
+    console.error("DB fetch error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok" });
+});
+
+
+// http://localhost:5001/api/test/expenses?user_id=XXXXX
+// http://localhost:5001/api/test/income?user_id=XXXXX
+// http://localhost:5001/api/test/prepays?user_id=XXXXX
+// http://localhost:5001/api/test/checking?user_id=XXXXX
+// http://localhost:5001/api/test/categories?user_id=XXXXX
+app.get("/api/test/expenses", async (req, res) => {
+  const userId = req.query.user_id;
+  if (!userId) return res.status(400).json({ error: "Missing user_id" });
+
+  res.json(await getExpensesFromDB(userId));
+});
+
+app.get("/api/test/income", async (req, res) => {
+  const userId = req.query.user_id;
+  if (!userId) return res.status(400).json({ error: "Missing user_id" });
+
+  res.json(await getIncomeFromDB(userId));
+});
+
+app.get("/api/test/prepays", async (req, res) => {
+  const userId = req.query.user_id;
+  if (!userId) return res.status(400).json({ error: "Missing user_id" });
+
+  res.json(await getPrepaysFromDB(userId));
+});
+
+app.get("/api/test/checking", async (req, res) => {
+  const userId = req.query.user_id;
+  if (!userId) return res.status(400).json({ error: "Missing user_id" });
+
+  res.json(await getCheckingHistoryFromDB(userId));
+});
+
+app.get("/api/test/categories", async (req, res) => {
+  const userId = req.query.user_id;
+  if (!userId) return res.status(400).json({ error: "Missing user_id" });
+
+  res.json(await getCategoriesFromDB(userId));
+});
 
 
 app.listen(5001, () => {

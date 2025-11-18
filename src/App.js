@@ -122,7 +122,19 @@ const HomePage = () => {
       })
       .catch((error) => console.error("Error loading settings:", error));
   }, []);
+  // backend down check
+  useEffect(() => {
+  async function pingBackend() {
+    try {
+      const res = await fetch("http://localhost:5001/api/health");
+      if (!res.ok) throw new Error();
+    } catch (err) {
+      alert("⚠️ Backend offline — data will NOT load!");
+    }
+  }
 
+  pingBackend();
+}, []);
   
 
   const { data,addExpense,reloadData } = useContext(DataContext); // Access global expense data from context
@@ -1287,7 +1299,8 @@ const HomePage = () => {
     );
   };
   
-  const [visibleWatermark, setVisibleWaterMark] = useState(true);
+  // set water mark to false or else keep on showing everytime refresh/enter homepage
+  const [visibleWatermark, setVisibleWaterMark] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setVisibleWaterMark(false), 2000);
