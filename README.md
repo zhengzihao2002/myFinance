@@ -4,7 +4,7 @@
 **Version:** 1.0
 **Author:** Zihao Zheng
 **Platform:** React + Node.js (Express)
-**Database:** JSON-based local storage (no cloud dependencies)
+**Database:** Supabase (Cloud) and Json (local)
 
 ---
 
