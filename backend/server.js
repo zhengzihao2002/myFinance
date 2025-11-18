@@ -1,5 +1,10 @@
-import dotenv from "dotenv";
-dotenv.config();
+if (process.env.NODE_ENV !== 'production') {
+  // dynamically import dotenv only for local dev
+  import('dotenv/config')// this automatically runs dotenv.config()
+  .then(() => console.log('✅ Loaded .env for local dev'))
+    .catch((err) => console.error('❌ Failed to load dotenv', err));
+}
+
 
 
 import express from "express";
