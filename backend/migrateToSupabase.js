@@ -172,8 +172,9 @@ async function migrateIncomes(incomes, user_id) {
 
     rows.push({
       user_id,
-      category: inc.category || inc.description || "Income",
-      amount,
+      before_tax:inc.before_tax,
+      after_tax:inc.after_tax,
+      tax_percentage:inc.tax_percentage,
       description: inc.description || "",
       date: inc.date || new Date().toISOString().slice(0, 10),
       external_id: inc.id || null,

@@ -13,6 +13,7 @@
     "cra-template": "1.2.0",
     "framer-motion": "^12.23.24",
     "lucide-react": "^0.539.0",
+    "play-sound": "^1.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-google-charts": "^5.2.1",
@@ -28,7 +29,6 @@
     "backend": "cd backend && node server.js",
     "predev": "node -e \"if (!require('fs').existsSync('node_modules')) { console.log('node_modules missing — installing...'); require('child_process').execSync('npm install', { stdio: 'inherit' }); }\"",
     "dev": "concurrently \"npm run start\" \"npm run backend\"",
-    "postinstall": "cd backend && npm install"
   },
   "eslintConfig": {
     "extends": [
