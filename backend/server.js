@@ -767,6 +767,7 @@ app.get("/api/test/expenses", async (req, res) => {
   const userId = req.query.user_id;
   if (!userId) return res.status(400).json({ error: "Missing user_id" });
 
+  // print out
   res.json(await getExpensesFromDB(userId));
 });
 

@@ -60,8 +60,8 @@ export async function getIncomeFromDB(user_id) {
     }
 
     return (data ?? []).map(i => ({
-      before_tax: i.amount?.toString() ?? "0",
-      after_tax: i.amount?.toString() ?? "0",
+      before_tax: i.before_tax?.toString() ?? "0",
+      after_tax: i.after_tax?.toString() ?? "0",
       description: i.description || "",
       tax_percentage: null,
       date: i.date,
