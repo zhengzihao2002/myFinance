@@ -4381,6 +4381,7 @@ const ShowExpensePage = () => {
         finalExpenses.push({
           id: null,
           category: `${categoriesTranslation[category] || category}  总消费: $${categoryTotal.toFixed(2)}`,
+          rawCategory: category,
           amount: "",
           date: "",
           description: "",
@@ -4632,6 +4633,8 @@ const ShowExpensePage = () => {
       console.log("Modified fields: ", modifiedFields.join(", "));
       // Update the global expense data
       updateExpense(updatedExpense);
+          console.log("Expanded Categories State11111:", expandedCategories);
+
     } else {
       console.log("No modifications made.");
     }
@@ -4712,91 +4715,99 @@ const ShowExpensePage = () => {
 
 
   // DATA TABLE (List by category table) FUNCTIONS
-  // Add state to track expanded categories - initialize as empty
   const [expandedCategories, setExpandedCategories] = useState({});
+
   // Initialize all categories as collapsed on first render
   React.useEffect(() => {
-    if (!isDataLoaded) return; // Don't initialize until data is loaded
+    if (!isDataLoaded) return;
     
     const expenses = filterExpenses();
-    const initialState = {};
     
-    expenses.forEach(expense => {
-      if (isClickableHeader(expense)) {
-        initialState[expense.category] = false;
-      }
+    setExpandedCategories(prev => {
+      const updated = { ...prev };
+      
+      expenses.forEach(expense => {
+        if (isClickableHeader(expense)) {
+          // Use rawCategory as the key (stable, doesn't change with totals)
+          const categoryKey = expense.rawCategory || expense.category;
+          
+          if (updated[categoryKey] === undefined) {
+            updated[categoryKey] = autoExpand ? true : false;
+          }
+        }
+      });
+      
+      return updated;
     });
     
-    if (Object.keys(initialState).length > 0) {
-      setExpandedCategories(initialState);
+    if (!isCategoriesInitialized) {
+      setIsCategoriesInitialized(true);
     }
-    
-    setIsCategoriesInitialized(true);
-  }, [isDataLoaded, appliedFilters]); // Add isDataLoaded as dependency
+  }, [isDataLoaded, appliedFilters]);
+
   // Function to toggle category expansion
-  const toggleCategory = (categoryName) => {
+  const toggleCategory = (expense) => {
+    const key = expense.rawCategory || expense.category;
     setExpandedCategories(prev => ({
       ...prev,
-      [categoryName]: !prev[categoryName]
+      [key]: !prev[key]
     }));
   };
+
   // Function to check if a row is a header (but not a total summary)
   const isHeaderRow = (expense) => {
     return expense.actions === null && expense.amount === "";
   };
+
   // Function to check if a row is a total summary row
   const isTotalSummaryRow = (expense) => {
     return expense.category && 
           (expense.category.includes("总共消费") || 
             expense.category.includes("Total Expenses"));
   };
+
   // Function to check if a row is a clickable category header
   const isClickableHeader = (expense) => {
     return isHeaderRow(expense) && !isTotalSummaryRow(expense);
   };
+
   // Function to check if a row should be visible
   const shouldShowRow = (expense, index, allExpenses) => {
-    // Always show header rows and total summary rows
     if (isHeaderRow(expense)) {
       return true;
     }
     
-    // Find the parent header for this transaction
     for (let i = index - 1; i >= 0; i--) {
       if (isClickableHeader(allExpenses[i])) {
-        // This is the parent header - explicitly check for true
-        return expandedCategories[allExpenses[i].category] === true;
+        // Use rawCategory as the key
+        const categoryKey = allExpenses[i].rawCategory || allExpenses[i].category;
+        return expandedCategories[categoryKey] === true;
       }
-      // Stop if we hit a total summary row
       if (isTotalSummaryRow(allExpenses[i])) {
         break;
       }
     }
     
-    return false; // Default to collapsed if no header found
+    return false;
   };
+
   const [prevShowType, setPrevShowType] = useState(appliedFilters.showType);
 
-
-
-  // Previous showtype tracking to prevent auto expand collapse when mode changes to show by cateogry
   useEffect(() => {
     if (prevShowType !== appliedFilters.showType) {
       setPrevShowType(appliedFilters.showType);
     }
   }, [appliedFilters.showType]);
 
-
-
-    // Add auto-expand state with localStorage
   const [autoExpand, setAutoExpand] = useState(() => {
     const storedAutoExpand = localStorage.getItem("autoExpand");
     return storedAutoExpand !== null ? JSON.parse(storedAutoExpand) : false;
   });
-  // Save auto-expand state to localStorage whenever it changes
+
   useEffect(() => {
     localStorage.setItem("autoExpand", JSON.stringify(autoExpand));
   }, [autoExpand]);
+
   // Auto-expand all categories when autoExpand is enabled
   useEffect(() => {
     if (autoExpand && isDataLoaded && isCategoriesInitialized) {
@@ -4805,19 +4816,20 @@ const ShowExpensePage = () => {
       
       expenses.forEach(expense => {
         if (isClickableHeader(expense)) {
-          expandAll[expense.category] = true;
+          const categoryKey = expense.rawCategory || expense.category;
+          expandAll[categoryKey] = true;
         }
       });
       
       setExpandedCategories(expandAll);
     } else if (!autoExpand && isDataLoaded && isCategoriesInitialized) {
-      // Collapse all when unchecked
       const expenses = filterExpenses();
       const collapseAll = {};
       
       expenses.forEach(expense => {
         if (isClickableHeader(expense)) {
-          collapseAll[expense.category] = false;
+          const categoryKey = expense.rawCategory || expense.category;
+          collapseAll[categoryKey] = false;
         }
       });
       
@@ -5187,7 +5199,8 @@ const ShowExpensePage = () => {
               const isHeader = isHeaderRow(expense);
               const isClickable = isClickableHeader(expense);
               const shouldShow = shouldShowRow(expense, index, allExpenses);
-              const isExpanded = expandedCategories[expense.category];
+              const isExpanded = expandedCategories[expense.rawCategory || expense.category];
+
 
               
               return (
@@ -5198,7 +5211,9 @@ const ShowExpensePage = () => {
                   data-clickable-header={isClickable && appliedFilters.showType == "List all Category Expenses" ? "true" : undefined}
                   data-expanded={isClickable && appliedFilters.showType == "List all Category Expenses" && isExpanded ? "true" : undefined}
                   data-collapsed={!isHeader && appliedFilters.showType == "List all Category Expenses" && !shouldShow ? "true" : undefined}
-                  onClick={isClickable && appliedFilters.showType == "List all Category Expenses" ? () => toggleCategory(expense.category) : undefined}
+                  onClick={isClickable && appliedFilters.showType == "List all Category Expenses" 
+                    ? () => toggleCategory(expense)  // Pass entire expense object
+                    : undefined}
                   style={{
                     cursor: isClickable && appliedFilters.showType == "List all Category Expenses" ? "pointer" : "default",
                     ...(isClickable && appliedFilters.showType == "List all Category Expenses" ? { userSelect: "none" } : {}),
