@@ -4631,9 +4631,17 @@ const ShowExpensePage = () => {
 
     if (modifiedFields.length > 0) {
       console.log("Modified fields: ", modifiedFields.join(", "));
+      // If category changed, immediately add new category to expandedCategories. without this, it would have race condition and the new cateogory would only be added to expandedCategories AFTER render
+      if (updatedExpense.category !== original.category) {
+        setExpandedCategories(prev => ({
+          ...prev,
+          [updatedExpense.category]: autoExpand  // Use autoExpand setting
+        }));
+      }
+
       // Update the global expense data
       updateExpense(updatedExpense);
-          console.log("Expanded Categories State11111:", expandedCategories);
+      console.log("Expanded Categories State11111:", expandedCategories);
 
     } else {
       console.log("No modifications made.");
@@ -4732,7 +4740,7 @@ const ShowExpensePage = () => {
           const categoryKey = expense.rawCategory || expense.category;
           
           if (updated[categoryKey] === undefined) {
-            updated[categoryKey] = autoExpand ? true : false;
+            updated[categoryKey] = autoExpand;
           }
         }
       });
