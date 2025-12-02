@@ -5285,7 +5285,7 @@ const ShowExpensePage = () => {
                       : ("")}
                   </div>
 
-                  <div className="description" data-fulltext={expense.description}>
+                  <div className="description ellipsis" data-fulltext={expense.description}>
                     {expense.description}
                   </div>
 

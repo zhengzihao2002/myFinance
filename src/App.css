@@ -294,6 +294,13 @@ body,
 .expense-display .action-btn:hover {
   background-color: #45a049;
 }
+.ellipsis {
+  white-space: nowrap;        /* keep text on one line */
+  overflow: hidden;           /* hide overflowed text */
+  text-overflow: ellipsis;    /* show "..." */
+  max-width: 100%;            /* ensure width constraints apply */
+  display: block;             /* required for some layouts */
+}
 
 
 @keyframes slideDown {
