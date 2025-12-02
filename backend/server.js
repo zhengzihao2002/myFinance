@@ -752,6 +752,123 @@ app.get("/api/fullData", async (req, res) => {
   }
 });
 
+// -------------------------------------------------------
+// 🔥 Compare DB vs Local JSON
+// GET /api/diff?user_id=xxxx
+// -------------------------------------------------------
+app.get("/api/diff", async (req, res) => {
+  try {
+    const userId = req.query.user_id;
+    if (!userId) return res.status(400).json({ error: "Missing user_id" });
+
+    // -----------------------
+    // 1. Fetch DB data
+    // -----------------------
+    const [dbExpenses, dbIncome, dbPrepays, dbChecking, dbCategories] =
+      await Promise.all([
+        getExpensesFromDB(userId),
+        getIncomeFromDB(userId),
+        getPrepaysFromDB(userId),
+        getCheckingHistoryFromDB(userId),
+        getCategoriesFromDB(userId)
+      ]);
+
+    // -----------------------
+    // 2. Load Local JSON
+    // -----------------------
+    const localData = JSON.parse(fs.readFileSync(dataFilePath, "utf8"));
+    const localCategories = JSON.parse(fs.readFileSync(categoriesFilePath, "utf8"));
+    const localPrepay = JSON.parse(fs.readFileSync(prepayFilePath, "utf8"));
+    const localChecking = JSON.parse(fs.readFileSync(recentTransactionsFilePath, "utf8"));
+
+    const localExpenses = localData.expenses || [];
+    const localIncome = localData.income || [];
+
+    // -----------------------------------------------------
+    // Helper to compare by ID
+    // -----------------------------------------------------
+    const indexById = arr => {
+      const map = {};
+      arr.forEach(item => { map[item.id] = item; });
+      return map;
+    };
+
+    const compareArrays = (localArr, dbArr) => {
+      const localMap = indexById(localArr);
+      const dbMap = indexById(dbArr);
+
+      const onlyLocal = [];
+      const onlyDB = [];
+
+      // local → DB missing
+      for (const id in localMap) {
+        if (!dbMap[id]) onlyLocal.push(localMap[id]);
+      }
+
+      // DB → local missing
+      for (const id in dbMap) {
+        if (!localMap[id]) onlyDB.push(dbMap[id]);
+      }
+
+      return { onlyLocal, onlyDB };
+    };
+
+    // -----------------------------
+    // 3. Build diffs
+    // -----------------------------
+    const expensesDiff = compareArrays(localExpenses, dbExpenses);
+    const incomeDiff = compareArrays(localIncome, dbIncome);
+    const prepaysDiff = compareArrays(localPrepay, dbPrepays);
+
+    // Checking — compare by external_id/id
+    const formatCheckingLocal = (ch) =>
+      (ch.CheckingRecent100 || []).map(t => ({
+        date: t[0],
+        type: t[1],
+        amount: t[2],
+        total: t[3],
+        id: t[4]
+      }));
+
+    const checkingLocal = formatCheckingLocal(localChecking);
+    const checkingDB = dbChecking.CheckingRecent100.map(t => ({
+      date: t[0],
+      type: t[1],
+      amount: t[2],
+      total: t[3],
+      id: t[4]
+    }));
+
+    const checkingDiff = compareArrays(checkingLocal, checkingDB);
+
+    // Categories — compare keys
+    const categoryKeysLocal = new Set(Object.keys(localCategories));
+    const categoryKeysDB = new Set(Object.keys(dbCategories));
+
+    const categoriesOnlyLocal = [...categoryKeysLocal].filter(k => !categoryKeysDB.has(k));
+    const categoriesOnlyDB = [...categoryKeysDB].filter(k => !categoryKeysLocal.has(k));
+
+    // -----------------------------
+    // 4. Return diff
+    // -----------------------------
+    res.json({
+      expenses: expensesDiff,
+      income: incomeDiff,
+      prepays: prepaysDiff,
+      checking: checkingDiff,
+      categories: {
+        onlyLocal: categoriesOnlyLocal,
+        onlyDB: categoriesOnlyDB
+      }
+    });
+
+  } catch (err) {
+    console.error("DIFF ERROR:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });
