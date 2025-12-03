@@ -23,6 +23,7 @@ git update-index --skip-worktree userData/data.json
 git update-index --skip-worktree userData/prepay_schedule.json
 git update-index --skip-worktree userData/recentTransactions.json
 git update-index --skip-worktree userData/checkingHistory.txt
+git update-index --skip-worktree userData/categories.json
 ```
 
 ### (Optional) Also skip build outputs & env files
