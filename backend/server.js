@@ -208,7 +208,21 @@ const createBackup = (callback) => {
 
 // Helper function to play success audio
 const playSuccessAudio = () => {
-  exec(`afplay "${successAudioPath}"`, (err) => {
+  const platform = os.platform();
+  let command;
+
+  if (platform === "darwin") {
+    // macOS
+    command = `afplay "${successAudioPath}"`;
+  } else if (platform === "win32") {
+    // Windows
+    command = `powershell -c (New-Object Media.SoundPlayer "${successAudioPath}").PlaySync();`;
+  } else {
+    // Linux
+    command = `aplay "${successAudioPath}" || paplay "${successAudioPath}"`;
+  }
+
+  exec(command, (err) => {
     if (err) {
       console.error("Failed to play success audio:", err);
     } else {
