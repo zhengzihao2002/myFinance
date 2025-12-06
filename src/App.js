@@ -49,9 +49,8 @@ const years = ["2023", "2024"];
 const displayTypes = ["Category Sum", "List all Category Expenses", "List all Expenses by Date"];
 
 
-let positive = "#2fc977";
-
-let negative = "#ff3714";
+// let positive = "#2fc977";
+// let negative = "#ff3714";
 
 function createId(dateStr) {
   // Parse the date string into a Date object
@@ -84,7 +83,7 @@ function getLocalDateString() {
 const changeLightMode = (newlightMode) => {
   localStorage.setItem("lightMode", newlightMode);
   document.documentElement.setAttribute('data-theme', newlightMode);
-};
+  console.log("Light mode changed to:", newlightMode);};
 
 function parseDate(dateString) {
   const [year, month, day] = dateString.split("-");
@@ -883,16 +882,16 @@ const HomePage = () => {
     const isIncrease = change > 0;
     const color = isExpense
       ? isIncrease
-        ? negative
-        : positive
+        ? "negative"
+        : "positive"
       : isIncrease
-      ? positive
-      : negative;
+      ? "positive"
+      : "negative";
     const arrow = isIncrease ? "↑" : "↓";
     const arrowClass = isIncrease ? "icon-arrow-up2" : "icon-arrow-down2";
 
     return (
-      <span style={{ color, fontWeight: "bold",height: "31px",
+      <span className={color} style={{ fontWeight: "bold",height: "31px",
                     lineHeight: "31px",display: "inline-block",
                     overflow: "hidden",}}>
         <span className={arrowClass} style={{height: "31px",lineHeight: "31px",display: "inline-block",  }}></span> {Math.abs(change).toFixed(1)}%
@@ -1310,35 +1309,35 @@ const HomePage = () => {
   return (
     <div className="homepage-container">
       <div
-      style={{
-        position: "absolute",
-        bottom: "8px",
-        left: "50%",
-        transform: "translateX(-50%)",
-        fontFamily: "'Cinzel', 'Playfair Display', serif",
-        fontSize: "11px",
-        letterSpacing: "1.5px",
-        fontWeight: 500,
-        fontStyle: "italic",
-        userSelect: "none",
-        pointerEvents: "none",
-        opacity: visibleWatermark ? 0.9 : 0,
-        transition: "opacity 0.5s ease-in-out",
-        color: lightMode === "dark" ? "#d4af37" : "#4b4b4b",
-        background:
-          lightMode === "dark"
-            ? "linear-gradient(90deg, #d4af37, #f8e473, #d4af37)"
-            : "none",
-        WebkitBackgroundClip: lightMode === "dark" ? "text" : "unset",
-        WebkitTextFillColor: lightMode === "dark" ? "transparent" : "unset",
-        textShadow:
-          lightMode === "light"
-            ? "0 1px 2px rgba(0,0,0,0.25)"
-            : "0 0 4px rgba(255,255,255,0.2)",
-      }}
-    >
-      Designed by Zihao Zheng in NYC
-    </div>
+        style={{
+          position: "absolute",
+          bottom: "8px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          fontFamily: "'Cinzel', 'Playfair Display', serif",
+          fontSize: "11px",
+          letterSpacing: "1.5px",
+          fontWeight: 500,
+          fontStyle: "italic",
+          userSelect: "none",
+          pointerEvents: "none",
+          opacity: visibleWatermark ? 0.9 : 0,
+          transition: "opacity 0.5s ease-in-out",
+          color: lightMode === "dark" ? "#d4af37" : "#4b4b4b",
+          background:
+            lightMode === "dark"
+              ? "linear-gradient(90deg, #d4af37, #f8e473, #d4af37)"
+              : "none",
+          WebkitBackgroundClip: lightMode === "dark" ? "text" : "unset",
+          WebkitTextFillColor: lightMode === "dark" ? "transparent" : "unset",
+          textShadow:
+            lightMode === "light"
+              ? "0 1px 2px rgba(0,0,0,0.25)"
+              : "0 0 4px rgba(255,255,255,0.2)",
+        }}
+      >
+        Designed by Zihao Zheng in NYC
+      </div>
 
       <button
         className={`icon-button ${!showButtons ? "icon-fade-out" : ""}`}
@@ -1621,13 +1620,13 @@ const HomePage = () => {
             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", width: "100%"}}>
               {/* Expenses */}
               <div className="panel_font_size" style={{
-    marginBottom: "10px",
-    height: "31px",             // ✅ FIXED height instead of minHeight
-    lineHeight: "31px",         // ✅ Keeps vertical centering
-    overflow: "hidden",         // ✅ Prevent vertical growth
-    whiteSpace: "nowrap",       // ✅ Prevent wrapping
-    textOverflow: "ellipsis",   // ✅ Adds "..." if it can’t fit
-  }}>
+                marginBottom: "10px",
+                height: "31px",             // ✅ FIXED height instead of minHeight
+                lineHeight: "31px",         // ✅ Keeps vertical centering
+                overflow: "hidden",         // ✅ Prevent vertical growth
+                whiteSpace: "nowrap",       // ✅ Prevent wrapping
+                textOverflow: "ellipsis",   // ✅ Adds "..." if it can’t fit
+              }}>
                 <strong
                   style={{
                     display: "inline-block",
@@ -1671,13 +1670,13 @@ const HomePage = () => {
 
               {/* Income */}
               <div className="panel_font_size" style={{
-    marginBottom: "10px",
-    height: "31px",             // ✅ FIXED height instead of minHeight
-    lineHeight: "31px",         // ✅ Keeps vertical centering
-    overflow: "hidden",         // ✅ Prevent vertical growth
-    whiteSpace: "nowrap",       // ✅ Prevent wrapping
-    textOverflow: "ellipsis",   // ✅ Adds "..." if it can’t fit
-  }}>
+                marginBottom: "10px",
+                height: "31px",             // ✅ FIXED height instead of minHeight
+                lineHeight: "31px",         // ✅ Keeps vertical centering
+                overflow: "hidden",         // ✅ Prevent vertical growth
+                whiteSpace: "nowrap",       // ✅ Prevent wrapping
+                textOverflow: "ellipsis",   // ✅ Adds "..." if it can’t fit
+              }}>
                 <strong
                   style={{
                     display: "inline-block",
@@ -2193,8 +2192,11 @@ const HomePage = () => {
                   const isExpense = category === "Expense";
                   const isIncome = category === "Income";
                   const isManual = category === "Manual";
-                  const amountColor = isExpense ? "red" : isIncome ? "green" : "black";
-
+                  const amountClass = isExpense 
+                    ? "negative" 
+                    : isIncome 
+                      ? "positive" 
+                      : "";
                   return (
                     <div
                       key={index}
@@ -2215,8 +2217,15 @@ const HomePage = () => {
                       <span style={{ width: "14%" }}>
                         {category === "Expense" ? "支出" : category === "Income" ? "收入" : "手动调整"}
                       </span>
-                      <span style={{ width: "23%", color: amountColor, fontWeight: "bold" }}>
-                        {isExpense ? "-" : isIncome ? "+" : isManual && parseFloat(amount) > 0 ? "+" : "-"}
+                      <span className={amountClass} style={{ width: "23%", fontWeight: "bold" }}>
+                        {isExpense 
+                          ? "-" 
+                          : isIncome 
+                            ? "+" 
+                            : isManual && parseFloat(amount) > 0 
+                              ? "+" 
+                              : "-"
+                        }
                         ${Math.abs(parseFloat(amount)).toFixed(2)}
                       </span>
                       <span style={{ width: "23%" }}>
@@ -2718,29 +2727,20 @@ const RecordExpensePage = () => {
                 <span className="icon-search"></span>
             </button>
               {suggestions.length > 0 && (
-                <ul
+                <ul data-suggestions
                   style={{
-                    position: "absolute",
-                    top: "100%",
-                    left: 0,
-                    right: 0,
-                    background: "white",
-                    border: "1px solid #ccc",
-                    listStyle: "none",
-                    padding: 0,
-                    margin: 0,
-                    maxHeight: "150px",
-                    overflowY: "auto",
-                    zIndex: 10
+                    
                   }}
                 >
                   {suggestions.slice(0, 5).map((sugg, index) => (
                     <li
                       key={index}
+                      onMouseEnter={()=>setHighlightedIndex(index)}
                       style={{
                         padding: "8px",
                         cursor: "pointer",
-                        backgroundColor: index === highlightedIndex ? "#f0f0f0" : "transparent"
+                        backgroundColor: index === highlightedIndex ? "#f0f0f0" : "transparent",
+                        color:index === highlightedIndex?"black":""
                       }}
                       // Use onMouseDown rather than onClick to ensure selection happens before input blur.
                       onMouseDown={() => {
@@ -2795,9 +2795,11 @@ const RecordExpensePage = () => {
               onMouseOver={(e) => {
                 e.target.style.backgroundColor = "#eaeaea";
                 e.target.style.boxShadow = "0 4px 6px rgba(0,0,0,0.15)";
+                e.target.style.color = "#000000";
               }}
               onMouseOut={(e) => {
-                e.target.style.backgroundColor = "#f9f9f9";
+                // e.target.style.backgroundColor = "#f9f9f9";
+                e.target.style.backgroundColor = "";
                 e.target.style.boxShadow = "0 1px 3px rgba(0,0,0,0.1)";
               }}
               className="today-btn"
@@ -3637,7 +3639,7 @@ const [scheduledPrepays, setScheduledPrepays] = useState([]);
               </div>
             ) : (
               scheduledPrepays.map((item, index) => (
-                <div className="table-row" key={index}>
+                <div className="table-row" key={index} data-has-actions={item.actions !== null ? "true" : undefined}>
                   <div>
                     {item.frequencyMode === "每"
                       ? `每 ${item.frequencyNumber} ${item.frequencyUnit}`
@@ -4078,7 +4080,6 @@ const RecordIncomePage = () => {
           </div>
           <div style={{ flex: "0 0 20%" }}>
             <button
-              className="today-btn"
               onClick={() => {
                 const localDate = getLocalDateString();
                 setDate(localDate);
@@ -4086,11 +4087,14 @@ const RecordIncomePage = () => {
               onMouseOver={(e) => {
                 e.target.style.backgroundColor = "#eaeaea";
                 e.target.style.boxShadow = "0 4px 6px rgba(0,0,0,0.15)";
+                e.target.style.color = "#000000";
               }}
               onMouseOut={(e) => {
-                e.target.style.backgroundColor = "#f9f9f9";
+                // e.target.style.backgroundColor = "#f9f9f9";
+                e.target.style.backgroundColor = "";
                 e.target.style.boxShadow = "0 1px 3px rgba(0,0,0,0.1)";
               }}
+              className="today-btn"
             >
               Today
             </button>

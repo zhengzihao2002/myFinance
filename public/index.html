@@ -43,12 +43,23 @@
       body {
         background-color: white;
       }
+      .positive{
+        color: #008000; 
+      }
+      .negative{
+        color:#FF0000;
+      }
 
       /* Dark mode */
       [data-theme="dark"] body {
         background-color: rgba(28, 28, 30, 0.9);
       }
-
+      [data-theme="dark"] .positive{
+        color: #2fc977; 
+      }
+      [data-theme="dark"] .negative{
+        color:#ff4c2d;
+      }
       [data-theme="dark"] .left-box,
       [data-theme="dark"] .right-box,
       [data-theme="dark"] .bottom-box,
@@ -56,10 +67,38 @@
       [data-theme="dark"] .flip-container .back {
         background-color: rgba(119, 119, 119, 0.8);
       }
-
+      [data-theme="dark"] .expense-display,
+      [data-theme="dark"] .income-display,
+      [data-theme="dark"] .modify-expense-header,
+      [data-theme="dark"] .modify-income-header,
+      [data-theme="dark"] .income-page,
+      [data-theme="dark"] .expense-page,
+      [data-theme="dark"] [class*="dialog"] ,
+      [data-theme="dark"] [class*="modal-container"],
+      [data-theme="dark"] [class*="modal-header"],
+      [data-theme="dark"] [class*="modal-title"],
+      [data-theme="dark"] [class*="modal-body"],
+      h3,p{
+        background-color: rgb(75, 75, 75)!important;
+        color:white!important;
+      }
+      [data-theme="dark"] .expense-display .table-header,
+      [data-theme="dark"] .income-display .table-header,
+      [data-theme="dark"] input,
+      [data-theme="dark"] select,
+      [data-theme="dark"] textarea,
+      [data-theme="dark"] .today-btn,
+      [data-theme="dark"] ul[data-suggestions],
+      [data-theme="dark"] .modal-footer{
+        background-color: rgb(97, 97, 97)!important;
+        color:white!important;
+      }
       [data-theme="dark"] .homepage-container [class^="icon-button"] span {
         color: white;
       }
+      [data-theme="dark"] input::placeholder{
+        color: #d3d3d3;
+      }      
     </style>
     
     <!-- THEN set the attribute -->

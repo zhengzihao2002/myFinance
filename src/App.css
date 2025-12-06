@@ -5,8 +5,9 @@
 
   font-family: "ZCOOL QingKe HuangYou", serif;
 }
+
 :root {
-  --bgc-duration: 0.6s;
+  --bgc-duration: 0.3s;
   --bgc-ease: ease;
 }
 
@@ -198,7 +199,8 @@ body,
 支出明细/收入明细
 */
 .table-row[data-has-actions="true"]:hover {
-  background-color: #e0e0e0; /* or any darker color you want */
+  background-color: #e0e0e0; 
+  color:black;
 }
 /* Expense Display Section */
 .expense-display {
@@ -348,8 +350,8 @@ body,
   height: 42px;
   margin-top: 8px;
   padding: 10px 16px;
-  background-color: #f9f9f9;
-  color: #333;
+  /* background-color: #f9f9f9; */
+  /* color: #333; */
   border: 2px solid black;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -358,6 +360,21 @@ body,
   transition: background-color 0.2s ease, box-shadow 0.2s ease;
   box-sizing: border-box;
 }
+ul[data-suggestions] {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 150px;
+  overflow-y: auto;
+  z-index: 10;
+}
+
 
 /*modal*/
 .modal-title{
@@ -1025,7 +1042,7 @@ body,
   /* justify-content: space-between; */ 
   padding: 10px 20px;
   background-color: #f1f1f1;
-  border-top: 1px solid #ddd;
+  /* border-top: 1px solid #ddd; */
   text-align: center;
 
   flex-shrink: 0;
@@ -1314,15 +1331,7 @@ h1 {
   background-color: #FF4C4C;
 }
 .h-nobold{font-weight: normal;}
-.positive{
-  /* color:#28a864; */
-  color: #2fc977;
-}
-.negative{
-  /* color:#FF2800; */
-  color:#ff3714;
 
-}
 
 
 
@@ -1392,7 +1401,14 @@ label {
     box-shadow: 0 0 0 0.3rem rgba(0, 123, 255, 0.25);
   }
 }
-
+.expense-page select,
+.expense-page input,
+.expense-page textarea,
+.income-page select,
+.income-page input,
+.income-page textarea {
+  border: 2px solid transparent;
+}
 .expense-page select:focus,
 .expense-page input:focus,
 .expense-page textarea:focus,

@@ -1,9 +1,7 @@
 import 'dotenv/config';
 import dotenv from "dotenv";
-dotenv.config();
 
 import os from "os";
-
 import express from "express";
 import fs from "fs";
 import path from "path";
@@ -20,6 +18,8 @@ import {
   getCheckingHistoryFromDB,
   getCategoriesFromDB
 } from "./util/dbFetch.js";
+
+dotenv.config();
 
 // Recreate __dirname for ESM
 const __filename = fileURLToPath(import.meta.url);
