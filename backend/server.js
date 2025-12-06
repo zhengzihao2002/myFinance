@@ -2,6 +2,7 @@ import 'dotenv/config';
 import dotenv from "dotenv";
 dotenv.config();
 
+import os from "os";
 
 import express from "express";
 import fs from "fs";
