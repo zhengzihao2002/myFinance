@@ -59,14 +59,22 @@ export async function getIncomeFromDB(user_id) {
       return [];
     }
 
-    return (data ?? []).map(i => ({
-      before_tax: i.before_tax?.toString() ?? "0",
-      after_tax: i.after_tax?.toString() ?? "0",
-      description: i.description || "",
-      tax_percentage: null,
-      date: i.date,
-      id: i.external_id ?? i.id
-    }));
+    return (data ?? []).map(i => {
+      const before = parseFloat(i.before_tax) || 0;
+      const after = parseFloat(i.after_tax) || 0;
+
+      // Income tax calculation: after-tax is lower
+      const tax_percentage = before > 0 ? ((before - after) / before) * 100 : 0;
+
+      return {
+        before_tax: i.before_tax?.toString() ?? "0",
+        after_tax: i.after_tax?.toString() ?? "0",
+        description: i.description || "",
+        tax_percentage: tax_percentage, // raw decimal
+        date: i.date,
+        id: i.external_id ?? i.id
+      };
+    });
 
   } catch (err) {
     console.error("Income exception:", err);
@@ -153,19 +161,25 @@ export async function getCategoriesFromDB(user_id) {
   try {
     const { data, error } = await supabase
       .from("categories")
-      .select("*")
+      .select("name, name_zh, metadata")
       .eq("user_id", user_id);
 
     if (error) {
-      // If DB rejects the user ID (invalid or non-existing), just log a friendly message
       console.log(`User ${user_id} not found`);
-      return [];
+      return {};
     }
 
     const dict = {};
-    for (const c of (data ?? [])) {
-      dict[c.name] = c.icon_url || c.name;
+
+    for (const c of data ?? []) {
+      const zh =
+        c.name_zh ||
+        c?.metadata?.translations?.zh ||
+        c.name; // fallback to English if no Chinese available
+
+      dict[c.name] = zh;
     }
+
     return dict;
 
   } catch (err) {
@@ -173,3 +187,4 @@ export async function getCategoriesFromDB(user_id) {
     return {};
   }
 }
+

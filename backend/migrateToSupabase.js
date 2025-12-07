@@ -282,18 +282,29 @@ async function migrateCheckingHistory(transactionsObj, user_id) {
 
 async function migrateCategories(categoriesObj, user_id) {
   console.log(`\n--- Migrating categories ---`);
+  
   const rows = [];
   for (const [name, zh] of Object.entries(categoriesObj || {})) {
     rows.push({
       user_id,
       name,
+      name_zh: zh || null,   // add Chinese translation
       icon_url: null,
       type: "Expense",
+
+      // future-proof metadata
+      metadata: {
+        translations: {
+          zh: zh || null
+        }
+      }
     });
   }
-  // We don't check duplicates here — rely on unique constraint if set; log errors
+
+  // Insert all rows at once (errors handled by batchInsert)
   return batchInsert("categories", rows);
 }
+
 
 /* ====== CLEAR EXISTING TABLES ====== */
 async function clearTables() {
