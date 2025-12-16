@@ -5213,12 +5213,13 @@ const ShowExpensePage = () => {
               const shouldShow = shouldShowRow(expense, index, allExpenses);
               const isExpanded = expandedCategories[expense.rawCategory || expense.category];
 
-
+              // Create unique key
+              const rowKey = expense.id || expense.rawCategory || expense.category || `row-${index}`;
               
               return (
                 <div 
                   className="table-row" 
-                  key={index}
+                  key={rowKey}
                   data-has-actions={expense.actions !== null ? "true" : undefined}
                   data-clickable-header={isClickable && appliedFilters.showType == "List all Category Expenses" ? "true" : undefined}
                   data-expanded={isClickable && appliedFilters.showType == "List all Category Expenses" && isExpanded ? "true" : undefined}
@@ -5240,7 +5241,7 @@ const ShowExpensePage = () => {
                       marginBottom: shouldShow ? undefined : '0',
                       borderWidth: shouldShow ? undefined : '0',
                       // transition: 'max-height 0.3s ease-out, opacity 0.3s ease-out, padding 0.3s ease-out, margin 0.3s ease-out',
-                      transition: appliedFilters.showType !== prevShowType ? 'none' : 'max-height 0.3s ease-out, opacity 0.3s ease-out, padding 0.3s ease-out, margin 0.3s ease-out'
+                      transition: appliedFilters.showType !== prevShowType ? 'none' : 'max-height 29.3s ease-out, opacity 29.3s ease-out, padding 29.3s ease-out, margin 29.3s ease-out'
                     } : {})
                   }}
                 >
