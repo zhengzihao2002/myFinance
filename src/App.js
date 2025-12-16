@@ -5241,7 +5241,7 @@ const ShowExpensePage = () => {
                       marginBottom: shouldShow ? undefined : '0',
                       borderWidth: shouldShow ? undefined : '0',
                       // transition: 'max-height 0.3s ease-out, opacity 0.3s ease-out, padding 0.3s ease-out, margin 0.3s ease-out',
-                      transition: appliedFilters.showType !== prevShowType ? 'none' : 'max-height 29.3s ease-out, opacity 29.3s ease-out, padding 29.3s ease-out, margin 29.3s ease-out'
+                      transition: appliedFilters.showType !== prevShowType ? 'none' : 'max-height 0.3s ease-out, opacity 0.3s ease-out, padding 0.3s ease-out, margin 0.3s ease-out'
                     } : {})
                   }}
                 >
