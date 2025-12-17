@@ -4489,9 +4489,9 @@ const ShowExpensePage = () => {
             }
           }
 
-          if (mIndex !== null && mIndex !== undefined && mIndex >= 0 && mIndex <= 11) {
-            return `${mIndex + 1}月`;
-          }
+          // if (mIndex !== null && mIndex !== undefined && mIndex >= 0 && mIndex <= 11) {
+          //   return `${mIndex + 1}月`;
+          // }
 
           // fallback to raw label
           return subOption || "";
