@@ -4183,6 +4183,65 @@ const ShowExpensePage = () => {
 
   const years = [...new Set(data.expenses.map(expense => new Date(expense.date).getFullYear()))];
 
+  // Build a human-friendly prefix based on the active time filter so the
+  // grand-total row shows context (e.g. "11月 总共消费", "2025 总共消费",
+  // "Q4 总共消费", "前3个月 总共消费").
+  const buildContextPrefix = () => {
+  const { filterOption, subOption, startDate, endDate, descriptionSearch } = appliedFilters;
+  
+  if (!filterOption || filterOption === "显示全部") return "";
+
+  if (filterOption === "自定义") {
+    let dateRange = "";
+    if (startDate && endDate) {
+      dateRange = `${startDate}至${endDate}`;
+    } else if (startDate) {
+      dateRange = `从${startDate}`;
+    } else if (endDate) {
+      dateRange = `至${endDate}`;
+    }
+    
+    let descPart = descriptionSearch ? ` 含'${descriptionSearch}'` : "";
+    return `${dateRange}${descPart}`.trim() || "自定义";
+  }
+  
+  if (filterOption === "按月显示") {
+    const monthNamesCN = {
+      一月: 0, 二月: 1, 三月: 2, 四月: 3, 五月: 4, 六月: 5,
+      七月: 6, 八月: 7, 九月: 8, 十月: 9, 十一月: 10, 十二月: 11,
+    };
+    const monthsEn = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December",
+    ];
+
+    let mIndex = null;
+    if (typeof subOption === "string") {
+      const maybeNum = parseInt(subOption, 10);
+      if (!Number.isNaN(maybeNum)) {
+        mIndex = maybeNum - 1;
+      } else if (monthNamesCN.hasOwnProperty(subOption)) {
+        mIndex = monthNamesCN[subOption];
+      } else {
+        const enIndex = monthsEn.indexOf(subOption);
+        if (enIndex !== -1) mIndex = enIndex;
+      }
+    }
+
+    if (mIndex !== null && mIndex !== undefined && mIndex >= 0 && mIndex <= 11) {
+      return `${mIndex + 1}月`;
+    }
+    return subOption || "";
+  }
+
+  if (filterOption === "按季度显示") return subOption || "";
+  if (filterOption === "按年份显示") return subOption || "";
+  if (filterOption === "前3个月" || filterOption === "前6个月" || filterOption === "前12个月") {
+    return filterOption;
+  }
+
+  return "";
+};
 
   const filterExpenses = () => {
     /* ---------- CONSTANTS ---------- */
@@ -4424,103 +4483,13 @@ const ShowExpensePage = () => {
       });
       console.log("FINAL:", finalExpenses);
 
-      // Build a human-friendly prefix based on the active time filter so the
-      // grand-total row shows context (e.g. "11月 总共消费", "2025 总共消费",
-      // "Q4 总共消费", "前3个月 总共消费").
-      const buildContextPrefix = () => {
-        if (!filterOption || filterOption === "显示全部") return "";
-
-        // Monthly: try to derive a numeric month (1-12) when possible, otherwise
-        // fall back to the raw label (which may already be localized like "十一月").
-        if (filterOption === "自定义") {
-          let dateRange = "";
-          if (startDate && endDate) {
-            dateRange = `${startDate}至${endDate}`;
-          } else if (startDate) {
-            dateRange = `从${startDate}`;
-          } else if (endDate) {
-            dateRange = `至${endDate}`;
-          }
-          
-          let descPart = descriptionSearch ? ` 含'${descriptionSearch}'` : "";
-          return `${dateRange}${descPart}`.trim() || "自定义";
-        }
-        if (filterOption === "按月显示") {
-          const monthNamesCN = {
-            一月: 0,
-            二月: 1,
-            三月: 2,
-            四月: 3,
-            五月: 4,
-            六月: 5,
-            七月: 6,
-            八月: 7,
-            九月: 8,
-            十月: 9,
-            十一月: 10,
-            十二月: 11,
-          };
-          const monthsEn = [
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December",
-          ];
-
-          let mIndex = null;
-          if (typeof subOption === "string") {
-            const maybeNum = parseInt(subOption, 10);
-            if (!Number.isNaN(maybeNum)) {
-              // numeric string like "11" or "2025-11" -> take first number
-              mIndex = maybeNum - 1;
-            } else if (monthNamesCN.hasOwnProperty(subOption)) {
-              mIndex = monthNamesCN[subOption];
-            } else {
-              const enIndex = monthsEn.indexOf(subOption);
-              if (enIndex !== -1) mIndex = enIndex;
-            }
-          }
-
-          if (mIndex !== null && mIndex !== undefined && mIndex >= 0 && mIndex <= 11) {
-            return `${mIndex + 1}月`;
-          }
-
-          // fallback to raw label
-          return subOption || "";
-        }
-
-        // Quarter, Year, or rolling windows: show the subOption or the filterOption
-        if (filterOption === "按季度显示") return subOption || ""; // e.g. Q4
-        if (filterOption === "按年份显示") return subOption || ""; // e.g. 2025
-        if (
-          filterOption === "前3个月" ||
-          filterOption === "前6个月" ||
-          filterOption === "前12个月"
-        )
-          return filterOption;
-
-        return "";
-      };
-
-      const prefix = buildContextPrefix();
-      const prefixWithSpace = prefix ? `${prefix} ` : "";
-
       const totalExpensesRow = {
-        category: `${prefixWithSpace}总共消费: $${totalExpenses.toFixed(2)}`,
+        category: `总共消费: $${totalExpenses.toFixed(2)}`,
         amount: "",
         date: "",
         description: "",
         actions: null,
       };
-
       // Mirror the grand-total row at top *and* bottom
       // finalExpenses.unshift(totalExpensesRow); // Top
       finalExpenses.push(totalExpensesRow);   // Bottom
@@ -4904,7 +4873,12 @@ const ShowExpensePage = () => {
       {/* Header Section */}
       <div className="modify-expense-header">
         <div className="header-left">
-          <h2>支出明细</h2>
+          <h2>
+            支出明细
+            {appliedFilters.filterOption && appliedFilters.filterOption !== "显示全部" && buildContextPrefix() && 
+              ` - [${buildContextPrefix()}]`
+            }
+          </h2>
         </div>
         <div className="header-right">
           <label style={{ 
@@ -5502,7 +5476,7 @@ const ShowExpensePage = () => {
                       expense.category.includes("$") ? (
                         <>
                           <span style={{  }}>{expense.category.split("$")[0]}</span>
-                          <span style={{ color: "red" }}>{"$" + expense.category.split("$")[1]}</span>
+                          <span className="negative">{"$" + expense.category.split("$")[1]}</span>
                         </>
                       ) : (
                         categoriesTranslation[expense.category] || expense.category
@@ -5609,10 +5583,10 @@ const ShowExpensePage = () => {
                         ? { overflow: "visible", fontWeight: "bold", fontSize: "25px" } 
                         : {}
                       ),
-                      color: (
+                      className: (
                         expense.category && 
                         (expense.category.includes("总共消费") || expense.category.includes("Total Expenses"))
-                      ) ? "red" : "",
+                      ) ? "negative" : "",
                       ...(isClickable ? {
                         // transition: 'color 0.2s ease-out'
                       } : {})
@@ -5667,19 +5641,21 @@ const ShowExpensePage = () => {
               </div>
               <div 
                 style={{
-                  ...(
-                    appliedFilters.showType === "List all Category Expenses" && expense.actions == null 
+                  ...(appliedFilters.showType === "List all Category Expenses" && expense.actions == null 
                     ? { overflow: "visible", fontWeight: "bold", fontSize: "25px" } 
                     : {}
-                  ),
-                  color: (
-                    expense.category && // Ensure category is defined
-                    (expense.category.includes("总共消费") || expense.category.includes("Total Expenses"))
-                  ) ? "red" : ""
+                  )
                 }}
+                className={
+                  expense.category && 
+                  (expense.category.includes("总共消费") || expense.category.includes("Total Expenses"))
+                    ? "negative" 
+                    : ""
+                }
               >
-                {categoriesTranslation[expense.category]||expense.category}
+                {categoriesTranslation[expense.category] || expense.category}
               </div>
+
 
 
               <div>{expense.date}</div>
@@ -6039,39 +6015,16 @@ const ShowIncomePage = () => {
 
     // Add the title row with the total after-tax income
     const titleRow = {
-        date: `${title}: $${totalAfterTax}`,  // Append the total amount to the title
-        before_tax: null,
-        after_tax: null,
-        description: null,
-        tax_percentage: null,
-        id: null,
-        actions: null,  // Add actions as "none"
-        type: "total_before_tax"
-    };
-    let endingLabel = "年收入（税前）";
-    if (filterOption === "自定义") {
-      let dateRange = "";
-      if (startDate && endDate) {
-        dateRange = `${startDate}至${endDate}`;
-      } else if (startDate) {
-        dateRange = `从${startDate}`;
-      } else if (endDate) {
-        dateRange = `至${endDate}`;
-      }
-      
-      let descPart = descriptionSearch ? ` 含'${descriptionSearch}'` : "";
-      endingLabel = `${dateRange}${descPart} 收入（税前）`.trim();
-    }else if (filterOption === "按月显示") {
-      endingLabel = `${subOption}收入（税前）`;
-    } else if (filterOption === "按季度显示") {
-      endingLabel = `${subOption}收入（税前）`;
-    } else if (filterOption === "按年份显示") {
-      endingLabel = `${subOption}年收入（税前）`;
-    } else if (["前3个月", "前6个月", "前12个月"].includes(filterOption)) {
-      endingLabel = `${filterOption}收入（税前）`;
-    }else{
-      endingLabel = `总收入（税前）`;
-    }
+      date: `税后 总收入: $${totalAfterTax}`,
+      before_tax: null,
+      after_tax: null,
+      description: null,
+      tax_percentage: null,
+      id: null,
+      actions: null,
+      type: "total_before_tax"
+  };
+    let endingLabel = "税前 总收入";
 
     const endingRow = {
       date: `${endingLabel}: $${totalBeforeTax}`,
@@ -6324,13 +6277,52 @@ const ShowIncomePage = () => {
       document.removeEventListener("mouseout", handleMouseOut);
     };
   }, []);
+
+  const getPageTitle = () => {
+    const { filterOption, subOption, startDate, endDate, descriptionSearch } = appliedFilters;
+    
+    if (!filterOption || filterOption === "显示全部") {
+      return "收入明细";
+    }
+    
+    if (filterOption === "自定义") {
+      let parts = [];
+      if (startDate && endDate) {
+        parts.push(`${startDate}至${endDate}`);
+      } else if (startDate) {
+        parts.push(`从${startDate}`);
+      } else if (endDate) {
+        parts.push(`至${endDate}`);
+      }
+      if (descriptionSearch) {
+        parts.push(`含'${descriptionSearch}'`);
+      }
+      return parts.length > 0 ? `收入明细 - [${parts.join(" ")}]` : "收入明细";
+    }
+    
+    if (subOption) {
+      // Convert Chinese month names to numeric format
+      if (filterOption === "按月显示") {
+        const monthMapping = {
+          "一月": "1月", "二月": "2月", "三月": "3月", "四月": "4月",
+          "五月": "5月", "六月": "6月", "七月": "7月", "八月": "8月",
+          "九月": "9月", "十月": "10月", "十一月": "11月", "十二月": "12月"
+        };
+        return `收入明细 - [${monthMapping[subOption] || subOption}]`;
+      }
+      return `收入明细 - [${subOption}]`;
+    }
+    
+    return `收入明细 - [${filterOption}]`;
+  };
   
   return (
     <div className="modify-income-container">
       {/* Header Section */}
       <div className="modify-income-header">
         <div className="header-left">
-          <h2>收入明细</h2>
+          <h2>{getPageTitle()}</h2>
+
         </div>
         <div className="header-right">
         <button
@@ -6780,10 +6772,10 @@ const ShowIncomePage = () => {
               >
                 {income.actions === null && income.type=="total_before_tax" && income.date && income.date.includes("$") ? (
                   <>
-                    <span style={{ color: "#777" }}>
+                    <span>
                       {income.date.split("$")[0]} {/* Text before the dollar sign */}
                     </span>
-                    <span style={{ color: "green" }}>
+                    <span className="positive">
                       {"$" + income.date.split("$")[1]} {/* Text including and after the dollar sign */}
                     </span>
                   </>
