@@ -76,4 +76,9 @@ git ls-files -v | grep ^S
 
 Any file starting with `S` is being ignored locally.
 
+### To pull from Github:
+```
+git fetch origin
+git reset --hard origin/main
+```
 ---
