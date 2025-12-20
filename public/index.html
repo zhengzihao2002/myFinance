@@ -60,6 +60,8 @@
       [data-theme="dark"] .negative{
         color:#ff4c2d;
       }
+
+      /* Dark mode for specific elements */
       [data-theme="dark"] .left-box,
       [data-theme="dark"] .right-box,
       [data-theme="dark"] .bottom-box,
@@ -67,6 +69,8 @@
       [data-theme="dark"] .flip-container .back {
         background-color: rgba(119, 119, 119, 0.8);
       }
+
+      
       [data-theme="dark"] .expense-display,
       [data-theme="dark"] .income-display,
       [data-theme="dark"] .modify-expense-header,
@@ -77,10 +81,14 @@
       [data-theme="dark"] [class*="modal-container"],
       [data-theme="dark"] [class*="modal-header"],
       [data-theme="dark"] [class*="modal-title"],
-      [data-theme="dark"] [class*="modal-body"]{
+      [data-theme="dark"] [class*="modal-body"],
+      [data-theme="dark"] .modify-expense-container .popups_modify_delete .modal-dialog h3,
+      [data-theme="dark"] .modify-income-container .popups_modify_delete .modal-dialog h3{
         background-color: rgb(75, 75, 75)!important;
         color:white!important;
       }
+
+
       [data-theme="dark"] .expense-display .table-header,
       [data-theme="dark"] .income-display .table-header,
       [data-theme="dark"] input,
@@ -92,8 +100,11 @@
         background-color: rgb(97, 97, 97)!important;
         color:white!important;
       }
-      [data-theme="dark"] .homepage-container [class^="icon-button"] span {
-        color: white;
+
+
+      [data-theme="dark"] [class^="icon-button"] span,
+      [data-theme="dark"] p {
+        color: white!important;
       }
       [data-theme="dark"] input::placeholder{
         color: #d3d3d3;

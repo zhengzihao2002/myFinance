@@ -17,7 +17,7 @@ body,
 .bottom-box,
 .flip-container .front,
 .flip-container .back,
-.homepage-container [class^="icon-button"] span {
+[class^="icon-button"] span {
   transition: background-color var(--bgc-duration) var(--bgc-ease),
               color var(--bgc-duration) var(--bgc-ease);
 }
@@ -31,7 +31,7 @@ body,
   background-color: #f8f8f8;
 }
 
-.homepage-container [class^="icon-button"] span {
+[class^="icon-button"] span {
   color: black;
 }
 
@@ -217,6 +217,9 @@ body,
 
   overflow-y: auto;
   scrollbar-gutter: stable; /* Reserves space for scrollbar */
+
+  transition: background-color var(--bgc-duration) var(--bgc-ease),
+              color var(--bgc-duration) var(--bgc-ease);
 }
 /* Table Header */
 .expense-display .table-header {
@@ -238,6 +241,9 @@ body,
   text-align: center;
   padding: 10px 20px;
   align-items: center; /* Centers content vertically within each cell */
+
+  transition: background-color var(--bgc-duration) var(--bgc-ease),
+              color var(--bgc-duration) var(--bgc-ease);
 }
 /* Table Header Column Centering */
 .expense-display .table-header > div {
@@ -359,6 +365,9 @@ body,
   font-size: 16px;
   transition: background-color 0.2s ease, box-shadow 0.2s ease;
   box-sizing: border-box;
+
+  transition: background-color var(--bgc-duration) var(--bgc-ease),
+              color var(--bgc-duration) var(--bgc-ease);
 }
 ul[data-suggestions] {
   position: absolute;
@@ -1355,6 +1364,8 @@ h1 {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   background-color: #f8f8f8;
   overflow: hidden;
+  transition: background-color var(--bgc-duration) var(--bgc-ease),
+              color var(--bgc-duration) var(--bgc-ease);
 }
 .page_bigger{
     width: 90vw;
@@ -1386,6 +1397,8 @@ label {
   border-radius: 5px;
   border: 1px solid #ccc;
   font-size: 20px;
+  transition: background-color var(--bgc-duration) var(--bgc-ease),
+              color var(--bgc-duration) var(--bgc-ease);
 }
 .expense-page textarea,.income-page textarea{
   min-height: 150px;
@@ -1500,6 +1513,9 @@ input[type="number"] {
   border-radius: 5px ;
   padding: 0px 30px;
   background-color: #f8f8f8;
+
+  transition: background-color var(--bgc-duration) var(--bgc-ease),
+              color var(--bgc-duration) var(--bgc-ease);
 }
 
 .header-left h2 {
@@ -1621,6 +1637,8 @@ input[type="number"] {
   color: #777;
   overflow-y: auto;
   position: relative;
+  transition: background-color var(--bgc-duration) var(--bgc-ease),
+              color var(--bgc-duration) var(--bgc-ease);
 }
 
 /* Table Header for income */
@@ -1644,6 +1662,8 @@ input[type="number"] {
   text-align: center;
   align-items: center; /* Centers content vertically within each cell */
   padding: 10px 20px;
+  transition: background-color var(--bgc-duration) var(--bgc-ease),
+              color var(--bgc-duration) var(--bgc-ease);
 }
 
 /* Table Header Column Centering */
@@ -2035,4 +2055,5 @@ F/* ---------------- SLIDE MODE (Now using exact offset) ---------------- */
   /* background-color: #45a049; */
   background-color: rgba(0, 0, 0, 0.3);
 }
+
 
