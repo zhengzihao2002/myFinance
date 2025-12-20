@@ -1151,7 +1151,7 @@ const HomePage = () => {
       return [];
     }
   };
-  // 🔔 On page load: check for due prepays and update if repeating
+  // On page load: check for due prepays and update if repeating
   useEffect(() => {
     if (totalChecking !== null) {
       const checkAndHandleDuePrepays = async () => {
@@ -1938,7 +1938,7 @@ const HomePage = () => {
         <div className="front">
           <div style={{ marginBottom: "40px" }}>
             <h2 className="zcool-qingke-huangyou-regular" style={{ fontSize: "50px" }}>
-              myFinance v2.2.1
+              myFinance v2.3.0
             </h2>
           </div>
           <div className="button-group">
@@ -2663,9 +2663,45 @@ const RecordExpensePage = () => {
   };
 
 
+
+
+  
+  const [showButtons, setShowButtons] = useState(true);
+  const [lightMode, setLightMode] = useState(
+    // Read from local Storage once on mount
+    ()=>{
+      let initialMode =localStorage.getItem("lightMode") || "light"
+      return initialMode;
+    }
+  );
+  const toggleLightMode = () => {
+    const newlightMode = lightMode === "light" ? "dark" : "light";
+    setLightMode(newlightMode);
+  };
+  const changeLightMode = (newlightMode) => {
+    localStorage.setItem("lightMode", newlightMode);
+    document.documentElement.setAttribute('data-theme', newlightMode);
+    console.log("Light mode changed to:", newlightMode);
+  };
+  // Save Whenever light mode changes
+  useEffect(() => {      
+    changeLightMode(lightMode) // useEffect runs only after DOM is rendered, so the change will be applied after all things load
+    localStorage.setItem("lightMode", lightMode);
+  },[lightMode])
   return (
     <div class="body">
       <div className="expense-page">
+        <button
+          className={`icon-button2 ${!showButtons ? "icon-fade-out" : ""}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleLightMode();
+          }}
+        >
+          <span
+            className={lightMode ? "icon-brightness-contrast" : "icon-sun"}
+          ></span>
+        </button>
         <h1 style={{ fontSize: "60px" }}>记录 支出</h1>
         <div className="form-group">
           <label>选择分类</label>
@@ -3163,7 +3199,28 @@ const [scheduledPrepays, setScheduledPrepays] = useState([]);
 // }, []);
 
 
-
+  const [showButtons, setShowButtons] = useState(true);
+  const [lightMode, setLightMode] = useState(
+    // Read from local Storage once on mount
+    ()=>{
+      let initialMode =localStorage.getItem("lightMode") || "light"
+      return initialMode;
+    }
+  );
+  const toggleLightMode = () => {
+    const newlightMode = lightMode === "light" ? "dark" : "light";
+    setLightMode(newlightMode);
+  };
+  const changeLightMode = (newlightMode) => {
+    localStorage.setItem("lightMode", newlightMode);
+    document.documentElement.setAttribute('data-theme', newlightMode);
+    console.log("Light mode changed to:", newlightMode);
+  };
+  // Save Whenever light mode changes
+  useEffect(() => {      
+    changeLightMode(lightMode) // useEffect runs only after DOM is rendered, so the change will be applied after all things load
+    localStorage.setItem("lightMode", lightMode);
+  },[lightMode])
 
 
 
@@ -3172,6 +3229,17 @@ const [scheduledPrepays, setScheduledPrepays] = useState([]);
   
   return (
     <div className="modify-expense-container">
+      <button
+        className={`icon-button2 ${!showButtons ? "icon-fade-out" : ""}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          toggleLightMode();
+        }}
+      >
+        <span
+          className={lightMode ? "icon-brightness-contrast" : "icon-sun"}
+        ></span>
+      </button>
       {/* Header Section */}
       <div className="modify-expense-header">
         <div className="header-left">
@@ -3800,8 +3868,41 @@ const [scheduledPrepays, setScheduledPrepays] = useState([]);
 
 
 const BudgetPage = () => {
+  const [showButtons, setShowButtons] = useState(true);
+  const [lightMode, setLightMode] = useState(
+    // Read from local Storage once on mount
+    ()=>{
+      let initialMode =localStorage.getItem("lightMode") || "light"
+      return initialMode;
+    }
+  );
+  const toggleLightMode = () => {
+    const newlightMode = lightMode === "light" ? "dark" : "light";
+    setLightMode(newlightMode);
+  };
+  const changeLightMode = (newlightMode) => {
+    localStorage.setItem("lightMode", newlightMode);
+    document.documentElement.setAttribute('data-theme', newlightMode);
+    console.log("Light mode changed to:", newlightMode);
+  };
+  // Save Whenever light mode changes
+  useEffect(() => {      
+    changeLightMode(lightMode) // useEffect runs only after DOM is rendered, so the change will be applied after all things load
+    localStorage.setItem("lightMode", lightMode);
+  },[lightMode])
   return (
     <div className="budget-page">
+      <button
+        className={`icon-button2 ${!showButtons ? "icon-fade-out" : ""}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          toggleLightMode();
+        }}
+      >
+        <span
+          className={lightMode ? "icon-brightness-contrast" : "icon-sun"}
+        ></span>
+      </button>
       {/* Header */}
       <div className="budget-header">
         <h1 className="budget-title">财务规划</h1>
@@ -4034,9 +4135,44 @@ const RecordIncomePage = () => {
 };
 
 
+
+
+  const [showButtons, setShowButtons] = useState(true);
+  const [lightMode, setLightMode] = useState(
+    // Read from local Storage once on mount
+    ()=>{
+      let initialMode =localStorage.getItem("lightMode") || "light"
+      return initialMode;
+    }
+  );
+  const toggleLightMode = () => {
+    const newlightMode = lightMode === "light" ? "dark" : "light";
+    setLightMode(newlightMode);
+  };
+  const changeLightMode = (newlightMode) => {
+    localStorage.setItem("lightMode", newlightMode);
+    document.documentElement.setAttribute('data-theme', newlightMode);
+    console.log("Light mode changed to:", newlightMode);
+  };
+  // Save Whenever light mode changes
+  useEffect(() => {      
+    changeLightMode(lightMode) // useEffect runs only after DOM is rendered, so the change will be applied after all things load
+    localStorage.setItem("lightMode", lightMode);
+  },[lightMode])
   return (
     <div className="body">
       <div className="income-page">
+        <button
+        className={`icon-button2 ${!showButtons ? "icon-fade-out" : ""}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          toggleLightMode();
+        }}
+      >
+        <span
+          className={lightMode ? "icon-brightness-contrast" : "icon-sun"}
+        ></span>
+      </button>
         <h1 className="" style={{ fontSize: "60px" }}>记录 收入</h1>
         <div className="form-group">
           <label>请输入 税前 总额</label>
@@ -4142,6 +4278,10 @@ const ShowExpensePage = () => {
   const [sortType,setSortType] = useState("")
   const [showType, setShowType] = useState(""); // Display type combo box value
 
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [descriptionSearch, setDescriptionSearch] = useState("");
+
 
   const [isSortDialogVisible, setSortDialogVisible] = useState(false); // Dialog visibility
   const [isModifyDialogVisible, setModifyDialogVisible] = useState(false);
@@ -4170,22 +4310,74 @@ const ShowExpensePage = () => {
     subOption: "",
     amountThreshold: "",
     showAboveThreshold: false,
-    showType: ""
+    showType: "",
+    sortType: "",
+    startDate: "",
+    endDate: "",
+    descriptionSearch: ""
   });
 
   const years = [...new Set(data.expenses.map(expense => new Date(expense.date).getFullYear()))];
 
-  // Use localStorage value as initial state
-  const [autoApplyChanges, setAutoApplyChanges] = useState(() => {
-    const storedAutoApply = localStorage.getItem("autoApplyChanges");
-    return storedAutoApply !== null ? JSON.parse(storedAutoApply) : false;
-  });
-
-  // Save the state of "直接显示" to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem("autoApplyChanges", JSON.stringify(autoApplyChanges));
-  }, [autoApplyChanges]);
+  // Build a human-friendly prefix based on the active time filter so the
+  // grand-total row shows context (e.g. "11月 总共消费", "2025 总共消费",
+  // "Q4 总共消费", "前3个月 总共消费").
+  const buildContextPrefix = () => {
+  const { filterOption, subOption, startDate, endDate, descriptionSearch } = appliedFilters;
   
+  if (!filterOption || filterOption === "显示全部") return "";
+
+  if (filterOption === "自定义") {
+    let dateRange = "";
+    if (startDate && endDate) {
+      dateRange = `${startDate}至${endDate}`;
+    } else if (startDate) {
+      dateRange = `从${startDate}`;
+    } else if (endDate) {
+      dateRange = `至${endDate}`;
+    }
+    
+    let descPart = descriptionSearch ? ` 含'${descriptionSearch}'` : "";
+    return `${dateRange}${descPart}`.trim() || "自定义";
+  }
+  
+  if (filterOption === "按月显示") {
+    const monthNamesCN = {
+      一月: 0, 二月: 1, 三月: 2, 四月: 3, 五月: 4, 六月: 5,
+      七月: 6, 八月: 7, 九月: 8, 十月: 9, 十一月: 10, 十二月: 11,
+    };
+    const monthsEn = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December",
+    ];
+
+    let mIndex = null;
+    if (typeof subOption === "string") {
+      const maybeNum = parseInt(subOption, 10);
+      if (!Number.isNaN(maybeNum)) {
+        mIndex = maybeNum - 1;
+      } else if (monthNamesCN.hasOwnProperty(subOption)) {
+        mIndex = monthNamesCN[subOption];
+      } else {
+        const enIndex = monthsEn.indexOf(subOption);
+        if (enIndex !== -1) mIndex = enIndex;
+      }
+    }
+
+    if (mIndex !== null && mIndex !== undefined && mIndex >= 0 && mIndex <= 11) {
+      return `${mIndex + 1}月`;
+    }
+    return subOption || "";
+  }
+
+  if (filterOption === "按季度显示") return subOption || "";
+  if (filterOption === "按年份显示") return subOption || "";
+  if (filterOption === "前3个月" || filterOption === "前6个月" || filterOption === "前12个月") {
+    return filterOption;
+  }
+
+  return "";
+};
 
   const filterExpenses = () => {
     /* ---------- CONSTANTS ---------- */
@@ -4199,6 +4391,9 @@ const ShowExpensePage = () => {
       showAboveThreshold,
       showType,
       sortType,
+      startDate,
+      endDate,
+      descriptionSearch
     } = appliedFilters;
 
     console.log("Loading the following:", appliedFilters);
@@ -4209,7 +4404,21 @@ const ShowExpensePage = () => {
       const expenseYear = parseInt(expenseDate.substring(0, 4), 10);
       const expenseMonth = parseInt(expenseDate.substring(5, 7), 10) - 1;
 
-      if (filterOption === "按月显示") {
+      if (filterOption === "自定义") {
+        const expenseDateObj = new Date(expenseDate);
+        const start = startDate ? new Date(startDate) : null;
+        const end = endDate ? new Date(endDate) : null;
+
+        if (start && end) {
+          return expenseDateObj >= start && expenseDateObj <= end;
+        } else if (start) {
+          return expenseDateObj >= start;
+        } else if (end) {
+          return expenseDateObj <= end;
+        }
+        return true;
+      }
+      else if (filterOption === "按月显示") {
         const monthMapping = {
           一月: 0,
           二月: 1,
@@ -4263,13 +4472,19 @@ const ShowExpensePage = () => {
       return true; // Default: include all expenses
     };
 
+    const matchesDescription = (expense) => {
+      if (!descriptionSearch || descriptionSearch.trim() === "") return true;
+      const expenseDesc = expense.description || "";
+      return expenseDesc.toLowerCase().includes(descriptionSearch.trim().toLowerCase());
+    };
+
     /* ---------- CATEGORY-SUM MODE ---------- */
     if (showType === "Category sum") {
       let categorySums = {};
 
       data.expenses.forEach((expense) => {
         const expenseDate = expense.date;
-        if (isDateInRange(expenseDate)) {
+        if (isDateInRange(expenseDate)&& matchesDescription(expense)) {
           const category = expense.category;
           const amount = parseFloat(expense.amount);
 
@@ -4329,7 +4544,7 @@ const ShowExpensePage = () => {
       // 1) Bucket every expense into its category
       data.expenses.forEach((expense) => {
         const expenseDate = expense.date;
-        if (isDateInRange(expenseDate)) {
+        if (isDateInRange(expenseDate)&& matchesDescription(expense)) {
           const category = expense.category;
           (categoryExpenses[category] ||= []).push(expense);
         }
@@ -4404,90 +4619,13 @@ const ShowExpensePage = () => {
       });
       console.log("FINAL:", finalExpenses);
 
-      // Build a human-friendly prefix based on the active time filter so the
-      // grand-total row shows context (e.g. "11月 总共消费", "2025 总共消费",
-      // "Q4 总共消费", "前3个月 总共消费").
-      const buildContextPrefix = () => {
-        if (!filterOption || filterOption === "显示全部") return "";
-
-        // Monthly: try to derive a numeric month (1-12) when possible, otherwise
-        // fall back to the raw label (which may already be localized like "十一月").
-        if (filterOption === "按月显示") {
-          const monthNamesCN = {
-            一月: 0,
-            二月: 1,
-            三月: 2,
-            四月: 3,
-            五月: 4,
-            六月: 5,
-            七月: 6,
-            八月: 7,
-            九月: 8,
-            十月: 9,
-            十一月: 10,
-            十二月: 11,
-          };
-          const monthsEn = [
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December",
-          ];
-
-          let mIndex = null;
-          if (typeof subOption === "string") {
-            const maybeNum = parseInt(subOption, 10);
-            if (!Number.isNaN(maybeNum)) {
-              // numeric string like "11" or "2025-11" -> take first number
-              mIndex = maybeNum - 1;
-            } else if (monthNamesCN.hasOwnProperty(subOption)) {
-              mIndex = monthNamesCN[subOption];
-            } else {
-              const enIndex = monthsEn.indexOf(subOption);
-              if (enIndex !== -1) mIndex = enIndex;
-            }
-          }
-
-          if (mIndex !== null && mIndex !== undefined && mIndex >= 0 && mIndex <= 11) {
-            return `${mIndex + 1}月`;
-          }
-
-          // fallback to raw label
-          return subOption || "";
-        }
-
-        // Quarter, Year, or rolling windows: show the subOption or the filterOption
-        if (filterOption === "按季度显示") return subOption || ""; // e.g. Q4
-        if (filterOption === "按年份显示") return subOption || ""; // e.g. 2025
-        if (
-          filterOption === "前3个月" ||
-          filterOption === "前6个月" ||
-          filterOption === "前12个月"
-        )
-          return filterOption;
-
-        return "";
-      };
-
-      const prefix = buildContextPrefix();
-      const prefixWithSpace = prefix ? `${prefix} ` : "";
-
       const totalExpensesRow = {
-         category: `${prefixWithSpace}总共消费: $${totalExpenses.toFixed(2)}`,
+        category: `总共消费: $${totalExpenses.toFixed(2)}`,
         amount: "",
         date: "",
         description: "",
         actions: null,
       };
-
       // Mirror the grand-total row at top *and* bottom
       // finalExpenses.unshift(totalExpensesRow); // Top
       finalExpenses.push(totalExpensesRow);   // Bottom
@@ -4505,7 +4643,7 @@ const ShowExpensePage = () => {
         const expenseDate = expense.date;
 
         // Date range
-        include = include && isDateInRange(expenseDate);
+        include = include && isDateInRange(expenseDate)&& matchesDescription(expense);
 
         // Amount threshold
         if (showAboveThreshold && amountThreshold) {
@@ -4542,6 +4680,10 @@ const ShowExpensePage = () => {
       setShowAboveThreshold(parsedFilters.showAboveThreshold ?? false);
       setShowType(parsedFilters.showType || "");
       setSortType(parsedFilters.sortType || "ascending");
+      setStartDate(parsedFilters.startDate || "");
+      setEndDate(parsedFilters.endDate || "");
+      setDescriptionSearch(parsedFilters.descriptionSearch || "");
+      
 
       // need this
       const filtersToSave = {
@@ -4550,7 +4692,10 @@ const ShowExpensePage = () => {
         amountThreshold:parsedFilters.amountThreshold || 0,
         showAboveThreshold:parsedFilters.showAboveThreshold ?? false,
         showType:parsedFilters.showType || "",
-        sortType:parsedFilters.sortType || "ascending"
+        sortType:parsedFilters.sortType || "ascending",
+        startDate: parsedFilters.startDate || "",
+        endDate: parsedFilters.endDate || "",
+        descriptionSearch: parsedFilters.descriptionSearch || ""
       };
       setAppliedFilters(filtersToSave);
     }else{
@@ -4564,6 +4709,9 @@ const ShowExpensePage = () => {
       setShowAboveThreshold(false);
       setShowType("");
       setSortType("ascending");
+      setStartDate("");
+      setEndDate("");
+      setDescriptionSearch("");
 
       // set obj of states (filterExpenses called cuz of this)
       const filtersToSave = {
@@ -4572,7 +4720,10 @@ const ShowExpensePage = () => {
         amountThreshold: 0,
         showAboveThreshold:false,
         showType: "",
-        sortType:"ascending"
+        sortType:"ascending",
+        startDate: "",
+        endDate: "",
+        descriptionSearch: ""
       };
       setAppliedFilters(filtersToSave);
     }
@@ -4589,7 +4740,10 @@ const ShowExpensePage = () => {
       amountThreshold:amountThreshold,
       showAboveThreshold:showAboveThreshold,
       showType:showType,
-      sortType:sortType
+      sortType:sortType,
+      startDate: startDate,
+      endDate: endDate,
+      descriptionSearch: descriptionSearch
     };
     setAppliedFilters(filtersToSave);
     setSortDialogVisible(false); // Close the modal
@@ -4850,12 +5004,53 @@ const ShowExpensePage = () => {
   }, [autoExpand, isDataLoaded, isCategoriesInitialized, appliedFilters]);
 
 
+
+
+
+  const [showButtons, setShowButtons] = useState(true);
+  const [lightMode, setLightMode] = useState(
+    // Read from local Storage once on mount
+    ()=>{
+      let initialMode =localStorage.getItem("lightMode") || "light"
+      return initialMode;
+    }
+  );
+  const toggleLightMode = () => {
+    const newlightMode = lightMode === "light" ? "dark" : "light";
+    setLightMode(newlightMode);
+  };
+  const changeLightMode = (newlightMode) => {
+    localStorage.setItem("lightMode", newlightMode);
+    document.documentElement.setAttribute('data-theme', newlightMode);
+    console.log("Light mode changed to:", newlightMode);
+  };
+  // Save Whenever light mode changes
+  useEffect(() => {      
+    changeLightMode(lightMode) // useEffect runs only after DOM is rendered, so the change will be applied after all things load
+    localStorage.setItem("lightMode", lightMode);
+  },[lightMode])
   return (
     <div className="modify-expense-container">
+      <button
+        className={`icon-button2 ${!showButtons ? "icon-fade-out" : ""}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          toggleLightMode();
+        }}
+      >
+        <span
+          className={lightMode ? "icon-brightness-contrast" : "icon-sun"}
+        ></span>
+      </button>
       {/* Header Section */}
       <div className="modify-expense-header">
         <div className="header-left">
-          <h2>支出明细</h2>
+          <h2>
+            支出明细
+            {appliedFilters.filterOption && appliedFilters.filterOption !== "显示全部" && buildContextPrefix() && 
+              ` - [${buildContextPrefix()}]`
+            }
+          </h2>
         </div>
         <div className="header-right">
           <label style={{ 
@@ -4911,9 +5106,17 @@ const ShowExpensePage = () => {
                       const newFilterOption = e.target.value;
                       setFilterOption(newFilterOption);
 
+                      // Clear description search when switching away from custom
+                      if (newFilterOption !== "自定义") {
+                        setDescriptionSearch("");
+                      }
+
                       // Update `subOption` etc with a default based on the new `filterOption`
                       // no need to update sortType since if unclicked default ascending, exactly which default radio is, once click desc, state updates.
-                      if (newFilterOption == "按月显示") {
+                      if (newFilterOption === "自定义") {
+                        setSubOption("");
+                        setShowType("List all Category Expenses");
+                      }else if (newFilterOption == "按月显示") {
                         const currentMonth = new Date().toLocaleString("zh-CN", { month: "long" });
                         
                         setSubOption(currentMonth); // Default to "一月" for months, backend ONLY
@@ -4932,15 +5135,19 @@ const ShowExpensePage = () => {
                         setShowType("")
                       }
 
-                      if (autoApplyChanges) {
-                        setAppliedFilters({
-                          filterOption: newFilterOption,
-                          subOption: subOption, // Update this to reflect the new `subOption`
-                          amountThreshold,
-                          showAboveThreshold,
-                          showType
-                        });
-                      }
+                      // if (autoApplyChanges) {
+                      //   setAppliedFilters({
+                      //     filterOption: newFilterOption,
+                      //     subOption: subOption, // Update this to reflect the new `subOption`
+                      //     amountThreshold,
+                      //     showAboveThreshold,
+                      //     showType,
+                      //     sortType,
+                      //     startDate,
+                      //     endDate,
+                      //     descriptionSearch
+                      //   });
+                      // }
                     }}
                     className="filter-combo"
                   >
@@ -4951,13 +5158,166 @@ const ShowExpensePage = () => {
                     <option value="前3个月">前3个月</option>
                     <option value="前12个月">前12个月</option>
                     <option value="前6个月">前6个月</option>
+                    <option value="自定义">自定义</option>
+
                   </select>
 
                 </div>
                 
+                {/* Conditional rendering: Sub Option OR Date Pickers */}
+                {filterOption !== "自定义" ? (
+                  <div className="row">
+                    <label htmlFor="sub-option-combo" className="inline-label">
+                      子选项
+                    </label>
+                    <select
+                      id="sub-option-combo"
+                      value={subOption}
+                      onChange={(e) => {
+                        setSubOption(e.target.value);
+                        // if (autoApplyChanges) {
+                        //   setAppliedFilters({
+                        //     filterOption,
+                        //     subOption: e.target.value,
+                        //     amountThreshold,
+                        //     showAboveThreshold,
+                        //     showType,
+                        //     sortType,
+                        //     startDate,
+                        //     endDate,
+                        //     descriptionSearch
+                        //   });
+                        // }
+                      }}
+                      className="filter-combo"
+                      disabled={filterOption === "前3个月" || filterOption === "前12个月" || filterOption === "前6个月" || filterOption === "显示全部"}
+                    >
+                      {filterOption === "按月显示" && (
+                        <>
+                          <option value="一月">一月</option>
+                          <option value="二月">二月</option>
+                          <option value="三月">三月</option>
+                          <option value="四月">四月</option>
+                          <option value="五月">五月</option>
+                          <option value="六月">六月</option>
+                          <option value="七月">七月</option>
+                          <option value="八月">八月</option>
+                          <option value="九月">九月</option>
+                          <option value="十月">十月</option>
+                          <option value="十一月">十一月</option>
+                          <option value="十二月">十二月</option>
+                        </>
+                      )}
+                      {filterOption === "按季度显示" && (
+                        <>
+                          <option value="Q1">Q1</option>
+                          <option value="Q2">Q2</option>
+                          <option value="Q3">Q3</option>
+                          <option value="Q4">Q4</option>
+                        </>
+                      )}
+                      {filterOption === "按年份显示" && years.map((year) => (
+                        <option value={year} key={year}>
+                          {year}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                ) : (
+                  <div className="row">
+                    <label className="inline-label">
+                      日期范围
+                    </label>
+                    <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                      <input
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => {
+                          setStartDate(e.target.value);
+                          // if (autoApplyChanges) {
+                          //   setAppliedFilters({
+                          //     filterOption,
+                          //     subOption,
+                          //     amountThreshold,
+                          //     showAboveThreshold,
+                          //     showType,
+                          //     sortType,
+                          //     startDate: e.target.value,
+                          //     endDate,
+                          //     descriptionSearch
+                          //   });
+                          // }
+                        }}
+                        style={{ padding: "5px", fontSize: "14px" }}
+                        className="filter-combo"
+                      />
+                      <span>至</span>
+                      <input
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => {
+                          setEndDate(e.target.value);
+                          // if (autoApplyChanges) {
+                          //   setAppliedFilters({
+                          //     filterOption,
+                          //     subOption,
+                          //     amountThreshold,
+                          //     showAboveThreshold,
+                          //     showType,
+                          //     sortType,
+                          //     startDate,
+                          //     endDate: e.target.value,
+                          //     descriptionSearch
+                          //   });
+                          // }
+                        }}
+                        style={{ padding: "5px", fontSize: "14px" }}
+                        className="filter-combo"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Description search - only show when custom is selected */}
+                {filterOption === "自定义" && (
+                  <div className="row">
+                    <label htmlFor="description-search" className="inline-label">
+                      描述搜索
+                    </label>
+                    <textarea
+                      id="description-search"
+                      value={descriptionSearch}
+                      onChange={(e) => {
+                        setDescriptionSearch(e.target.value);
+                        // if (autoApplyChanges) {
+                        //   setAppliedFilters({
+                        //     filterOption,
+                        //     subOption,
+                        //     amountThreshold,
+                        //     showAboveThreshold,
+                        //     showType,
+                        //     sortType,
+                        //     startDate,
+                        //     endDate,
+                        //     descriptionSearch: e.target.value
+                        //   });
+                        // }
+                      }}
+                      placeholder="输入描述关键词..."
+                      style={{
+                        width: "100%",
+                        padding: "8px",
+                        fontSize: "14px",
+                        minHeight: "100px",
+                        resize: "none"
+                      }}
+                      className="filter-combo"
+                    />
+                  </div>
+                )}
 
                 {/* Sub Option for Time Range */}
-                <div className="row">
+                {/* <div className="row">
                   <label htmlFor="sub-option-combo" className="inline-label">
                     子选项
                   </label>
@@ -5009,7 +5369,7 @@ const ShowExpensePage = () => {
                       </option>
                     ))}
                   </select>
-                </div>
+                </div> */}
 
                 {/* Row for Show Type */}
                 <div className="row">
@@ -5021,15 +5381,15 @@ const ShowExpensePage = () => {
                     value={showType}
                     onChange={(e) => {
                       setShowType(e.target.value);
-                      if (autoApplyChanges) {
-                        setAppliedFilters({
-                          filterOption,
-                          subOption,
-                          amountThreshold,
-                          showAboveThreshold,
-                          showType: e.target.value
-                        });
-                      }
+                      // if (autoApplyChanges) {
+                      //   setAppliedFilters({
+                      //     filterOption,
+                      //     subOption,
+                      //     amountThreshold,
+                      //     showAboveThreshold,
+                      //     showType: e.target.value
+                      //   });
+                      // }
                     }}
                     className="filter-combo"
                     disabled={filterOption == "显示全部"}
@@ -5060,16 +5420,16 @@ const ShowExpensePage = () => {
                         onChange={(e) => {
                           setSortType(e.target.value);
                           console.log("Selected Order: ", e.target.value);
-                          if (autoApplyChanges) {
-                            setAppliedFilters({
-                              filterOption,
-                              subOption,
-                              amountThreshold,
-                              showAboveThreshold,
-                              showType,
-                              sortType: e.target.value,
-                            });
-                          }
+                          // if (autoApplyChanges) {
+                          //   setAppliedFilters({
+                          //     filterOption,
+                          //     subOption,
+                          //     amountThreshold,
+                          //     showAboveThreshold,
+                          //     showType,
+                          //     sortType: e.target.value,
+                          //   });
+                          // }
                         }}
                       />
                       升序
@@ -5085,16 +5445,16 @@ const ShowExpensePage = () => {
                         onChange={(e) => {
                           setSortType(e.target.value);
                           console.log("Selected Order: ", e.target.value);
-                          if (autoApplyChanges) {
-                            setAppliedFilters({
-                              filterOption,
-                              subOption,
-                              amountThreshold,
-                              showAboveThreshold,
-                              showType,
-                              sortType: e.target.value,
-                            });
-                          }
+                          // if (autoApplyChanges) {
+                          //   setAppliedFilters({
+                          //     filterOption,
+                          //     subOption,
+                          //     amountThreshold,
+                          //     showAboveThreshold,
+                          //     showType,
+                          //     sortType: e.target.value,
+                          //   });
+                          // }
                         }}
                       />
                       降序
@@ -5175,7 +5535,7 @@ const ShowExpensePage = () => {
 
               {/* 保存退出按钮 */}
               <div className="dialog-actions">
-                {!autoApplyChanges && (
+                {(
                   <button className="save-btn" onClick={handleSaveFilters}>
                     保存
                   </button>
@@ -5213,12 +5573,13 @@ const ShowExpensePage = () => {
               const shouldShow = shouldShowRow(expense, index, allExpenses);
               const isExpanded = expandedCategories[expense.rawCategory || expense.category];
 
-
+              // Create unique key
+              const rowKey = expense.id || expense.rawCategory || expense.category || `row-${index}`;
               
               return (
                 <div 
                   className="table-row" 
-                  key={index}
+                  key={rowKey}
                   data-has-actions={expense.actions !== null ? "true" : undefined}
                   data-clickable-header={isClickable && appliedFilters.showType == "List all Category Expenses" ? "true" : undefined}
                   data-expanded={isClickable && appliedFilters.showType == "List all Category Expenses" && isExpanded ? "true" : undefined}
@@ -5270,23 +5631,29 @@ const ShowExpensePage = () => {
                   </div>
                   
                   <div 
-                    style={{
-                      ...(
-                        appliedFilters.showType === "List all Category Expenses" && expense.actions == null 
-                        ? { overflow: "visible", fontWeight: "bold", fontSize: "25px" } 
-                        : {}
-                      ),
-                      color: (
-                        expense.category && 
-                        (expense.category.includes("总共消费") || expense.category.includes("Total Expenses"))
-                      ) ? "red" : "",
-                      ...(isClickable ? {
-                        // transition: 'color 0.2s ease-out'
-                      } : {})
-                    }}
-                  >
-                    {categoriesTranslation[expense.category]||expense.category}
-                  </div>
+                      style={{
+                        ...(
+                          appliedFilters.showType === "List all Category Expenses" && expense.actions == null 
+                          ? { overflow: "visible", fontWeight: "bold", fontSize: "25px" } 
+                          : {}
+                        ),
+                        ...(isClickable ? {
+                          // transition: 'color 0.2s ease-out'
+                        } : {})
+                      }}
+                    >
+                      {expense.category && 
+                      (expense.category.includes("总共消费") || expense.category.includes("Total Expenses")) &&
+                      !expense.isTopTotal &&
+                      expense.category.includes("$") ? (
+                        <>
+                          <span style={{  }}>{expense.category.split("$")[0]}</span>
+                          <span className="negative">{"$" + expense.category.split("$")[1]}</span>
+                        </>
+                      ) : (
+                        categoriesTranslation[expense.category] || expense.category
+                      )}
+                    </div>
 
                   <div>{expense.date}</div>
 
@@ -5388,10 +5755,10 @@ const ShowExpensePage = () => {
                         ? { overflow: "visible", fontWeight: "bold", fontSize: "25px" } 
                         : {}
                       ),
-                      color: (
+                      className: (
                         expense.category && 
                         (expense.category.includes("总共消费") || expense.category.includes("Total Expenses"))
-                      ) ? "red" : "",
+                      ) ? "negative" : "",
                       ...(isClickable ? {
                         // transition: 'color 0.2s ease-out'
                       } : {})
@@ -5446,19 +5813,21 @@ const ShowExpensePage = () => {
               </div>
               <div 
                 style={{
-                  ...(
-                    appliedFilters.showType === "List all Category Expenses" && expense.actions == null 
+                  ...(appliedFilters.showType === "List all Category Expenses" && expense.actions == null 
                     ? { overflow: "visible", fontWeight: "bold", fontSize: "25px" } 
                     : {}
-                  ),
-                  color: (
-                    expense.category && // Ensure category is defined
-                    (expense.category.includes("总共消费") || expense.category.includes("Total Expenses"))
-                  ) ? "red" : ""
+                  )
                 }}
+                className={
+                  expense.category && 
+                  (expense.category.includes("总共消费") || expense.category.includes("Total Expenses"))
+                    ? "negative" 
+                    : ""
+                }
               >
-                {categoriesTranslation[expense.category]||expense.category}
+                {categoriesTranslation[expense.category] || expense.category}
               </div>
+
 
 
               <div>{expense.date}</div>
@@ -5616,6 +5985,9 @@ const ShowIncomePage = () => {
   const [sortType,setSortType] = useState("")
   const [showType, setShowType] = useState(""); // Display type combo box value
 
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [descriptionSearch, setDescriptionSearch] = useState("");
 
   const [isSortDialogVisible, setSortDialogVisible] = useState(false); // Dialog visibility
   const [isModifyDialogVisible, setModifyDialogVisible] = useState(false);
@@ -5644,7 +6016,11 @@ const ShowIncomePage = () => {
     subOption: "",
     amountThreshold: "",
     showAboveThreshold: false,
-    showType: ""
+    showType: "",
+    sortType: "",
+    startDate: "",
+    endDate: "",
+    descriptionSearch: ""
   });
 
   const years = [...new Set(data.income.map(income => new Date(income.date).getFullYear()))];
@@ -5667,12 +6043,15 @@ const ShowIncomePage = () => {
     const currentMonth = now.getMonth();
 
     const {
-        filterOption,
-        subOption,
-        amountThreshold,
-        showAboveThreshold,
-        showType,
-        sortType
+      filterOption,
+      subOption,
+      amountThreshold,
+      showAboveThreshold,
+      showType,
+      sortType,
+      startDate,
+      endDate,
+      descriptionSearch
     } = appliedFilters;
 
     let title = "总收入";
@@ -5693,7 +6072,20 @@ const ShowIncomePage = () => {
         const incomeYear = parseInt(incomeDate.substring(0, 4), 10);
         const incomeMonth = parseInt(incomeDate.substring(5, 7), 10) - 1;
 
-        if (filterOption === "按月显示") {
+        if (filterOption === "自定义") {
+        const incomeDateObj = new Date(incomeDate);
+        const start = startDate ? new Date(startDate) : null;
+        const end = endDate ? new Date(endDate) : null;
+
+        if (start && end) {
+          return incomeDateObj >= start && incomeDateObj <= end;
+        } else if (start) {
+          return incomeDateObj >= start;
+        } else if (end) {
+          return incomeDateObj <= end;
+        }
+        return true;
+      }else if (filterOption === "按月显示") {
             const monthMapping = {
                 一月: 0,
                 二月: 1,
@@ -5732,9 +6124,27 @@ const ShowIncomePage = () => {
         return true; // Default: include all
     };
 
+    const matchesDescription = (income) => {
+      if (!descriptionSearch || descriptionSearch.trim() === "") return true;
+      const incomeDesc = income.description || "";
+      return incomeDesc.toLowerCase().includes(descriptionSearch.trim().toLowerCase());
+    };
+
     // Calculate the title based on the filter options
     if (filterOption === "显示全部") {
         title = "全部记录的收入";
+    }else if (filterOption === "自定义") {
+      let dateRange = "";
+      if (startDate && endDate) {
+        dateRange = `${startDate}至${endDate}`;
+      } else if (startDate) {
+        dateRange = `从${startDate}`;
+      } else if (endDate) {
+        dateRange = `至${endDate}`;
+      }
+      
+      let descPart = descriptionSearch ? ` 含'${descriptionSearch}'` : "";
+      title = `${dateRange}${descPart} 总收入`.trim() || "自定义 总收入";
     } else if (filterOption === "按月显示" || filterOption === "按季度显示" || filterOption === "按年份显示") {
         title = `${subOption} 总收入`;
     } else if (filterOption === "前3个月" || filterOption === "前6个月" || filterOption === "前12个月") {
@@ -5752,7 +6162,7 @@ const ShowIncomePage = () => {
           const incomeDate = income.date;
 
           // Apply date range filter
-          include = include && isDateInRange(incomeDate);
+          include = include && isDateInRange(incomeDate)&& matchesDescription(income);
 
           // Filter by amountThreshold if applicable
           if (showAboveThreshold && amountThreshold) {
@@ -5777,27 +6187,16 @@ const ShowIncomePage = () => {
 
     // Add the title row with the total after-tax income
     const titleRow = {
-        date: `${title}: $${totalAfterTax}`,  // Append the total amount to the title
-        before_tax: null,
-        after_tax: null,
-        description: null,
-        tax_percentage: null,
-        id: null,
-        actions: null,  // Add actions as "none"
-        type: "total_before_tax"
-    };
-    let endingLabel = "年收入（税前）";
-    if (filterOption === "按月显示") {
-      endingLabel = `${subOption}收入（税前）`;
-    } else if (filterOption === "按季度显示") {
-      endingLabel = `${subOption}收入（税前）`;
-    } else if (filterOption === "按年份显示") {
-      endingLabel = `${subOption}年收入（税前）`;
-    } else if (["前3个月", "前6个月", "前12个月"].includes(filterOption)) {
-      endingLabel = `${filterOption}收入（税前）`;
-    }else{
-      endingLabel = `总收入（税前）`;
-    }
+      date: `税后 总收入: $${totalAfterTax}`,
+      before_tax: null,
+      after_tax: null,
+      description: null,
+      tax_percentage: null,
+      id: null,
+      actions: null,
+      type: "total_before_tax"
+  };
+    let endingLabel = "税前 总收入";
 
     const endingRow = {
       date: `${endingLabel}: $${totalBeforeTax}`,
@@ -5849,7 +6248,10 @@ const ShowIncomePage = () => {
       amountThreshold:amountThreshold,
       showAboveThreshold:showAboveThreshold,
       showType:showType,
-      sortType:sortType
+      sortType:sortType,
+      startDate: startDate,
+      endDate: endDate,
+      descriptionSearch: descriptionSearch
     };
     setAppliedFilters(filtersToSave);
     setSortDialogVisible(false); // Close the modal
@@ -5875,6 +6277,9 @@ const ShowIncomePage = () => {
       setShowAboveThreshold(parsedFilters.showAboveThreshold ?? false);
       setShowType(parsedFilters.showType || "");
       setSortType(parsedFilters.sortType || "ascending");
+      setStartDate(parsedFilters.startDate || "");
+      setEndDate(parsedFilters.endDate || "");
+      setDescriptionSearch(parsedFilters.descriptionSearch || "");
 
       // need this
       const filtersToSave = {
@@ -5883,7 +6288,10 @@ const ShowIncomePage = () => {
         amountThreshold:parsedFilters.amountThreshold || 0,
         showAboveThreshold:parsedFilters.showAboveThreshold ?? false,
         showType:parsedFilters.showType || "",
-        sortType:parsedFilters.sortType || "ascending"
+        sortType:parsedFilters.sortType || "ascending",
+        startDate: parsedFilters.startDate || "",
+        endDate: parsedFilters.endDate || "",
+        descriptionSearch: parsedFilters.descriptionSearch || ""
       };
       setAppliedFilters(filtersToSave);
     }else{
@@ -5897,6 +6305,10 @@ const ShowIncomePage = () => {
       setShowAboveThreshold(false);
       setShowType("");
       setSortType("ascending");
+      setStartDate("");
+      setEndDate("");
+      setDescriptionSearch("");
+
 
       // set obj of states (filterIncomes called cuz of this)
       const filtersToSave = {
@@ -5905,7 +6317,10 @@ const ShowIncomePage = () => {
         amountThreshold: 0,
         showAboveThreshold:false,
         showType: "",
-        sortType:"ascending"
+        sortType:"ascending",
+        startDate: "",
+        endDate: "",
+        descriptionSearch: ""
       };
       setAppliedFilters(filtersToSave);
     }
@@ -6034,13 +6449,87 @@ const ShowIncomePage = () => {
       document.removeEventListener("mouseout", handleMouseOut);
     };
   }, []);
+
+  const getPageTitle = () => {
+    const { filterOption, subOption, startDate, endDate, descriptionSearch } = appliedFilters;
+    
+    if (!filterOption || filterOption === "显示全部") {
+      return "收入明细";
+    }
+    
+    if (filterOption === "自定义") {
+      let parts = [];
+      if (startDate && endDate) {
+        parts.push(`${startDate}至${endDate}`);
+      } else if (startDate) {
+        parts.push(`从${startDate}`);
+      } else if (endDate) {
+        parts.push(`至${endDate}`);
+      }
+      if (descriptionSearch) {
+        parts.push(`含'${descriptionSearch}'`);
+      }
+      return parts.length > 0 ? `收入明细 - [${parts.join(" ")}]` : "收入明细";
+    }
+    
+    if (subOption) {
+      // Convert Chinese month names to numeric format
+      if (filterOption === "按月显示") {
+        const monthMapping = {
+          "一月": "1月", "二月": "2月", "三月": "3月", "四月": "4月",
+          "五月": "5月", "六月": "6月", "七月": "7月", "八月": "8月",
+          "九月": "9月", "十月": "10月", "十一月": "11月", "十二月": "12月"
+        };
+        return `收入明细 - [${monthMapping[subOption] || subOption}]`;
+      }
+      return `收入明细 - [${subOption}]`;
+    }
+    
+    return `收入明细 - [${filterOption}]`;
+  };
   
+
+
+  const [showButtons, setShowButtons] = useState(true);
+  const [lightMode, setLightMode] = useState(
+    // Read from local Storage once on mount
+    ()=>{
+      let initialMode =localStorage.getItem("lightMode") || "light"
+      return initialMode;
+    }
+  );
+  const toggleLightMode = () => {
+    const newlightMode = lightMode === "light" ? "dark" : "light";
+    setLightMode(newlightMode);
+  };
+  const changeLightMode = (newlightMode) => {
+    localStorage.setItem("lightMode", newlightMode);
+    document.documentElement.setAttribute('data-theme', newlightMode);
+    console.log("Light mode changed to:", newlightMode);
+  };
+  // Save Whenever light mode changes
+  useEffect(() => {      
+    changeLightMode(lightMode) // useEffect runs only after DOM is rendered, so the change will be applied after all things load
+    localStorage.setItem("lightMode", lightMode);
+  },[lightMode])
   return (
     <div className="modify-income-container">
+      <button
+        className={`icon-button2 ${!showButtons ? "icon-fade-out" : ""}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          toggleLightMode();
+        }}
+      >
+        <span
+          className={lightMode ? "icon-brightness-contrast" : "icon-sun"}
+        ></span>
+      </button>
       {/* Header Section */}
       <div className="modify-income-header">
         <div className="header-left">
-          <h2>收入明细</h2>
+          <h2>{getPageTitle()}</h2>
+
         </div>
         <div className="header-right">
         <button
@@ -6076,9 +6565,17 @@ const ShowIncomePage = () => {
                       const newFilterOption = e.target.value;
                       setFilterOption(newFilterOption);
 
+                      // Clear description search when switching away from custom
+                      if (newFilterOption !== "自定义") {
+                        setDescriptionSearch("");
+                      }
+
                       // Update `subOption` etc with a default based on the new `filterOption`
                       // no need to update sortType since if unclicked default ascending, exactly which default radio is, once click desc, state updates.
-                      if (newFilterOption == "按月显示") {
+                      if (newFilterOption === "自定义") {
+                        setSubOption("");
+                        setShowType("");
+                      }else if (newFilterOption == "按月显示") {
                         // Use zh-CN so the generated month name matches the Chinese option values
                         const currentMonth = new Date().toLocaleString("zh-CN", { month: "long" });
                         setSubOption(currentMonth); // Default to current month
@@ -6116,13 +6613,14 @@ const ShowIncomePage = () => {
                     <option value="前3个月">前3个月</option>
                     <option value="前12个月">前12个月</option>
                     <option value="前6个月">前6个月</option>
+                    <option value="自定义">自定义</option>
                   </select>
 
                 </div>
                 
 
                 {/* Sub Option for Time Range */}
-                <div className="row">
+                {/* <div className="row">
                   <label htmlFor="sub-option-combo" className="inline-label">
                     子选项
                   </label>
@@ -6174,7 +6672,99 @@ const ShowIncomePage = () => {
                       </option>
                     ))}
                   </select>
-                </div>
+                </div> */}
+
+                {/* Conditional rendering: Sub Option OR Date Pickers */}
+                {filterOption !== "自定义" ? (
+                  <div className="row">
+                    <label htmlFor="sub-option-combo" className="inline-label">
+                      子选项
+                    </label>
+                    <select
+                      id="sub-option-combo"
+                      value={subOption}
+                      onChange={(e) => setSubOption(e.target.value)}
+                      className="filter-combo"
+                      disabled={filterOption === "前3个月" || filterOption === "前12个月" || filterOption === "前6个月" || filterOption === "显示全部"}
+                    >
+                      {filterOption === "按月显示" && (
+                        <>
+                          <option value="一月">一月</option>
+                          <option value="二月">二月</option>
+                          <option value="三月">三月</option>
+                          <option value="四月">四月</option>
+                          <option value="五月">五月</option>
+                          <option value="六月">六月</option>
+                          <option value="七月">七月</option>
+                          <option value="八月">八月</option>
+                          <option value="九月">九月</option>
+                          <option value="十月">十月</option>
+                          <option value="十一月">十一月</option>
+                          <option value="十二月">十二月</option>
+                        </>
+                      )}
+                      {filterOption === "按季度显示" && (
+                        <>
+                          <option value="Q1">Q1</option>
+                          <option value="Q2">Q2</option>
+                          <option value="Q3">Q3</option>
+                          <option value="Q4">Q4</option>
+                        </>
+                      )}
+                      {filterOption === "按年份显示" && years.map((year) => (
+                        <option value={year} key={year}>
+                          {year}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                ) : (
+                  <div className="row">
+                    <label className="inline-label">
+                      日期范围
+                    </label>
+                    <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                      <input
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        style={{ padding: "5px", fontSize: "14px" }}
+                        className="filter-combo"
+                      />
+                      <span>至</span>
+                      <input
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        style={{ padding: "5px", fontSize: "14px" }}
+                        className="filter-combo"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Description search - only show when custom is selected */}
+                {filterOption === "自定义" && (
+                  <div className="row">
+                    <label htmlFor="description-search" className="inline-label">
+                      描述搜索
+                    </label>
+                    <textarea
+                      id="description-search"
+                      value={descriptionSearch}
+                      onChange={(e) => setDescriptionSearch(e.target.value)}
+                      placeholder="输入描述关键词..."
+                      style={{
+                        width: "100%",
+                        padding: "8px",
+                        fontSize: "14px",
+                        minHeight: "100px",
+                        resize: "none"
+                      }}
+                      className="filter-combo"
+                    />
+                  </div>
+                )}
 
                 {/* Row for Show Type */}
                 <div className="row">
@@ -6389,10 +6979,10 @@ const ShowIncomePage = () => {
               >
                 {income.actions === null && income.type=="total_before_tax" && income.date && income.date.includes("$") ? (
                   <>
-                    <span style={{ color: "red" }}>
+                    <span>
                       {income.date.split("$")[0]} {/* Text before the dollar sign */}
                     </span>
-                    <span style={{ color: "green" }}>
+                    <span className="positive">
                       {"$" + income.date.split("$")[1]} {/* Text including and after the dollar sign */}
                     </span>
                   </>
