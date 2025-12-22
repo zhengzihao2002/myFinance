@@ -258,7 +258,7 @@ body,
 }
 /* Table Body */
 .expense-display .table-body {
-  padding: 10px 20px; /* No extra padding needed */
+  padding: 10px 0px; /* No extra padding needed */
 }
 .expense-display .table-row {
   display: grid; /* Grid layout for consistent column widths */
@@ -271,7 +271,7 @@ body,
     minmax(80px, 2fr); /* 操作 */
   gap: 10px; /* Add spacing between columns */
   align-items: center;
-  padding: 10px 0;
+  padding: 10px 20px;
   border-bottom: 1px solid #eee;
   overflow: hidden;
 }
@@ -1676,7 +1676,7 @@ input[type="number"] {
 
 /* Table Body for income */
 .income-display .table-body {
-  padding: 10px 20px;
+  padding: 10px 0px;
 }
 
 .income-display .table-row {
@@ -1692,7 +1692,7 @@ input[type="number"] {
   gap: 10px; /* Add space between columns */
   align-items: center;
   border-bottom: 1px solid #eee;
-  padding: 10px 0; 
+  padding: 10px 20px; 
 }
 
 .income-display .table-row > div {
