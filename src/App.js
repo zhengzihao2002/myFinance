@@ -890,11 +890,46 @@ const HomePage = () => {
     const arrow = isIncrease ? "↑" : "↓";
     const arrowClass = isIncrease ? "icon-arrow-up2" : "icon-arrow-down2";
 
+    // delta between current and previous (preserve sign)
+    const delta = current - previous;
+    const changeAmount = Math.abs(delta) || 0;
+    const sign = delta >= 0 ? "+" : "-";
+    const formattedAmount = `${sign}$${changeAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+    // For user-friendly coloring: green = good (income up OR expense down), red = bad
+    const isGood = isExpense ? delta < 0 : delta > 0;
+    const badgeStyle = {
+      display: "inline-block",
+      padding: "0px 10px",
+      marginLeft: "8px",
+      borderRadius: "14px",
+      background: isGood ? "rgba(16,185,129,0.12)" : "rgba(239,68,68,0.10)",
+      fontWeight: 600,
+      fontSize: "18px",
+      lineHeight: "31px",
+    };
+
     return (
-      <span className={color} style={{ fontWeight: "bold",height: "31px",
-                    lineHeight: "31px",display: "inline-block",
-                    overflow: "hidden",}}>
-        <span className={arrowClass} style={{height: "31px",lineHeight: "31px",display: "inline-block",  }}></span> {Math.abs(change).toFixed(1)}%
+      <span
+        className={color}
+        style={{
+          fontWeight: "bold",
+          height: "31px",
+          display: "inline-flex",
+          alignItems: "center",
+          lineHeight: "normal",
+          overflow: "hidden",
+          padding: 0,
+          margin: 0,
+          verticalAlign:"top",
+        }}
+      >
+        <span
+          className={arrowClass}
+          style={{ height: "31px", display: "inline-flex", alignItems: "center" }}
+        ></span>
+        <span style={{ marginLeft: 6 }}>{Math.abs(change).toFixed(1)}%</span>
+        <span style={badgeStyle}>{formattedAmount}</span>
       </span>
     );
   };
@@ -1613,7 +1648,7 @@ const HomePage = () => {
                 textAlign: "center",
               }}
             >
-              上个月概览
+              上个月({monthBeforeLast + 1}月)概览
             </div>
 
             {/* Content */}
@@ -1626,13 +1661,14 @@ const HomePage = () => {
                 overflow: "hidden",         // ✅ Prevent vertical growth
                 whiteSpace: "nowrap",       // ✅ Prevent wrapping
                 textOverflow: "ellipsis",   // ✅ Adds "..." if it can’t fit
+                verticalAlign: "middle",
               }}>
                 <strong
                   style={{
                     display: "inline-block",
                     height: "31px",
                     lineHeight: "31px",
-                    verticalAlign: "middle",
+                    verticalAlign: "top",
                     // Optionally add minWidth if you want all titles to align
                     marginRight:"15px",
                   }}
@@ -1646,7 +1682,7 @@ const HomePage = () => {
                     height: "31px",
                     lineHeight: "31px",
                     letterSpacing: "1px",
-                    verticalAlign: "middle",
+                    verticalAlign: "top",
                     overflow: "hidden",
                     whiteSpace: "nowrap"
                   }}
@@ -1659,7 +1695,7 @@ const HomePage = () => {
                     minWidth: "60px",
                     height: "31px",
                     lineHeight: "31px",
-                    verticalAlign: "middle",
+                    verticalAlign: "top",
                     overflow: "hidden",
                     whiteSpace: "nowrap"
                   }}
@@ -1682,7 +1718,7 @@ const HomePage = () => {
                     display: "inline-block",
                     height: "31px",
                     lineHeight: "31px",
-                    verticalAlign: "middle",
+                    verticalAlign: "top",
                     // Optionally add minWidth if you want all titles to align
                     marginRight:"15px",
                   }}
@@ -1696,7 +1732,7 @@ const HomePage = () => {
                     height: "31px",
                     lineHeight: "31px",
                     letterSpacing: "1px",
-                    verticalAlign: "middle",
+                    verticalAlign: "top",
                     overflow: "hidden",
                     whiteSpace: "nowrap"
                   }}
@@ -1709,7 +1745,7 @@ const HomePage = () => {
                     minWidth: "60px",
                     height: "31px",
                     lineHeight: "31px",
-                    verticalAlign: "middle",
+                    verticalAlign: "top",
                     overflow: "hidden",
                     whiteSpace: "nowrap"
                   }}
@@ -1720,19 +1756,19 @@ const HomePage = () => {
 
               {/* Highest Category Increase */}
               <div className="panel_font_size" style={{
-    marginBottom: "10px",
-    height: "31px",             // ✅ FIXED height instead of minHeight
-    lineHeight: "31px",         // ✅ Keeps vertical centering
-    overflow: "hidden",         // ✅ Prevent vertical growth
-    whiteSpace: "nowrap",       // ✅ Prevent wrapping
-    textOverflow: "ellipsis",   // ✅ Adds "..." if it can’t fit
-  }}>
+                marginBottom: "10px",
+                height: "31px",             // ✅ FIXED height instead of minHeight
+                lineHeight: "31px",         // ✅ Keeps vertical centering
+                overflow: "hidden",         // ✅ Prevent vertical growth
+                whiteSpace: "nowrap",       // ✅ Prevent wrapping
+                textOverflow: "ellipsis",   // ✅ Adds "..." if it can’t fit
+              }}>
                 <strong
                   style={{
                     display: "inline-block",
                     height: "31px",
                     lineHeight: "31px",
-                    verticalAlign: "middle",
+                    verticalAlign: "top",
                     // Optionally add minWidth if you want all titles to align
                   }}
                 >
@@ -1745,7 +1781,7 @@ const HomePage = () => {
                     height: "31px",
                     lineHeight: "31px",
                     textAlign: "center",
-                    verticalAlign: "middle",
+                    verticalAlign: "top",
                     overflow: "hidden",
                     whiteSpace: "nowrap"
                   }}
@@ -1759,7 +1795,7 @@ const HomePage = () => {
                     height: "31px",
                     lineHeight: "31px",
                     textAlign: "left",
-                    verticalAlign: "middle",
+                    verticalAlign: "top",
                     overflow: "hidden",
                     whiteSpace: "nowrap"
                   }}
@@ -1770,19 +1806,19 @@ const HomePage = () => {
 
               {/* Highest Category Decrease */}
               <div className="panel_font_size" style={{
-    marginBottom: "10px",
-    height: "31px",             // ✅ FIXED height instead of minHeight
-    lineHeight: "31px",         // ✅ Keeps vertical centering
-    overflow: "hidden",         // ✅ Prevent vertical growth
-    whiteSpace: "nowrap",       // ✅ Prevent wrapping
-    textOverflow: "ellipsis",   // ✅ Adds "..." if it can’t fit
-  }}>
+                marginBottom: "10px",
+                height: "31px",             // ✅ FIXED height instead of minHeight
+                lineHeight: "31px",         // ✅ Keeps vertical centering
+                overflow: "hidden",         // ✅ Prevent vertical growth
+                whiteSpace: "nowrap",       // ✅ Prevent wrapping
+                textOverflow: "ellipsis",   // ✅ Adds "..." if it can’t fit
+              }}>
                 <strong
                   style={{
                     display: "inline-block",
                     height: "31px",
                     lineHeight: "31px",
-                    verticalAlign: "middle",
+                    verticalAlign: "top",
                   }}
                 >
                   最大支出下降类别:
@@ -1794,7 +1830,7 @@ const HomePage = () => {
                     height: "31px",
                     lineHeight: "31px",
                     textAlign: "center",
-                    verticalAlign: "middle",
+                    verticalAlign: "top",
                     overflow: "hidden",
                     whiteSpace: "nowrap"
                   }}
@@ -1812,7 +1848,7 @@ const HomePage = () => {
                     height: "31px",
                     lineHeight: "31px",
                     textAlign: "left",
-                    verticalAlign: "middle",
+                    verticalAlign: "top",
                     overflow: "hidden",
                     whiteSpace: "nowrap"
                   }}
