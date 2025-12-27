@@ -800,12 +800,43 @@ app.get("/api/diff", async (req, res) => {
     const localIncome = localData.income || [];
 
     // -----------------------------------------------------
-    // Helper to compare by ID
+    // Helper to compare by ALL attributes
     // -----------------------------------------------------
     const indexById = arr => {
       const map = {};
       arr.forEach(item => { map[item.id] = item; });
       return map;
+    };
+
+    const normalizeForComparison = (obj) => {
+      const normalized = {};
+      
+      // Sort keys alphabetically
+      const sortedKeys = Object.keys(obj).sort();
+      
+      sortedKeys.forEach(key => {
+        let value = obj[key];
+        
+        // Normalize all numeric strings to numbers
+        if (typeof value === 'string') {
+          value = value.trim();
+          // If it's a numeric string, convert to number
+          const num = parseFloat(value);
+          if (!isNaN(num) && value !== '') {
+            value = num;
+          }
+        }
+        
+        normalized[key] = value;
+      });
+      
+      return normalized;
+    };
+
+    const areEqual = (obj1, obj2) => {
+      const norm1 = normalizeForComparison(obj1);
+      const norm2 = normalizeForComparison(obj2);
+      return JSON.stringify(norm1) === JSON.stringify(norm2);
     };
 
     const compareArrays = (localArr, dbArr) => {
@@ -814,18 +845,31 @@ app.get("/api/diff", async (req, res) => {
 
       const onlyLocal = [];
       const onlyDB = [];
+      const modified = [];
 
-      // local → DB missing
+      // Check local items
       for (const id in localMap) {
-        if (!dbMap[id]) onlyLocal.push(localMap[id]);
+        if (!dbMap[id]) {
+          onlyLocal.push(localMap[id]);
+        } else {
+          if (!areEqual(localMap[id], dbMap[id])) {
+            modified.push({
+              id,
+              local: localMap[id],
+              db: dbMap[id]
+            });
+          }
+        }
       }
 
-      // DB → local missing
+      // Check DB items missing in local
       for (const id in dbMap) {
-        if (!localMap[id]) onlyDB.push(dbMap[id]);
+        if (!localMap[id]) {
+          onlyDB.push(dbMap[id]);
+        }
       }
 
-      return { onlyLocal, onlyDB };
+      return { onlyLocal, onlyDB, modified };
     };
 
     // -----------------------------
@@ -835,7 +879,7 @@ app.get("/api/diff", async (req, res) => {
     const incomeDiff = compareArrays(localIncome, dbIncome);
     const prepaysDiff = compareArrays(localPrepay, dbPrepays);
 
-    // Checking — compare by external_id/id
+    // Checking
     const formatCheckingLocal = (ch) =>
       (ch.CheckingRecent100 || []).map(t => ({
         date: t[0],
@@ -856,26 +900,298 @@ app.get("/api/diff", async (req, res) => {
 
     const checkingDiff = compareArrays(checkingLocal, checkingDB);
 
-    // Categories — compare keys
+    // Categories
     const categoryKeysLocal = new Set(Object.keys(localCategories));
     const categoryKeysDB = new Set(Object.keys(dbCategories));
 
     const categoriesOnlyLocal = [...categoryKeysLocal].filter(k => !categoryKeysDB.has(k));
     const categoriesOnlyDB = [...categoryKeysDB].filter(k => !categoryKeysLocal.has(k));
+    const categoriesModified = [];
+
+    for (const key of categoryKeysLocal) {
+      if (categoryKeysDB.has(key)) {
+        if (!areEqual(localCategories[key], dbCategories[key])) {
+          categoriesModified.push({
+            key,
+            local: localCategories[key],
+            db: dbCategories[key]
+          });
+        }
+      }
+    }
 
     // -----------------------------
-    // 4. Return diff
+    // 4. Format human-readable output
     // -----------------------------
-    res.json({
-      expenses: expensesDiff,
-      income: incomeDiff,
-      prepays: prepaysDiff,
-      checking: checkingDiff,
-      categories: {
-        onlyLocal: categoriesOnlyLocal,
-        onlyDB: categoriesOnlyDB
+    let output = [];
+    let hasDifferences = false;
+
+    // Helper to find differences between two objects
+    const findDifferences = (local, db) => {
+      const diffs = [];
+      const allKeys = new Set([...Object.keys(local), ...Object.keys(db)]);
+      
+      for (const key of allKeys) {
+        if (key === 'id') continue; // Skip id field
+        
+        const localVal = local[key];
+        const dbVal = db[key];
+        
+        // Normalize for comparison
+        const normLocal = typeof localVal === 'string' ? localVal.trim() : localVal;
+        const normDB = typeof dbVal === 'string' ? dbVal.trim() : dbVal;
+        
+        if (JSON.stringify(normLocal) !== JSON.stringify(normDB)) {
+          diffs.push(`  ${key}: "${normDB}" → "${normLocal}"`);  // DB → Local (was → now)
+        }
       }
-    });
+      
+      return diffs;
+    };
+
+    // Expenses
+    if (expensesDiff.onlyLocal.length > 0) {
+      hasDifferences = true;
+      output.push("📍 EXPENSES - Only in Local:");
+      expensesDiff.onlyLocal.forEach(exp => {
+        output.push(`  • ${exp.date} - ${exp.description} ($${exp.amount}) [${exp.category}]`);
+      });
+      output.push("");
+      output.push("");
+      output.push("");
+      output.push("");
+    }
+
+    if (expensesDiff.onlyDB.length > 0) {
+      hasDifferences = true;
+      output.push("💾 EXPENSES - Only in Database:");
+      expensesDiff.onlyDB.forEach(exp => {
+        output.push(`  • ${exp.date} - ${exp.description} ($${exp.amount}) [${exp.category}]`);
+      });
+      output.push("");
+      output.push("");
+      output.push("");
+      output.push("");
+    }
+
+    if (expensesDiff.modified.length > 0) {
+      hasDifferences = true;
+      output.push("✏️  EXPENSES - Modified:");
+      expensesDiff.modified.forEach(mod => {
+        output.push(`  • ${mod.local.date} - ${mod.local.description}`);
+        const diffs = findDifferences(mod.local, mod.db);
+        output.push(...diffs);
+      });
+      output.push("");
+      output.push("");
+      output.push("");
+      output.push("");
+    }
+
+    // Income
+    if (incomeDiff.onlyLocal.length > 0) {
+      hasDifferences = true;
+      output.push("📍 INCOME - Only in Local:");
+      incomeDiff.onlyLocal.forEach(inc => {
+        output.push(`  • ${inc.date} - ${inc.description} ($${inc.after_tax})`);
+      });
+      output.push("");
+      output.push("");
+      output.push("");
+      output.push("");
+    }
+
+    if (incomeDiff.onlyDB.length > 0) {
+      hasDifferences = true;
+      output.push("💾 INCOME - Only in Database:");
+      incomeDiff.onlyDB.forEach(inc => {
+        output.push(`  • ${inc.date} - ${inc.description} ($${inc.after_tax})`);
+      });
+      output.push("");
+      output.push("");
+      output.push("");
+      output.push("");
+    }
+
+    if (incomeDiff.modified.length > 0) {
+      hasDifferences = true;
+      output.push("✏️  INCOME - Modified:");
+      incomeDiff.modified.forEach(mod => {
+        output.push(`  • ${mod.local.date} - ${mod.local.description}`);
+        const diffs = findDifferences(mod.local, mod.db);
+        output.push(...diffs);
+      });
+      output.push("");
+      output.push("");
+      output.push("");
+      output.push("");
+    }
+
+    // Prepays
+    if (prepaysDiff.onlyLocal.length > 0) {
+      hasDifferences = true;
+      output.push("📍 PREPAYS - Only in Local:");
+      prepaysDiff.onlyLocal.forEach(prep => {
+        output.push(`  • ${prep.id}: $${prep.amount}`);
+      });
+      output.push("");
+      output.push("");
+      output.push("");
+      output.push("");
+    }
+
+    if (prepaysDiff.onlyDB.length > 0) {
+      hasDifferences = true;
+      output.push("💾 PREPAYS - Only in Database:");
+      prepaysDiff.onlyDB.forEach(prep => {
+        output.push(`  • ${prep.id}: $${prep.amount}`);
+      });
+      output.push("");
+      output.push("");
+      output.push("");
+      output.push("");
+    }
+
+    if (prepaysDiff.modified.length > 0) {
+      hasDifferences = true;
+      output.push("✏️  PREPAYS - Modified:");
+      prepaysDiff.modified.forEach(mod => {
+        output.push(`  • ${mod.id}`);
+        const diffs = findDifferences(mod.local, mod.db);
+        output.push(...diffs);
+      });
+      output.push("");
+      output.push("");
+      output.push("");
+      output.push("");
+    }
+
+    // Checking
+    if (checkingDiff.onlyLocal.length > 0) {
+      hasDifferences = true;
+      output.push("📍 CHECKING - Only in Local:");
+      checkingDiff.onlyLocal.forEach(chk => {
+        output.push(`  • ${chk.date} - ${chk.type}: $${chk.amount} (Total: $${chk.total})`);
+      });
+      output.push("");
+      output.push("");
+      output.push("");
+      output.push("");
+    }
+
+    if (checkingDiff.onlyDB.length > 0) {
+      hasDifferences = true;
+      output.push("💾 CHECKING - Only in Database:");
+      checkingDiff.onlyDB.forEach(chk => {
+        output.push(`  • ${chk.date} - ${chk.type}: $${chk.amount} (Total: $${chk.total})`);
+      });
+      output.push("");
+      output.push("");
+      output.push("");
+      output.push("");
+    }
+
+    if (checkingDiff.modified.length > 0) {
+      hasDifferences = true;
+      output.push("✏️  CHECKING - Modified:");
+      checkingDiff.modified.forEach(mod => {
+        output.push(`  • ${mod.local.date} - ${mod.local.type}`);
+        const diffs = findDifferences(mod.local, mod.db);
+        output.push(...diffs);
+      });
+      output.push("");
+      output.push("");
+      output.push("");
+      output.push("");
+    }
+
+    // Categories
+    if (categoriesOnlyLocal.length > 0) {
+      hasDifferences = true;
+      output.push("📍 CATEGORIES - Only in Local:");
+      categoriesOnlyLocal.forEach(cat => {
+        output.push(`  • ${cat}`);
+      });
+      output.push("");
+      output.push("");
+      output.push("");
+      output.push("");
+    }
+
+    if (categoriesOnlyDB.length > 0) {
+      hasDifferences = true;
+      output.push("💾 CATEGORIES - Only in Database:");
+      categoriesOnlyDB.forEach(cat => {
+        output.push(`  • ${cat}`);
+      });
+      output.push("");
+      output.push("");
+      output.push("");
+      output.push("");
+    }
+
+    if (categoriesModified.length > 0) {
+      hasDifferences = true;
+      output.push("✏️  CATEGORIES - Modified:");
+      categoriesModified.forEach(mod => {
+        output.push(`  • ${mod.key}`);
+        output.push(`    Local: ${JSON.stringify(mod.local)}`);
+        output.push(`    DB: ${JSON.stringify(mod.db)}`);
+      });
+      output.push("");
+      output.push("");
+      output.push("");
+      output.push("");
+    }
+
+    // Final output
+    if (!hasDifferences) {
+      res.send(`
+        <html>
+          <head>
+            <style>
+              body {
+                background-color: #1e1e1e;
+                color: #ffffff;
+                font-family: 'Consolas', 'Monaco', monospace;
+                padding: 20px;
+                margin: 0;
+              }
+              pre {
+                white-space: pre-wrap;
+                word-wrap: break-word;
+              }
+            </style>
+          </head>
+          <body>
+            <pre>✅ Everything is in sync! Local and database match perfectly.</pre>
+          </body>
+        </html>
+      `);
+    } else {
+      res.send(`
+        <html>
+          <head>
+            <style>
+              body {
+                background-color: #1e1e1e;
+                color: #ffffff;
+                font-family: 'Consolas', 'Monaco', monospace;
+                padding: 20px;
+                margin: 0;
+              }
+              pre {
+                white-space: pre-wrap;
+                word-wrap: break-word;
+              }
+            </style>
+          </head>
+          <body>
+            <pre>${output.join("\n")}</pre>
+          </body>
+        </html>
+      `);
+    }
 
   } catch (err) {
     console.error("DIFF ERROR:", err);
