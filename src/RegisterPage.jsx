@@ -105,6 +105,14 @@ export default function RegisterPage() {
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
 
+  // Remove dark mode on mount, restore on unmount
+  useEffect(() => {
+    const htmlElement = document.documentElement;
+    const savedTheme = htmlElement.getAttribute('data-theme');
+    htmlElement.removeAttribute('data-theme');
+    
+  }, []);
+
   async function handleRegister(e) {
     e.preventDefault();
     setIsLoading(true);
@@ -163,7 +171,8 @@ export default function RegisterPage() {
       padding: '40px',
       boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
       border: '1px solid rgba(255, 255, 255, 0.2)',
-      animation: shake ? 'shake 0.5s' : 'none'
+      animation: shake ? 'shake 0.5s' : 'none',
+       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     },
     iconBox: {
       display: 'inline-flex',
@@ -174,19 +183,22 @@ export default function RegisterPage() {
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       borderRadius: '16px',
       marginBottom: '20px',
-      boxShadow: '0 8px 16px rgba(102, 126, 234, 0.4)'
+      boxShadow: '0 8px 16px rgba(102, 126, 234, 0.4)',
+       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     },
     heading: {
       fontSize: '32px',
       fontWeight: '700',
       color: '#1a202c',
       marginBottom: '8px',
-      marginTop: 0
+      marginTop: 0,
+       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     },
     subtitle: {
       color: '#718096',
       marginBottom: '32px',
-      marginTop: 0
+      marginTop: 0,
+       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     },
     inputWrapper: {
       position: 'relative',
@@ -209,7 +221,8 @@ export default function RegisterPage() {
       color: '#1a202c',
       outline: 'none',
       transition: 'all 0.2s',
-      boxSizing: 'border-box'
+      boxSizing: 'border-box',
+       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     },
     inputFocus: {
       border: '2px solid #764ba2',
@@ -231,7 +244,8 @@ export default function RegisterPage() {
       gap: '8px',
       boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)',
       transition: 'all 0.2s',
-      marginTop: '8px'
+      marginTop: '8px',
+       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     },
     buttonDisabled: {
       opacity: 0.5,
@@ -256,7 +270,8 @@ export default function RegisterPage() {
       alignItems: 'center',
       justifyContent: 'center',
       gap: '8px',
-      transition: 'all 0.2s'
+      transition: 'all 0.2s',
+       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     },
     spinner: {
       width: '20px',
@@ -264,7 +279,8 @@ export default function RegisterPage() {
       border: '2px solid rgba(255, 255, 255, 0.3)',
       borderTop: '2px solid white',
       borderRadius: '50%',
-      animation: 'spin 1s linear infinite'
+      animation: 'spin 1s linear infinite',
+       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     }
   };
 

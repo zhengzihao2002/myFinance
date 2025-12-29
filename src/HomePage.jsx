@@ -173,10 +173,20 @@ const HomePage = () => {
     localStorage.setItem("lightMode", lightMode);
   },[lightMode])
   useEffect(() => {
+  // Disable transitions during initial theme application
+  document.body.style.transition = 'none';
+  
+  // Apply saved theme immediately
+  const savedMode = localStorage.getItem("lightMode") || "light";
+  document.documentElement.setAttribute('data-theme', savedMode);
+  
+  // Re-enable transitions after a brief delay
+  requestAnimationFrame(() => {
     setTimeout(() => {
-      document.body.classList.remove("no-transition");
-    }, 1);
-  }, []); // Runs once after first render
+      document.body.style.transition = '';
+    }, 50);
+  });
+}, []); // Run only once on mount // Runs once after first render
   // Toggle function, triggered by button
   const toggleLightMode = () => {
     const newlightMode = lightMode === "light" ? "dark" : "light";

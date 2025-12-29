@@ -27,7 +27,8 @@ function Toast({ message, onClose, type = "error" }) {
       minWidth: '320px',
       maxWidth: '500px',
       zIndex: 1000,
-      animation: 'slideIn 0.3s ease-out'
+      animation: 'slideIn 0.3s ease-out',
+       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     },
     iconWrapper: {
       display: 'flex',
@@ -37,13 +38,15 @@ function Toast({ message, onClose, type = "error" }) {
       height: '40px',
       borderRadius: '50%',
       background: type === 'error' ? '#fff5f5' : '#f0fff4',
-      flexShrink: 0
+      flexShrink: 0,
+       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     },
     content: {
       flex: 1,
       color: '#2d3748',
       fontSize: '14px',
-      fontWeight: '500'
+      fontWeight: '500',
+       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     },
     closeButton: {
       background: 'none',
@@ -55,7 +58,8 @@ function Toast({ message, onClose, type = "error" }) {
       justifyContent: 'center',
       color: '#a0aec0',
       transition: 'color 0.2s',
-      flexShrink: 0
+      flexShrink: 0,
+       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     }
   };
 
@@ -95,6 +99,7 @@ function Toast({ message, onClose, type = "error" }) {
 }
 
 export default function LoginPage() {
+
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -103,6 +108,14 @@ export default function LoginPage() {
   const [shake, setShake] = useState(false);
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
+
+  // Remove dark mode on mount, restore on unmount
+  useEffect(() => {
+    const htmlElement = document.documentElement;
+    const savedTheme = htmlElement.getAttribute('data-theme');
+    htmlElement.removeAttribute('data-theme');
+    
+  }, []);
 
   async function handleLogin(e) {
     e.preventDefault();
@@ -145,7 +158,8 @@ export default function LoginPage() {
       alignItems: 'center',
       justifyContent: 'center',
       padding: '20px',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     },
     card: {
       width: '100%',
@@ -156,7 +170,8 @@ export default function LoginPage() {
       padding: '40px',
       boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
       border: '1px solid rgba(255, 255, 255, 0.2)',
-      animation: shake ? 'shake 0.5s' : 'none'
+      animation: shake ? 'shake 0.5s' : 'none',
+       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     },
     iconBox: {
       display: 'inline-flex',
@@ -167,19 +182,22 @@ export default function LoginPage() {
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       borderRadius: '16px',
       marginBottom: '20px',
-      boxShadow: '0 8px 16px rgba(102, 126, 234, 0.4)'
+      boxShadow: '0 8px 16px rgba(102, 126, 234, 0.4)',
+       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     },
     heading: {
       fontSize: '32px',
       fontWeight: '700',
       color: '#1a202c',
       marginBottom: '8px',
-      marginTop: 0
+      marginTop: 0,
+       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     },
     subtitle: {
       color: '#718096',
       marginBottom: '32px',
-      marginTop: 0
+      marginTop: 0,
+       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     },
     inputWrapper: {
       position: 'relative',
@@ -202,7 +220,8 @@ export default function LoginPage() {
       color: '#1a202c',
       outline: 'none',
       transition: 'all 0.2s',
-      boxSizing: 'border-box'
+      boxSizing: 'border-box',
+       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     },
     inputFocus: {
       border: '2px solid #764ba2',
@@ -224,7 +243,8 @@ export default function LoginPage() {
       gap: '8px',
       boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)',
       transition: 'all 0.2s',
-      marginTop: '8px'
+      marginTop: '8px',
+       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     },
     buttonDisabled: {
       opacity: 0.5,
@@ -249,7 +269,8 @@ export default function LoginPage() {
       alignItems: 'center',
       justifyContent: 'center',
       gap: '8px',
-      transition: 'all 0.2s'
+      transition: 'all 0.2s',
+       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     },
     spinner: {
       width: '20px',
@@ -257,7 +278,8 @@ export default function LoginPage() {
       border: '2px solid rgba(255, 255, 255, 0.3)',
       borderTop: '2px solid white',
       borderRadius: '50%',
-      animation: 'spin 1s linear infinite'
+      animation: 'spin 1s linear infinite',
+       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     }
   };
 
