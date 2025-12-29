@@ -20,7 +20,7 @@ console.log("Loaded Supabase URL:", process.env.SUPABASE_URL);
 /* ====== CONFIG - EDIT IF NEEDED ====== */
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SECRET_KEY; // Service role key - server only
-const USER_ID = "ef917371-bec7-4528-acb7-236460d81b3e"; // target user UUID in your Supabase
+const USER_ID = "d8966ddc-47e0-4191-95cf-e7f593d9d4b9"; // target user UUID in your Supabase
 
 if (!SUPABASE_URL || !SUPABASE_KEY) {
   console.error("❌ Missing Supabase credentials. Check your .env file.");
