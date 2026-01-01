@@ -861,27 +861,26 @@ const HomePage = () => {
   }
 
 
-  // Get current date (+1 cuz not index but actual month no)
+  // Compute previous months robustly using Date arithmetic (handles year rollover)
   const now = new Date();
-  const lastMonth = now.getMonth(); // 0-based: 0=Jan, 11=Dec
-  const monthBeforeLast = lastMonth - 1 < 0 ? 11 : lastMonth - 1;
-  
-  
-  const lastMonthYear = lastMonth === 0 ? currentYear - 1 : currentYear;
-  const monthBeforeLastYear = lastMonth === 0 ? currentYear - 1 : (lastMonth - 1 < 0 ? currentYear - 1 : currentYear);
+  const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const monthBeforeLastDate = new Date(now.getFullYear(), now.getMonth() - 2, 1);
+  const lastMonth = lastMonthDate.getMonth(); // 0-based: 0=Jan, 11=Dec
+  const monthBeforeLast = monthBeforeLastDate.getMonth();
+
+  const lastMonthYear = lastMonthDate.getFullYear();
+  const monthBeforeLastYear = monthBeforeLastDate.getFullYear();
    
 
 
   // Calculate total expenses and income
-  // lastMonth and monthBeforeLast are 0-based, but your function expects 1-based months
-  const lastMonthExpenses = Number(getMonthlyTotal(data.expenses, lastMonth , lastMonthYear)) || 0;
-  const prevMonthExpenses = Number(getMonthlyTotal(data.expenses, monthBeforeLast , monthBeforeLastYear)) || 0;
-  const lastMonthIncome = Number(getMonthlyTotal(data.income, lastMonth , lastMonthYear)) || 0;
-  const prevMonthIncome = Number(getMonthlyTotal(data.income, monthBeforeLast, monthBeforeLastYear)) || 0;
+  // `getMonthlyTotal` expects 1-based months (1-12). Convert from JS 0-based months.
+  const lastMonthExpenses = Number(getMonthlyTotal(data.expenses, lastMonth + 1, lastMonthYear)) || 0;
+  const prevMonthExpenses = Number(getMonthlyTotal(data.expenses, monthBeforeLast + 1, monthBeforeLastYear)) || 0;
+  const lastMonthIncome = Number(getMonthlyTotal(data.income, lastMonth + 1, lastMonthYear)) || 0;
+  const prevMonthIncome = Number(getMonthlyTotal(data.income, monthBeforeLast + 1, monthBeforeLastYear)) || 0;
 
-  console.log("上个月支出",data.expenses.filter(function(record) {          
-        return Number(record.date.substring(5, 7)) === lastMonth && Number(record.date.substring(0, 4)) === lastMonthYear;  
-    }));
+  console.log("上个月支出", lastMonth+1,lastMonthYear);
   
   
 
@@ -978,17 +977,29 @@ const HomePage = () => {
   }
 
   // Get category totals for last month and the month before
-  var lastMonthCategories = categoryTotals(data.expenses, lastMonth,currentYear);  
-  var prevMonthCategories = categoryTotals(data.expenses, monthBeforeLast,currentYear); 
+  // categoryTotals also expects 1-based month and correct year values
+  var lastMonthCategories = categoryTotals(data.expenses, lastMonth + 1, lastMonthYear);  
+  var prevMonthCategories = categoryTotals(data.expenses, monthBeforeLast + 1, monthBeforeLastYear); 
   
   
   
 
-  // Filter out categories that don't exceed 100 in both months
-  var filteredCategories = Object.keys(lastMonthCategories).filter(function(category) {  
-      return lastMonthCategories[category] > 100 && (prevMonthCategories[category] || 0) > 100;  
-  });  
+  // Filter categories: include any category that exceeds the threshold in either month
+  // This lets us detect large decreases where a category existed in the previous month
+  // but may be missing (or small) in the last month.
+  const THRESHOLD = 20;
+  const unionCategoryKeys = new Set([
+    ...Object.keys(lastMonthCategories),
+    ...Object.keys(prevMonthCategories),
+  ]);
+  var filteredCategories = Array.from(unionCategoryKeys).filter(function (category) {
+    const lastAmt = lastMonthCategories[category] || 0;
+    const prevAmt = prevMonthCategories[category] || 0;
+    return lastAmt > THRESHOLD || prevAmt > THRESHOLD;
+  });
   let all = {}
+  console.log(12345,filteredCategories);
+  
 
   // Process only the filtered categories
   for (var i = 0; i < filteredCategories.length; i++) {  
@@ -1064,8 +1075,8 @@ const HomePage = () => {
                 whiteSpace: "pre-wrap"  // Preserve newlines + auto-wrap long text
               }}
             >
-              <span style={{ fontWeight: "bold", color: "#555" }}>{formatKey(key)}</span>
-              <span style={{ color: "#222", maxWidth: "60%" }}>{formattedValue}</span>
+              <span style={{ fontWeight: "bold" }}>{formatKey(key)}</span>
+              <span style={{  maxWidth: "60%" }}>{formattedValue}</span>
             </div>
           );
         })}
@@ -1670,7 +1681,7 @@ const HomePage = () => {
                 textAlign: "center",
               }}
             >
-              上个月({monthBeforeLast + 1}月)概览
+              上个月({lastMonth + 1}月)概览
             </div>
 
             {/* Content */}
@@ -1861,7 +1872,7 @@ const HomePage = () => {
                     ? "•••••"
                     : (lowestCategory !== "无"
                         ? (categoriesTranslation[lowestCategory] || lowestCategory)
-                        : "暂无（消费超过100刀的）最大下降类别")}
+                        : "暂无（消费超过20刀的）最大下降类别")}
                 </span>
                 <span
                   style={{
