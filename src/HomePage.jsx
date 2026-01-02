@@ -643,6 +643,29 @@ const HomePage = () => {
     }
   };
 
+  // If a persisted `subOptionTopLeft` value doesn't exist in the current
+  // set of selectable months (for example, localStorage contains "十二月"
+  // but the app is now in January and only "一月" is available), reset
+  // it to a valid choice (the latest available month) and update storage.
+  useEffect(() => {
+    if (timeRangeTopLeft === "按月显示") {
+      // months up and until current month
+      const monthNames = [...Array(new Date().getMonth() + 1).keys()].map((m) =>
+        new Date(0, m).toLocaleString("zh-CN", { month: "long" })
+      );
+
+      if (subOptionTopLeft && !monthNames.includes(subOptionTopLeft)) {
+        const defaultName = monthNames[monthNames.length - 1] || "未选择";
+        setSubOptionTopLeft(defaultName);
+        try {
+          localStorage.setItem("subOptionTopLeft", defaultName);
+        } catch (e) {
+          // ignore localStorage errors
+        }
+      }
+    }
+  }, [timeRangeTopLeft, subOptionTopLeft]);
+
 
   const [isFlipped, setIsFlipped] = useState(false);
   const [totalChecking, setTotalChecking] = useState(null);
@@ -998,7 +1021,6 @@ const HomePage = () => {
     return lastAmt > THRESHOLD || prevAmt > THRESHOLD;
   });
   let all = {}
-  console.log(12345,filteredCategories);
   
 
   // Process only the filtered categories
@@ -1568,6 +1590,7 @@ const HomePage = () => {
                   const filteredExpenses = data.expenses.filter((expense) =>
                     isDateInRange(expense.date, timeRangeTopLeft, subOptionTopLeft)
                   );
+                  
 
                   const totalExpenses = filteredExpenses.reduce(
                     (sum, expense) => sum + parseFloat(expense.amount),
