@@ -204,9 +204,24 @@ async function migratePrepays(prepays, user_id) {
   for (const p of prepays) {
     const amount = toNumber(p.amount ?? p.after_tax ?? p.before_tax, 0.0);
     // normalize frequency
-    const frequency_mode = p.frequencyMode ?? p.frequency_mode ?? (p.frequencyNumber ? "每" : "单次");
-    const frequency_number = Number.isFinite(Number(p.frequencyNumber ?? p.frequency_number)) ? Number(p.frequencyNumber ?? p.frequency_number) : 1;
-    const frequency_unit = p.frequencyUnit ?? p.frequency_unit ?? (p.frequencyUnit ? p.frequencyUnit : "月");
+    let frequency_mode =
+      p.frequencyMode ??
+      p.frequency_mode ??
+      (p.frequencyNumber ? "每" : "单次");
+
+    let frequency_number = null;
+    let frequency_unit = null;
+
+    if (frequency_mode !== "单次") {
+      frequency_number = Number.isFinite(
+        Number(p.frequencyNumber ?? p.frequency_number)
+      )
+        ? Number(p.frequencyNumber ?? p.frequency_number)
+        : 1;
+
+      frequency_unit = ((p.frequencyUnit ?? p.frequency_unit) || "").trim() || "月";
+    }
+
 
     rows.push({
       user_id,
