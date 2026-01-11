@@ -21,13 +21,30 @@ const DATA_SOURCE = BACKEND_URL.includes("localhost") ? "local" : "db";
 
 
 // This function will load categories data from the JSON file
-const loadCategoriesData = async () => {
+const loadCategoriesData = async (userId) => {
   try {
-    const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/get-categories`);
+    const BACKEND_URL = process.env.REACT_APP_BACKEND;
+    const DATA_SOURCE = BACKEND_URL.includes("localhost") ? "local" : "db";
+
+    const response = await fetch(`${BACKEND_URL}/api/get-categories`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        source: DATA_SOURCE,
+        user_id: userId,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
     const data = await response.json();
 
     if (!data || Object.keys(data).length === 0) {
-      console.warn('Categories data is empty. Using default category "Other".');
+      console.warn('Categories empty. Falling back to default.');
       categories = ['Other'];
       categoriesTranslation = { Other: '其他' };
     } else {
@@ -37,12 +54,14 @@ const loadCategoriesData = async () => {
 
     console.log('Loaded Categories:', categories);
     console.log('Loaded Categories Translations:', categoriesTranslation);
+
   } catch (error) {
     console.error('Error loading categories data:', error);
     categories = ['Other'];
     categoriesTranslation = { Other: 'Other' };
   }
 };
+
 
 
 
@@ -141,7 +160,7 @@ const HomePage = () => {
   }, []);
 
 
-  const { data, addExpense, reloadData, handleLogout } = useContext(DataContext); // Access global expense data from context
+  const { data, addExpense, reloadData, handleLogout,supabaseUser } = useContext(DataContext); // Access global expense data from context
   const [isModalOpenCategory, setIsModalOpenCategory] = useState(false);
   const [modalContentCategory, setModalContentCategory] = useState("");
   const [isModalOpenOther, setIsModalOpenOther] = useState(false);
@@ -2428,7 +2447,7 @@ const HomePage = () => {
                           alert("添加失败，请重试！");
                         }
                         //加载新类别
-                        loadCategoriesData();
+                        loadCategoriesData(supabaseUser.id);
                       }}
                       style={{
                         padding: "8px 16px",
@@ -2510,7 +2529,7 @@ const HomePage = () => {
                         }
 
                         // 🔄 Step 3: Reload new category list
-                        await loadCategoriesData();
+                        await loadCategoriesData(supabaseUser.id);
 
                         // ✅ Step 4: Clear checkboxes
                         setCheckedCategories([]); // <-- this automatically unchecks all boxes
@@ -7307,10 +7326,11 @@ const ProtectedApp = () => {
 
 
 
-  // Call loadCategoriesData when the component mounts
   useEffect(() => {
-    loadCategoriesData(); // This will fetch and load the categories into global variables
-  }, []); // Empty dependency array ensures it runs only once after mount
+    if (!supabaseUser?.id) return;
+    loadCategoriesData(supabaseUser.id);
+  }, [supabaseUser]);
+
 
   const addExpense = (newExpense) => {
     const requestId = uuidv4(); // Generate a unique request ID
@@ -7508,7 +7528,7 @@ const ProtectedApp = () => {
   }
 
   return (
-    <DataContext.Provider value={{ data, addExpense, updateExpense, addIncome, updateIncome, deleteIncome, deleteExpense, reloadData, handleLogout }}>
+    <DataContext.Provider value={{ data, addExpense, updateExpense, addIncome, updateIncome, deleteIncome, deleteExpense, reloadData, handleLogout,supabaseUser }}>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/recordExpense" element={<RecordExpensePage />} />

@@ -891,7 +891,7 @@ ul[data-suggestions] {
   display: flex;
   justify-content: space-between;
   gap: 20px;
-  height: 50%;
+  height: 40%;
 }
 
 .left-box,
@@ -912,7 +912,7 @@ ul[data-suggestions] {
 }
 
 .bottom-box {
-  height: 50%;
+  height: 60%;
 }
 
 /* Right side layout */
