@@ -648,22 +648,58 @@ app.post("/api/get-data", async (req, res) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 });
-app.get("/api/get-categories", (req, res) => {
-  fs.readFile(categoriesFilePath, "utf8", (err, data) => {
-    if (err) {
-      console.error("Error reading categories.json:", err);
-      return res.status(500).send("Failed to read categories.json");
+app.post("/api/get-categories", async (req, res) => {
+  const { source, user_id } = req.body;
+
+  try {
+    // -------------------------------
+    // LOCAL JSON MODE
+    // -------------------------------
+    if (source === "local") {
+      fs.readFile(categoriesFilePath, "utf8", (err, data) => {
+        if (err) {
+          console.error("Error reading categories.json:", err);
+          return res.status(500).send("Failed to read categories.json");
+        }
+
+        try {
+          const jsonData = JSON.parse(data);
+          return res.status(200).json(jsonData);
+        } catch (parseErr) {
+          console.error("Invalid JSON in categories.json:", parseErr);
+          return res.status(500).send("Invalid JSON format.");
+        }
+      });
+
+      return;
     }
 
-    try {
-      const jsonData = JSON.parse(data);
-      res.status(200).json(jsonData);
-    } catch (parseErr) {
-      console.error("Invalid JSON in categories.json:", parseErr);
-      return res.status(500).send("Invalid JSON format.");
+    // -------------------------------
+    // DATABASE MODE
+    // -------------------------------
+    if (source === "db") {
+      if (!user_id) {
+        return res.status(400).json({ error: "Missing user_id" });
+      }
+
+      const categories = await getCategoriesFromDB(user_id);
+
+      return res.status(200).json(categories);
     }
-  });
+
+    // -------------------------------
+    // INVALID SOURCE
+    // -------------------------------
+    return res.status(400).json({
+      error: "Invalid data source. Use 'local' or 'db'."
+    });
+
+  } catch (err) {
+    console.error("get-categories fatal error:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
 });
+
 app.get("/api/get-prepay", (req, res) => {
   fs.readFile(prepayFilePath, "utf8", (err, data) => {
     if (err) {
