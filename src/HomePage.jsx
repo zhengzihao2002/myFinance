@@ -15,6 +15,10 @@ let categories = [];
 let categoriesTranslation = {};
 let language = null;
 
+const BACKEND_URL = process.env.REACT_APP_BACKEND;
+const DATA_SOURCE = BACKEND_URL.includes("localhost") ? "local" : "db";
+
+
 
 // This function will load categories data from the JSON file
 const loadCategoriesData = async () => {
@@ -7249,27 +7253,59 @@ export const DataContext = createContext();
 const ProtectedApp = () => {
   const [data, setData] = useState({ expenses: [], income: [] }); // Initial state
 
-  // Fetch and initialize data
+  const [supabaseUser, setSupabaseUser] = useState(null);
+
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_BACKEND}/api/get-data`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch data");
-        }
-        return response.json();
-      })
+    // fetch Supabase user on mount
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) {
+        console.log("Supabase user found:", data.user.id);
+        setSupabaseUser(data.user); // store in state
+      } else {
+        console.log("No user logged in");
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    // wait until we have supabaseUser
+    if (!supabaseUser?.id) return;
+
+    const userId = supabaseUser.id;
+    const BACKEND_URL = process.env.REACT_APP_BACKEND;
+    const DATA_SOURCE = BACKEND_URL.includes("localhost") ? "local" : "db";
+
+    console.log("Fetching data from:", BACKEND_URL, "source:", DATA_SOURCE, "user_id:", userId);
+
+    fetch(`${BACKEND_URL}/api/get-data`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        source: DATA_SOURCE,
+        user_id: userId,
+      }),
+    })
+      .then((res) => res.json())
       .then((jsonData) => {
+        console.log("Raw JSON data returned from backend:", jsonData);
+
         const sortedData = {
           ...jsonData,
-          expenses: jsonData.expenses.sort((a, b) => new Date(a.date) - new Date(b.date)),
-          income: jsonData.income.sort((a, b) => new Date(a.date) - new Date(b.date)),
+          expenses: (jsonData.expenses || []).sort(
+            (a, b) => new Date(a.date) - new Date(b.date)
+          ),
+          income: (jsonData.income || []).sort(
+            (a, b) => new Date(a.date) - new Date(b.date)
+          ),
         };
-        setData(sortedData); // Update state with sorted data
+
+        console.log("Sorted data ready to set:", sortedData);
+        setData(sortedData);
       })
-      .catch((error) => {
-        console.error("Error fetching the JSON data:", error);
-      });
-  }, []);
+      .catch((err) => console.error("Error fetching or parsing data:", err));
+  }, [supabaseUser]); // re-run when user is available
+
+
 
   // Call loadCategoriesData when the component mounts
   useEffect(() => {

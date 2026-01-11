@@ -579,21 +579,74 @@ app.get("/api/get-settings", (req, res) => {
     }
   });
 });
-app.get("/api/get-data", (req, res) => {
-  fs.readFile(dataFilePath, "utf8", (err, data) => {
-    if (err) {
-      console.error("Failed to read data.json:", err);
-      return res.status(500).send("Failed to read data file.");
+app.post("/api/get-data", async (req, res) => {
+  const { source, user_id } = req.body;
+
+  try {
+    // -------------------------------
+    // LOCAL JSON MODE
+    // -------------------------------
+    if (source === "local") {
+      fs.readFile(dataFilePath, "utf8", (err, data) => {
+        if (err) {
+          console.error("Failed to read data.json:", err);
+          return res.status(500).send("Failed to read data file.");
+        }
+
+        try {
+          const jsonData = JSON.parse(data);
+          return res.status(200).json(jsonData);
+        } catch (parseErr) {
+          console.error("Invalid JSON:", parseErr);
+          return res.status(500).send("Invalid JSON format.");
+        }
+      });
+
+      return;
     }
 
-    try {
-      const jsonData = JSON.parse(data);
-      res.status(200).json(jsonData);
-    } catch (parseErr) {
-      console.error("Error parsing data.json:", parseErr);
-      return res.status(500).send("Invalid JSON format.");
+    // -------------------------------
+    // DATABASE MODE
+    // -------------------------------
+    if (source === "db") {
+      if (!user_id) {
+        return res.status(400).json({ error: "Missing user_id" });
+      }
+
+      const [
+        expenses,
+        income,
+        prepays,
+        checking,
+        categories
+      ] = await Promise.all([
+        getExpensesFromDB(user_id),
+        getIncomeFromDB(user_id),
+        getPrepaysFromDB(user_id),
+        getCheckingHistoryFromDB(user_id),
+        getCategoriesFromDB(user_id)
+      ]);
+
+      return res.status(200).json({
+        expenses,
+        income,
+        prepays,
+        checking,
+        categories
+      });
     }
-  });
+
+    // -------------------------------
+    // INVALID SOURCE
+    // -------------------------------
+    return res.status(400).json({
+      error: "Invalid data source. Use 'local' or 'db'."
+    });
+
+  } catch (err) {
+    console.error("get-data fatal error:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
 });
 app.get("/api/get-categories", (req, res) => {
   fs.readFile(categoriesFilePath, "utf8", (err, data) => {
