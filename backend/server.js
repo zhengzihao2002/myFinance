@@ -30,6 +30,14 @@ app.use(cors());
 app.use(express.json());
 
 
+import { createClient } from "@supabase/supabase-js";
+
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_SECRET_KEY; // service role
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+
+
 
 // TIME HERE IS IN UTC
 
@@ -232,42 +240,144 @@ const playSuccessAudio = () => {
   });
 };
 
-// Endpoint to update expenses
-app.post("/api/update-expenses", (req, res) => {
-  const { expenses, requestId } = req.body;
 
-  if (processedRequests.has(requestId)) {
-    console.log(`Request with ID ${requestId} already processed.${processedRequests}`);
-    return res.status(200).send("Request already processed.");
+
+
+
+
+
+
+
+// expenses
+export async function upsertExpensesToDB(user_id, expenses) {
+  await supabase
+    .from("expenses")
+    .delete()
+    .eq("user_id", user_id);
+
+  if (expenses.length > 0) {
+    await supabase
+      .from("expenses")
+      .insert(
+        expenses.map(e => ({
+          user_id,
+          category: e.category,
+          amount: e.amount,
+          description: e.description,
+          date: e.date,
+          external_id: e.id
+        }))
+      );
   }
+}
+async function isProcessed(requestId) {
+  const { data } = await supabase
+    .from("processed_requests")
+    .select("request_id")
+    .eq("request_id", requestId)
+    .single();
 
-  processedRequests.add(requestId); // Mark request as processed
+  return !!data;
+}
+function isLocalSource(req) {
+  return req.body?.source === "local";
+}
+async function checkAndInsertRequest(requestId, userId) {
+  const { data: existing } = await supabase
+    .from("processed_requests")
+    .select("request_id")
+    .eq("request_id", requestId)
+    .maybeSingle();
 
-  createBackup((backupError) => {
-    if (backupError) return res.status(500).send("Failed to create backup.");
+  if (existing) return false;
 
-    fs.readFile(dataFilePath, "utf8", (err, data) => {
-      if (err) return res.status(500).send("Failed to read file.");
+  await supabase.from("processed_requests").insert({
+    request_id: requestId,
+    user_id: userId,
+  });
 
-      const jsonData = JSON.parse(data);
-      jsonData.expenses = expenses;
+  return true;
+}
 
-      fs.writeFile(dataFilePath, JSON.stringify(jsonData, null, 2), (writeErr) => {
-        if (writeErr) return res.status(500).send("Failed to write file.");
 
-        playSuccessAudio();
-        console.log("Played at update expense");
-        res.status(200).send("Expenses updated successfully.");
+
+
+// Endpoint to update expenses
+app.post("/api/update-expenses", async (req, res) => {
+  const { source, user_id, expenses, requestId } = req.body;
+
+  // ---------------- LOCAL ----------------
+  if (source === "local") {
+    if (processedRequests.has(requestId)) {
+      return res.status(200).send("Already processed");
+    }
+    processedRequests.add(requestId);
+
+    createBackup((backupError) => {
+      if (backupError) return res.status(500).send("Backup failed");
+
+      fs.readFile(dataFilePath, "utf8", (err, data) => {
+        if (err) return res.status(500).send("Read failed");
+
+        const json = JSON.parse(data);
+        json.expenses = expenses;
+
+        fs.writeFile(dataFilePath, JSON.stringify(json, null, 2), () => {
+          playSuccessAudio();
+          res.status(200).send("Expenses updated (local)");
+        });
       });
     });
-  });
+    return;
+  }
+
+  // ---------------- DB ----------------
+  if (source === "db") {
+    if (!(await checkAndInsertRequest(requestId, user_id))) {
+      return res.status(200).send("Request already processed.");
+    }
+
+    const { error: delErr } = await supabase
+      .from("expenses")
+      .delete()
+      .eq("user_id", user_id);
+
+    if (delErr) return res.status(500).send("Failed to clear expenses");
+
+    const rows = expenses.map(e => ({ ...e, user_id }));
+
+    const { error: insErr } = await supabase
+      .from("expenses")
+      .insert(rows);
+
+    if (insErr) return res.status(500).send("Failed to insert expenses");
+
+    return res.status(200).send("Expenses updated (DB).");
+  }
+
+  res.status(400).send("Invalid source");
 });
 
-// Endpoint to update income
-app.post("/api/update-income", (req, res) => {
-  const { income, requestId } = req.body;
 
-  if (processedRequests.has(requestId)) {
+// Endpoint to update income
+app.post("/api/update-income", async (req, res) => {
+  const { income, requestId, user_id, source } = req.body;
+  
+  if (source === "db") {
+    if (!(await checkAndInsertRequest(requestId, user_id))) {
+      return res.status(200).send("Request already processed.");
+    }
+
+    await supabase.from("income").delete().eq("user_id", user_id);
+
+    const rows = income.map(i => ({ ...i, user_id }));
+    await supabase.from("income").insert(rows);
+
+    return res.status(200).send("Income updated (DB).");
+  }
+
+  if (source === "local") {
+    if (processedRequests.has(requestId)) {
     console.log(`Request with ID ${requestId} already processed.`);
     return res.status(200).send("Request already processed.");
   }
@@ -292,141 +402,218 @@ app.post("/api/update-income", (req, res) => {
       });
     });
   });
+  }
+
+  res.status(400).send("Invalid source");
+
+  
 });
 
 // Endpoint to update total checking amount
-app.post("/api/update-total", (req, res) => {
-  const { newTotal, requestId } = req.body;  
+app.post("/api/update-total", async (req, res) => {
+  const { newTotal, requestId, user_id, source } = req.body;
   console.log(req.body);
-  
 
-  if (processedRequests.has(requestId)) {
-    console.log(`Request with ID ${requestId} already processed.`);
-    return res.status(200).send("Request already processed.");
-  }
-
-  processedRequests.add(requestId); // Mark request as processed
-
-  fs.readFile(recentTransactionsFilePath, "utf8", (err, data) => {
-    if (err) {
-      return res.status(500).send("Failed to read file.");
+  if (source === "db") {
+    if (!(await checkAndInsertRequest(requestId, user_id))) {
+      return res.status(200).send("Already processed");
     }
 
-    const jsonData = JSON.parse(data);
-    jsonData.Checking = newTotal;
+    await supabase
+      .from("accounts")
+      .upsert({
+        user_id,
+        checking: newTotal,
+      });
 
-    fs.writeFile(recentTransactionsFilePath, JSON.stringify(jsonData, null, 2), (writeErr) => {
-      if (writeErr) {
-        return res.status(500).send("Failed to write file.");
+    return res.status(200).send("Checking total updated (DB)");
+  }
+  
+  if (source === "local") {
+    if (processedRequests.has(requestId)) {
+      console.log(`Request with ID ${requestId} already processed.`);
+      return res.status(200).send("Request already processed.");
+    }
+
+    processedRequests.add(requestId); // Mark request as processed
+
+    fs.readFile(recentTransactionsFilePath, "utf8", (err, data) => {
+      if (err) {
+        return res.status(500).send("Failed to read file.");
       }
 
-      res.status(200).send(`Total checking amount ${newTotal} updated successfully.`);
+      const jsonData = JSON.parse(data);
+      jsonData.Checking = newTotal;
+
+      fs.writeFile(recentTransactionsFilePath, JSON.stringify(jsonData, null, 2), (writeErr) => {
+        if (writeErr) {
+          return res.status(500).send("Failed to write file.");
+        }
+
+        res.status(200).send(`Total checking amount ${newTotal} updated successfully.`);
+      });
     });
-  });
+  }
+  res.status(400).send("Invalid source");
+
 });
 
 // Endpoint to update CheckingLast100 transactions
-app.post("/api/update-checking-last100", (req, res) => {
-  console.log("Received request at update-checking-last100");
-  console.log("Request body:", req.body); 
+app.post("/api/update-checking-last100", async (req, res) => {
+  const { newTransaction, requestId, user_id, source } = req.body;
 
-  const { newTransaction,requestId } = req.body;
-
-  if (processedRequests.has(requestId)) {
-    console.log(`Request with ID ${requestId} already processed.`);
-    return res.status(500).send("Request already processed. Last 100 Not updated.");
-  }
-
-  processedRequests.add(requestId);
-
-  fs.readFile(recentTransactionsFilePath, "utf8", (err, data) => {
-    if (err) {
-      console.error("Failed to read file.");
-      return res.status(500).send("Failed to read file.");
+  if (source === "db") {
+    if (!(await checkAndInsertRequest(requestId, user_id))) {
+      return res.status(200).send("Already processed");
     }
 
-    let jsonData;
-    try {
-      jsonData = JSON.parse(data);
-    } catch (parseErr) {
-      console.error("Error parsing JSON:", parseErr);
-      return res.status(500).send("Invalid JSON data.");
-    }
-    jsonData.Checking = parseFloat(parseFloat(newTransaction[3]).toFixed(2));
-    console.log(`Updating jsonData.Checking to ${parseFloat(parseFloat(newTransaction[3]).toFixed(2))}`,newTransaction[3]);
-    
-
-    // Add the new transaction to the front of the array
-    jsonData.CheckingRecent100.unshift(newTransaction);
-
-    // Ensure the length of CheckingLast100 does not exceed 100
-    if (jsonData.CheckingRecent100.length > 100) {
-      jsonData.CheckingRecent100.pop();
-    }
-
-
-    // Write the updated data back to recentTransactions.json
-    fs.writeFile(recentTransactionsFilePath, JSON.stringify(jsonData, null, 2), (writeErr) => {
-      if (writeErr) {
-        console.error("Failed to write file.");
-        return res.status(500).send("Failed to write file.");
-      }
-      console.log("New Checking",jsonData.Checking);
-      
-      return res.status(200).send(`Transaction successfully updated. Total checking amount ${jsonData.Checking} updated successfully.`);
+    await supabase.from("checking_transactions").insert({
+      user_id,
+      date: newTransaction[0],
+      description: newTransaction[1],
+      amount: newTransaction[2],
+      balance: newTransaction[3],
     });
-  });
 
+    // prune old rows
+    const { data: rows } = await supabase
+      .from("checking_transactions")
+      .select("id")
+      .eq("user_id", user_id)
+      .order("created_at", { ascending: false })
+      .range(100, 1000);
 
-});
-
-app.post("/api/add-prepay", (req, res) => {
-  const { newPrepay, requestId } = req.body;
-
-  if (processedRequests.has(requestId)) {
-    console.log(`Duplicate request: ${requestId}`);
-    return res.status(200).send("Already processed.");
-  }
-  processedRequests.add(requestId);
-
-  fs.readFile(prepayFilePath, "utf8", (err, data) => {
-    let allPrepay = [];
-
-    if (!err && data) {
-      try {
-        allPrepay = JSON.parse(data);
-      } catch {
-        allPrepay = [];
-      }
+    if (rows?.length) {
+      await supabase
+        .from("checking_transactions")
+        .delete()
+        .in("id", rows.map(r => r.id));
     }
 
-    // Append ID here
-    const prepayWithId = {
-      id: generateTimestampId(),
-      ...newPrepay,
-    };
+    return res.status(200).send("Checking updated (DB)");
+  }
 
-    allPrepay.push(prepayWithId);
+  if (source === "local") {
+    if (processedRequests.has(requestId)) {
+      console.log(`Request with ID ${requestId} already processed.`);
+      return res.status(500).send("Request already processed. Last 100 Not updated.");
+    }
 
-    fs.writeFile(prepayFilePath, JSON.stringify(allPrepay, null, 2), (err) => {
+    processedRequests.add(requestId);
+
+    fs.readFile(recentTransactionsFilePath, "utf8", (err, data) => {
       if (err) {
-        console.error("Write failed:", err);
-        return res.status(500).send("Failed to save.");
+        console.error("Failed to read file.");
+        return res.status(500).send("Failed to read file.");
       }
 
-      res.status(200).send("Prepay added successfully.");
+      let jsonData;
+      try {
+        jsonData = JSON.parse(data);
+      } catch (parseErr) {
+        console.error("Error parsing JSON:", parseErr);
+        return res.status(500).send("Invalid JSON data.");
+      }
+      jsonData.Checking = parseFloat(parseFloat(newTransaction[3]).toFixed(2));
+      console.log(`Updating jsonData.Checking to ${parseFloat(parseFloat(newTransaction[3]).toFixed(2))}`,newTransaction[3]);
+      
+
+      // Add the new transaction to the front of the array
+      jsonData.CheckingRecent100.unshift(newTransaction);
+
+      // Ensure the length of CheckingLast100 does not exceed 100
+      if (jsonData.CheckingRecent100.length > 100) {
+        jsonData.CheckingRecent100.pop();
+      }
+
+
+      // Write the updated data back to recentTransactions.json
+      fs.writeFile(recentTransactionsFilePath, JSON.stringify(jsonData, null, 2), (writeErr) => {
+        if (writeErr) {
+          console.error("Failed to write file.");
+          return res.status(500).send("Failed to write file.");
+        }
+        console.log("New Checking",jsonData.Checking);
+        
+        return res.status(200).send(`Transaction successfully updated. Total checking amount ${jsonData.Checking} updated successfully.`);
+      });
     });
-  });
+  }
+
+  res.status(400).send("Invalid source");
+});
+
+app.post("/api/add-prepay", async (req, res) => {
+  const { newPrepay, requestId, user_id, source } = req.body;
+  if (source === "db") {
+    if (!(await checkAndInsertRequest(requestId, user_id))) {
+      return res.status(200).send("Already processed");
+    }
+
+    await supabase.from("prepays").insert({
+      user_id,
+      ...newPrepay,
+    });
+
+    return res.status(200).send("Prepay added (DB)");
+  }
+
+  if (source === "local") {
+    if (processedRequests.has(requestId)) {
+      console.log(`Duplicate request: ${requestId}`);
+      return res.status(200).send("Already processed.");
+    }
+    processedRequests.add(requestId);
+
+    fs.readFile(prepayFilePath, "utf8", (err, data) => {
+      let allPrepay = [];
+
+      if (!err && data) {
+        try {
+          allPrepay = JSON.parse(data);
+        } catch {
+          allPrepay = [];
+        }
+      }
+
+      // Append ID here
+      const prepayWithId = {
+        id: generateTimestampId(),
+        ...newPrepay,
+      };
+
+      allPrepay.push(prepayWithId);
+
+      fs.writeFile(prepayFilePath, JSON.stringify(allPrepay, null, 2), (err) => {
+        if (err) {
+          console.error("Write failed:", err);
+          return res.status(500).send("Failed to save.");
+        }
+
+        res.status(200).send("Prepay added successfully.");
+      });
+    });
+  }
+  res.status(400).send("Invalid source");
 });
 
 
-app.post("/api/add-category", (req, res) => {
-  const { en, zh } = req.body;
+app.post("/api/add-category", async (req, res) => {
+  const { en, zh, user_id, source } = req.body;
   if (!en || !zh) {
     return res.status(400).send("Missing category name(s).");
   }
 
-  fs.readFile(categoriesFilePath, "utf8", (err, data) => {
+  if (source == "db") {
+    await supabase.from("categories").insert({
+      user_id,
+      en,
+      zh,
+    });
+    return res.status(200).send("Category added (DB)");
+  }
+  if (source == "local") {
+    fs.readFile(categoriesFilePath, "utf8", (err, data) => {
     if (err) return res.status(500).send("Failed to read categories file.");
 
     let categories;
@@ -447,121 +634,229 @@ app.post("/api/add-category", (req, res) => {
       res.status(200).send("Category added successfully.");
     });
   });
+  }
+  res.status(400).send("Invalid source");
 });
-app.post("/api/change-category",(req,res)=>{
-  const {from,to} = req.body; 
+app.post("/api/change-category", async (req, res) => {
+  const { source, user_id, from, to } = req.body;
 
-  if(!from||!to){
-    return res.status(500).send("Missing 'from' or 'to' category.")
+  if (!source) return res.status(400).send("Missing source");
+  if (!from || !to) return res.status(400).send("Missing 'from' or 'to' category.");
+
+  // ---------- LOCAL ----------
+  if (source === "local") {
+    fs.readFile(dataFilePath, "utf8", (err, data) => {
+      if (err) {
+        console.error("❌ Failed to read data.json:", err);
+        return res.status(500).send("Failed to read data file.");
+      }
+
+      let jsonData;
+      try {
+        jsonData = JSON.parse(data);
+      } catch (parseErr) {
+        console.error("❌ Invalid JSON in data.json:", parseErr);
+        return res.status(500).send("Invalid JSON format.");
+      }
+
+      let changedCount = 0;
+      ["expenses", "income"].forEach((section) => {
+        if (Array.isArray(jsonData[section])) {
+          jsonData[section] = jsonData[section].map((item) => {
+            if (item.category === from) {
+              changedCount++;
+              return { ...item, category: to };
+            }
+            return item;
+          });
+        }
+      });
+
+      fs.writeFile(dataFilePath, JSON.stringify(jsonData, null, 2), (writeErr) => {
+        if (writeErr) {
+          console.error("❌ Failed to write updated data.json:", writeErr);
+          return res.status(500).send("Failed to write file.");
+        }
+
+        console.log(`✅ Changed ${changedCount} transactions from '${from}' to '${to}'.`);
+        res.status(200).send(`Successfully changed ${changedCount} transactions from '${from}' to '${to}'.`);
+      });
+    });
+    return;
   }
 
-  fs.readFile(dataFilePath, "utf8", (err, data) => {
-    if (err) {
-      console.error("❌ Failed to read data.json:", err);
-      return res.status(500).send("Failed to read data file.");
-    }
+  // ---------- DB ----------
+  if (source === "db") {
+    if (!user_id) return res.status(400).send("Missing user_id");
 
-    let jsonData;
     try {
-      jsonData = JSON.parse(data);
-    } catch (parseErr) {
-      console.error("❌ Invalid JSON in data.json:", parseErr);
-      return res.status(500).send("Invalid JSON format.");
+      const tables = ["expenses", "income"];
+      let totalChanged = 0;
+
+      for (const table of tables) {
+        const { data, error } = await supabase
+          .from(table)
+          .select("*")
+          .eq("user_id", user_id)
+          .eq("category", from);
+
+        if (error) throw error;
+
+        if (data.length > 0) {
+          totalChanged += data.length;
+          const { error: updError } = await supabase
+            .from(table)
+            .update({ category: to })
+            .eq("user_id", user_id)
+            .eq("category", from);
+          if (updError) throw updError;
+        }
+      }
+
+      res.status(200).send(`Successfully changed ${totalChanged} transactions from '${from}' to '${to}' (DB).`);
+    } catch (err) {
+      console.error("DB change-category error:", err);
+      res.status(500).send("Failed to update categories in DB.");
     }
-
-    // ✅ Make replacements
-    let changedCount = 0;
-
-    ["expenses", "income"].forEach((section) => {
-      if (Array.isArray(jsonData[section])) {
-        jsonData[section] = jsonData[section].map((item) => {
-          if (item.category === from) {
-            changedCount++;
-            return { ...item, category: to };
-          }
-          return item;
-        });
-      }
-    });
-
-    // ✅ Write updated file
-    fs.writeFile(dataFilePath, JSON.stringify(jsonData, null, 2), (writeErr) => {
-      if (writeErr) {
-        console.error("❌ Failed to write updated data.json:", writeErr);
-        return res.status(500).send("Failed to write file.");
-      }
-
-      console.log(`✅ Changed ${changedCount} transactions from '${from}' to '${to}'.`);
-      res.status(200).send(`Successfully changed ${changedCount} transactions from '${from}' to '${to}'.`);
-    });
-  });
+  }
 });
-app.post("/api/delete-categories", (req, res) => {
-  const { categoriesToDelete } = req.body;
+
+
+app.post("/api/delete-categories", async (req, res) => {
+  const { categoriesToDelete, user_id, source } = req.body;
   if (!Array.isArray(categoriesToDelete) || categoriesToDelete.length === 0) {
     return res.status(400).send("No categories specified.");
   }
 
-  fs.readFile(categoriesFilePath, "utf8", (err, data) => {
-    if (err) return res.status(500).send("Failed to read categories file.");
+  if (source === "db") {
+    await supabase
+      .from("categories")
+      .delete()
+      .eq("user_id", user_id)
+      .in("en", categoriesToDelete);
 
-    let categories;
-    try {
-      categories = JSON.parse(data);
-    } catch (e) {
-      return res.status(500).send("Invalid categories file.");
-    }
+    return res.status(200).send("Categories deleted (DB)");
+  }
 
-    // Remove each category
-    categoriesToDelete.forEach((cat) => {
-      if (cat !== "Other") {
-        delete categories[cat];
+  if (source === "local") {
+    fs.readFile(categoriesFilePath, "utf8", (err, data) => {
+      if (err) return res.status(500).send("Failed to read categories file.");
+
+      let categories;
+      try {
+        categories = JSON.parse(data);
+      } catch (e) {
+        return res.status(500).send("Invalid categories file.");
       }
-    });
 
-    fs.writeFile(categoriesFilePath, JSON.stringify(categories, null, 2), (err) => {
-      if (err) return res.status(500).send("Failed to write categories file.");
-      res.status(200).send("Categories deleted successfully.");
+      // Remove each category
+      categoriesToDelete.forEach((cat) => {
+        if (cat !== "Other") {
+          delete categories[cat];
+        }
+      });
+
+      fs.writeFile(categoriesFilePath, JSON.stringify(categories, null, 2), (err) => {
+        if (err) return res.status(500).send("Failed to write categories file.");
+        res.status(200).send("Categories deleted successfully.");
+      });
     });
-  });
+  }
+  res.status(400).send("Invalid source");
 });
 
 // Endpoint to fetch total checking amount
-app.get("/api/get-total-checking", (req, res) => {
-  fs.readFile(recentTransactionsFilePath, "utf8", (err, data) => {
-    if (err) {
-      console.error("Error reading recentTransactions.json:", err);
-      return res.status(500).send("Failed to read total checking.");
-    }
+app.post("/api/get-total-checking", async (req, res) => {
+  const { source, user_id } = req.body;
 
+  if (!source) return res.status(400).send("Missing source");
+
+  // ---------- LOCAL ----------
+  if (source === "local") {
+    fs.readFile(recentTransactionsFilePath, "utf8", (err, data) => {
+      if (err) {
+        console.error("Error reading recentTransactions.json:", err);
+        return res.status(500).send("Failed to read total checking.");
+      }
+      try {
+        const jsonData = JSON.parse(data);
+        const checking = jsonData.Checking || 0;
+        res.status(200).json({ checking });
+      } catch (parseErr) {
+        console.error("Error parsing recentTransactions.json:", parseErr);
+        res.status(500).send("Invalid JSON format.");
+      }
+    });
+    return;
+  }
+
+  // ---------- DB ----------
+  if (source === "db") {
+    if (!user_id) return res.status(400).send("Missing user_id");
     try {
-      const jsonData = JSON.parse(data);
-      const checking = jsonData.Checking || 0;
-      res.status(200).json({ checking });
-    } catch (parseErr) {
-      console.error("Error parsing recentTransactions.json:", parseErr);
-      res.status(500).send("Invalid JSON format.");
+      const { data, error } = await supabase
+        .from("checking")
+        .select("amount");
+
+      if (error) throw error;
+
+      const total = data.reduce((sum, item) => sum + (item.amount || 0), 0);
+      res.status(200).json({ checking: total });
+    } catch (err) {
+      console.error("DB get-total-checking error:", err);
+      res.status(500).send("Failed to calculate total checking from DB.");
     }
-  });
+  }
 });
+
+
 // Endpoint to fetch CheckingRecent100
-app.get("/api/get-checking-recent100", (req, res) => {
-  fs.readFile(recentTransactionsFilePath, "utf8", (err, data) => {
-    if (err) {
-      console.error("Error reading recentTransactions.json:", err);
-      return res.status(500).send("Failed to read recent transactions.");
-    }
+app.post("/api/get-checking-recent100", async (req, res) => {
+  const { source, user_id } = req.body;
 
+  if (!source) return res.status(400).send("Missing source");
+
+  // ---------- LOCAL ----------
+  if (source === "local") {
+    fs.readFile(recentTransactionsFilePath, "utf8", (err, data) => {
+      if (err) {
+        console.error("Error reading recentTransactions.json:", err);
+        return res.status(500).send("Failed to read recent transactions.");
+      }
+      try {
+        const jsonData = JSON.parse(data);
+        const recent100 = jsonData.CheckingRecent100 || [];
+        res.status(200).json({ recent100 });
+      } catch (parseErr) {
+        console.error("Error parsing recentTransactions.json:", parseErr);
+        res.status(500).send("Invalid JSON format.");
+      }
+    });
+    return;
+  }
+
+  // ---------- DB ----------
+  if (source === "db") {
+    if (!user_id) return res.status(400).send("Missing user_id");
     try {
-      const jsonData = JSON.parse(data);
-      const recent100 = jsonData.CheckingRecent100 || [];
-      res.status(200).json({ recent100 });
-    } catch (parseErr) {
-      console.error("Error parsing recentTransactions.json:", parseErr);
-      res.status(500).send("Invalid JSON format.");
+      const { data, error } = await supabase
+        .from("checking")
+        .select("*")
+        .eq("user_id", user_id)
+        .order("date", { ascending: false })
+        .limit(100);
+
+      if (error) throw error;
+
+      res.status(200).json({ recent100: data || [] });
+    } catch (err) {
+      console.error("DB get-checking-recent100 error:", err);
+      res.status(500).send("Failed to fetch recent checking transactions from DB.");
     }
-  });
+  }
 });
+
+
 // Endpoint to get settings.json
 app.get("/api/get-settings", (req, res) => {
   fs.readFile(settingsFilePath, "utf8", (err, data) => {
@@ -699,130 +994,223 @@ app.post("/api/get-categories", async (req, res) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 });
+app.post("/api/get-prepay", async (req, res) => {
+  const { source, user_id } = req.body;
 
-app.get("/api/get-prepay", (req, res) => {
-  fs.readFile(prepayFilePath, "utf8", (err, data) => {
-    if (err) {
-      console.error("Failed to read scheduled_prepay.json:", err);
-      return res.status(500).send("Failed to load prepay data.");
-    }
+  if (!source) return res.status(400).send("Missing source");
 
-    try {
-      const prepayList = JSON.parse(data);
-      res.status(200).json(prepayList);
-    } catch (e) {
-      console.error("Invalid JSON in prepay file:", e);
-      res.status(500).send("Malformed prepay data.");
-    }
-  });
-});
-app.post("/api/modify-prepay", (req, res) => {
-  const { id, category, amount, description, date, frequencyMode, frequencyNumber, frequencyUnit } = req.body;
-
-  fs.readFile(prepayFilePath, "utf8", (err, data) => {
-    if (err) {
-      console.error("Error reading prepay file:", err);
-      return res.status(502).send("读取失败");
-    }
-
-    let json = [];
-    try {
-      json = JSON.parse(data);
-    } catch (parseErr) {
-      return res.status(501).send("JSON格式错误");
-    }
-
-    const index = json.findIndex(p => p.id === id);
-    if (index === -1) {
-      return res.status(404).send("未找到预付款");
-    }
-
-    json[index] = {
-      id,
-      category,
-      amount,
-      description,
-      date,
-      frequencyMode,
-      frequencyNumber,
-      frequencyUnit
-    };
-
-    fs.writeFile(prepayFilePath, JSON.stringify(json, null, 2), (writeErr) => {
-      if (writeErr) {
-        return res.status(500).send("保存失败");
+  // ---------- LOCAL ----------
+  if (source === "local") {
+    fs.readFile(prepayFilePath, "utf8", (err, data) => {
+      if (err) {
+        console.error("Failed to read scheduled_prepay.json:", err);
+        return res.status(500).send("Failed to load prepay data.");
       }
-      res.status(200).send("修改成功");
+      try {
+        const prepayList = JSON.parse(data);
+        res.status(200).json(prepayList);
+      } catch (e) {
+        console.error("Invalid JSON in prepay file:", e);
+        res.status(500).send("Malformed prepay data.");
+      }
     });
-  });
-});
-app.post("/api/delete-prepay", (req, res) => {
-  const { id } = req.body;
-  
+    return;
+  }
 
-  fs.readFile(prepayFilePath, "utf8", (err, data) => {
-    if (err) {
-      console.error("Error reading prepay file:", err);
-      return res.status(500).send("读取失败");
-    }
-
-    let json;
+  // ---------- DB ----------
+  if (source === "db") {
+    if (!user_id) return res.status(400).send("Missing user_id");
     try {
-      json = JSON.parse(data); // should be an array, NOT object with scheduledPrepays key
-    } catch (parseErr) {
-      console.error("Error parsing prepay file:", parseErr);
-      return res.status(500).send("JSON格式错误");
+      const { data: prepays, error } = await supabase
+        .from("prepays")
+        .select("*")
+        .eq("user_id", user_id);
+
+      if (error) throw error;
+
+      return res.status(200).json(prepays || []);
+    } catch (err) {
+      console.error("DB get-prepay error:", err);
+      return res.status(500).send("Failed to fetch prepay data from DB.");
     }
+  }
 
-    // Ensure it's an array
-    if (!Array.isArray(json)) {
-      return res.status(500).send("数据结构错误");
-    }
+  res.status(400).send("Invalid source");
+});
 
-    const updated = json.filter(p => p.id !== id);
 
-    if (updated.length === json.length) {
-      return res.status(404).send("未找到该预付款");
-    }
+app.post("/api/modify-prepay", async (req, res) => {
+  const { source, user_id, id, category, amount, description, date, frequencyMode, frequencyNumber, frequencyUnit } = req.body;
 
-    fs.writeFile(prepayFilePath, JSON.stringify(updated, null, 2), (writeErr) => {
-      if (writeErr) {
-        console.error("Error writing prepay file:", writeErr);
-        return res.status(500).send("保存失败");
+  if (!source) return res.status(400).send("Missing source");
+
+  // ---------- LOCAL ----------
+  if (source === "local") {
+    fs.readFile(prepayFilePath, "utf8", (err, data) => {
+      if (err) return res.status(502).send("读取失败");
+
+      let json = [];
+      try {
+        json = JSON.parse(data);
+      } catch {
+        return res.status(501).send("JSON格式错误");
       }
 
-      res.status(200).send("删除成功");
+      const index = json.findIndex(p => p.id === id);
+      if (index === -1) return res.status(404).send("未找到预付款");
+
+      json[index] = { id, category, amount, description, date, frequencyMode, frequencyNumber, frequencyUnit };
+
+      fs.writeFile(prepayFilePath, JSON.stringify(json, null, 2), (writeErr) => {
+        if (writeErr) return res.status(500).send("保存失败");
+        res.status(200).send("修改成功 (local)");
+      });
     });
-  });
-});
-app.post("/api/update-prepay-date", (req, res) => {
-  const { id, newDate } = req.body;
+    return;
+  }
 
-  fs.readFile(prepayFilePath, "utf8", (err, data) => {
-    if (err) return res.status(500).send("读取失败");
+  // ---------- DB ----------
+  if (source === "db") {
+    if (!user_id) return res.status(400).send("Missing user_id");
 
-    let json;
     try {
-      json = JSON.parse(data);
-    } catch {
-      return res.status(500).send("JSON格式错误");
+      const { error } = await supabase
+        .from("prepays")
+        .update({ category, amount, description, date, frequencyMode, frequencyNumber, frequencyUnit })
+        .eq("id", id)
+        .eq("user_id", user_id);
+
+      if (error) throw error;
+
+      return res.status(200).send("修改成功 (DB)");
+    } catch (err) {
+      console.error("DB modify-prepay error:", err);
+      return res.status(500).send("DB 修改失败");
     }
+  }
 
-    if (!Array.isArray(json)) {
-      return res.status(500).send("预付款数据格式应为数组");
-    }
-
-    const index = json.findIndex(p => p.id === id);
-    if (index === -1) return res.status(404).send("未找到预付款");
-
-    json[index].date = newDate;
-
-    fs.writeFile(prepayFilePath, JSON.stringify(json, null, 2), (err) => {
-      if (err) return res.status(500).send("保存失败");
-      res.status(200).send("更新成功");
-    });
-  });
+  res.status(400).send("Invalid source");
 });
+
+app.post("/api/delete-prepay", async (req, res) => {
+  const { source, user_id, id } = req.body;
+
+  if (!source) return res.status(400).send("Missing source");
+
+  // ---------- LOCAL ----------
+  if (source === "local") {
+    fs.readFile(prepayFilePath, "utf8", (err, data) => {
+      if (err) return res.status(500).send("读取失败");
+
+      let json;
+      try {
+        json = JSON.parse(data);
+      } catch {
+        return res.status(500).send("JSON格式错误");
+      }
+
+      if (!Array.isArray(json)) return res.status(500).send("数据结构错误");
+
+      const updated = json.filter(p => p.id !== id);
+      if (updated.length === json.length) return res.status(404).send("未找到该预付款");
+
+      fs.writeFile(prepayFilePath, JSON.stringify(updated, null, 2), (writeErr) => {
+        if (writeErr) return res.status(500).send("保存失败");
+        res.status(200).send("删除成功 (local)");
+      });
+    });
+    return;
+  }
+
+  // ---------- DB ----------
+  if (source === "db") {
+    if (!user_id) return res.status(400).send("Missing user_id");
+
+    try {
+      const { error } = await supabase
+        .from("prepays")
+        .delete()
+        .eq("id", id)
+        .eq("user_id", user_id);
+
+      if (error) throw error;
+
+      return res.status(200).send("删除成功 (DB)");
+    } catch (err) {
+      console.error("DB delete-prepay error:", err);
+      return res.status(500).send("DB 删除失败");
+    }
+  }
+
+  res.status(400).send("Invalid source");
+});
+
+app.post("/api/update-prepay-date", async (req, res) => {
+  const { source, user_id, id, newDate } = req.body;
+
+  if (!source) return res.status(400).send("Missing source");
+
+  // ---------- LOCAL ----------
+  if (source === "local") {
+    fs.readFile(prepayFilePath, "utf8", (err, data) => {
+      if (err) return res.status(500).send("读取失败");
+
+      let json;
+      try {
+        json = JSON.parse(data);
+      } catch {
+        return res.status(500).send("JSON格式错误");
+      }
+
+      if (!Array.isArray(json)) return res.status(500).send("预付款数据格式应为数组");
+
+      const index = json.findIndex(p => p.id === id);
+      if (index === -1) return res.status(404).send("未找到预付款");
+
+      json[index].date = newDate;
+
+      fs.writeFile(prepayFilePath, JSON.stringify(json, null, 2), (writeErr) => {
+        if (writeErr) return res.status(500).send("保存失败");
+        res.status(200).send("更新成功 (local)");
+      });
+    });
+    return;
+  }
+
+  // ---------- DB ----------
+  if (source === "db") {
+    if (!user_id) return res.status(400).send("Missing user_id");
+
+    try {
+      const { error } = await supabase
+        .from("prepays")
+        .update({ date: newDate })
+        .eq("id", id)
+        .eq("user_id", user_id);
+
+      if (error) throw error;
+
+      return res.status(200).send("更新成功 (DB)");
+    } catch (err) {
+      console.error("DB update-prepay-date error:", err);
+      return res.status(500).send("DB 更新失败");
+    }
+  }
+
+  res.status(400).send("Invalid source");
+});
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // 🔥 One endpoint returns all local-format data
@@ -855,7 +1243,6 @@ app.get("/api/fullData", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
 // -------------------------------------------------------
 // 🔥 Compare DB vs Local JSON
 // GET /api/diff?user_id=xxxx
@@ -1290,9 +1677,23 @@ app.get("/api/diff", async (req, res) => {
 
 
 
+
+
+
+
+
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });
 });
+
+
+
+
+
+
+
+
+
 
 
 // http://localhost:5001/api/test/expenses?user_id=XXXXX
