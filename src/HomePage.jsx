@@ -701,14 +701,7 @@ const HomePage = () => {
   useEffect(() => {
     const fetchTotalChecking = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/get-total-checking`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            source: DATA_SOURCE,
-            user_id: supabaseUser.id
-          }),
-        });
+        const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/get-total-checking`)
         const data = await response.json();
         setTotalChecking(data.checking || 0);
       } catch (error) {
@@ -716,22 +709,14 @@ const HomePage = () => {
       }
     };
     fetchTotalChecking();
-  }, [supabaseUser]);
+  }, []);
 
 
   // Fetch the recent transactions from recentTransactions.json
   useEffect(() => {
     const fetchRecentTransactions = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/get-checking-recent100`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            source: DATA_SOURCE,
-            user_id: supabaseUser.id
-          }),
-        });
-
+        const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/get-checking-recent100`)
         const data = await response.json();
         setLast100Transactions(data.recent100 || []);
       } catch (error) {
@@ -739,7 +724,7 @@ const HomePage = () => {
       }
     };
     fetchRecentTransactions();
-  }, [supabaseUser]);
+  }, []);
 
 
   // Load flip status from localStorage on page load
@@ -799,8 +784,7 @@ const HomePage = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ source: DATA_SOURCE,
-    user_id: supabaseUser.id,newTotal, requestId }),
+        body: JSON.stringify({ newTotal, requestId }),
       });
 
       if (response.ok) {
@@ -811,8 +795,7 @@ const HomePage = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ source: DATA_SOURCE,
-    user_id: supabaseUser.id,newTransaction, requestId: secondRequestId }),
+          body: JSON.stringify({ newTransaction, requestId: secondRequestId }),
         });
 
         if (last100Response.ok) {
@@ -871,8 +854,7 @@ const HomePage = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ source: DATA_SOURCE,
-    user_id: supabaseUser.id,newTotal, requestId }),
+        body: JSON.stringify({ newTotal, requestId }),
       });
 
       if (response.ok) {
@@ -883,8 +865,7 @@ const HomePage = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ source: DATA_SOURCE,
-    user_id: supabaseUser.id,newTransaction, requestId: secondRequestId }),
+          body: JSON.stringify({ newTransaction, requestId: secondRequestId }),
         });
 
         if (last100Response.ok) {
@@ -1261,26 +1242,17 @@ const HomePage = () => {
   let hasCheckedDue = false; // Prevent multiple executions
   // 🔁 Fetch all scheduled prepays from backend
   const fetchScheduledPrepays = async () => {
-  try {
-    const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/get-prepay`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        source: DATA_SOURCE,
-        user_id: supabaseUser.id
-      }),
-    });
-
-    if (!response.ok) throw new Error("Failed to fetch");
-    const data = await response.json();
-    setScheduledPrepays(data || []);
-    return data; // For reuse
-  } catch (err) {
-    console.error("Error loading scheduled prepays:", err);
-    return [];
-  }
-};
-
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/get-prepay`);
+      if (!response.ok) throw new Error("Failed to fetch");
+      const data = await response.json();
+      setScheduledPrepays(data || []);
+      return data; // For reuse
+    } catch (err) {
+      console.error("Error loading scheduled prepays:", err);
+      return [];
+    }
+  };
   // On page load: check for due prepays and update if repeating
   useEffect(() => {
     if (totalChecking !== null) {
@@ -1341,8 +1313,7 @@ const HomePage = () => {
               const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/update-prepay-date`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ source: DATA_SOURCE,
-    user_id: supabaseUser.id,id: prepay.id, newDate: nextDateStr }),
+                body: JSON.stringify({ id: prepay.id, newDate: nextDateStr }),
               });
 
               if (res.ok) updated = true;
@@ -1351,8 +1322,7 @@ const HomePage = () => {
               const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/delete-prepay`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ source: DATA_SOURCE,
-    user_id: supabaseUser.id,id: prepay.id })
+                body: JSON.stringify({ id: prepay.id })
               });
 
               if (res.ok) updated = true;
@@ -1399,8 +1369,7 @@ const HomePage = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ source: DATA_SOURCE,
-    user_id: supabaseUser.id,newTransaction, requestId }),
+      body: JSON.stringify({ newTransaction, requestId }),
     });
     if (last100Response.ok) {
       console.log("金额和交易记录更新成功");
@@ -1408,6 +1377,16 @@ const HomePage = () => {
       alert("更新交易记录失败，请稍后再试");
     }
 
+    // const requestId = uuidv4(); // Generate a unique request ID
+    // // Send update request to update total checking
+    // const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/update-total`, {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({ newTotal, requestId }),
+    // });
+    // alert(response)
     setTotalChecking(newTotal);
   };
 
@@ -2458,8 +2437,7 @@ const HomePage = () => {
                         const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/add-category`, {
                           method: "POST",
                           headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({ source: DATA_SOURCE,
-    user_id: supabaseUser.id,en, zh }),
+                          body: JSON.stringify({ en, zh }),
                         });
                         if (res.ok) {
                           alert(`添加的类别: ${en} / ${zh}`);
@@ -2530,8 +2508,7 @@ const HomePage = () => {
                           const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/change-category`, {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ source: DATA_SOURCE,
-    user_id: supabaseUser.id,from: cat, to: "Other" }),
+                            body: JSON.stringify({ from: cat, to: "Other" }),
                           });
                           if (!res.ok) {
                             console.error(`Failed to change category '${cat}' to 'Other'`);
@@ -2542,8 +2519,7 @@ const HomePage = () => {
                         const deleteRes = await fetch(`${process.env.REACT_APP_BACKEND}/api/delete-categories`, {
                           method: "POST",
                           headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({ source: DATA_SOURCE,
-    user_id: supabaseUser.id,categoriesToDelete: selectedCategories }),
+                          body: JSON.stringify({ categoriesToDelete: selectedCategories }),
                         });
 
                         if (deleteRes.ok) {
@@ -2655,7 +2631,7 @@ const RecordExpensePage = () => {
   const [totalChecking, setTotalChecking] = useState(null);
   const navigate = useNavigate();
 
-  const { data, addExpense,supabaseUser } = useContext(DataContext); // Access global data and updater
+  const { data, addExpense } = useContext(DataContext); // Access global data and updater
 
   let adjustAmount = 0
   let adjustType = "subtract"
@@ -2682,8 +2658,7 @@ const RecordExpensePage = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ source: DATA_SOURCE,
-    user_id: supabaseUser.id,newTransaction, requestId }),
+      body: JSON.stringify({ newTransaction, requestId }),
     });
     if (last100Response.ok) {
       console.log("金额和交易记录更新成功");
@@ -2691,20 +2666,23 @@ const RecordExpensePage = () => {
       alert("更新交易记录失败，请稍后再试");
     }
 
+    // const requestId = uuidv4(); // Generate a unique request ID
+    // // Send update request to update total checking
+    // const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/update-total`, {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({ newTotal, requestId }),
+    // });
+    // alert(response)
     setTotalChecking(newTotal);
   };
   // Fetch the total amount from recentTransactions.json
   useEffect(() => {
     const fetchTotalChecking = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/get-total-checking`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            source: DATA_SOURCE,
-            user_id: supabaseUser.id
-          }),
-        });
+        const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/get-total-checking`)
         const data = await response.json();
         setTotalChecking(data.checking || 0);
       } catch (error) {
@@ -3009,7 +2987,6 @@ const RecordExpensePage = () => {
 };
 
 const PrepayPage = () => {
-  const { data, addPrepay,supabaseUser } = useContext(DataContext); // Access global data and updater
   // 暂存 States: May contain clicked but not saved (means we don't want)
   const [filterOption, setFilterOption] = useState(""); // Combo box value, default all will be set in a usestate hook below somewhere, above return
   const [subOption, setSubOption] = useState(""); // Sub combo box value
@@ -3144,8 +3121,7 @@ const PrepayPage = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ source: DATA_SOURCE,
-    user_id: supabaseUser.id,newPrepay, requestId }),
+        body: JSON.stringify({ newPrepay, requestId }),
       }
     );
 
@@ -3177,30 +3153,41 @@ const PrepayPage = () => {
   const [scheduledPrepays, setScheduledPrepays] = useState([]);
   useEffect(() => {
     const fetchScheduledPrepays = async () => {
-  try {
-    const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/get-prepay`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        source: DATA_SOURCE,
-        user_id: supabaseUser.id
-      }),
-    });
+      try {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/get-prepay`);
+        if (!response.ok) throw new Error("Failed to fetch");
 
-    if (!response.ok) throw new Error("Failed to fetch");
-    const data = await response.json();
-    setScheduledPrepays(data || []);
-    return data; // For reuse
-  } catch (err) {
-    console.error("Error loading scheduled prepays:", err);
-    return [];
-  }
-};
-
+        const data = await response.json();
+        setScheduledPrepays(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("Error loading scheduled prepays:", err);
+      }
+    };
 
     fetchScheduledPrepays();
   }, []);
+  // useEffect(() => {
+  //   fetch(`${process.env.REACT_APP_BACKEND}/api/get-prepay`)
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       // Replace tokens in description
+  //       const now = new Date();
+  //       const month = now.getMonth() + 1;
+  //       const day = now.getDate();
+  //       const year = now.getFullYear();
 
+  //       const tokenReplaced = data.map((item) => ({
+  //         ...item,
+  //         description: item.description
+  //           .replace("{MONTH}", month.toString().padStart(2, "0"))
+  //           .replace("{DAY}", day.toString().padStart(2, "0"))
+  //           .replace("{YEAR}", year.toString())
+  //       }));
+
+  //       setScheduledPrepays(tokenReplaced);
+  //     })
+  //     .catch((err) => console.error("Error loading scheduled prepays:", err));
+  // }, []);
   const translateFrequency = (raw) => {
     switch (raw) {
       case "每1月": return "每个月";
@@ -3247,11 +3234,7 @@ const PrepayPage = () => {
     const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/modify-prepay`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-    source: DATA_SOURCE,           // "local" or "db"
-    user_id: supabaseUser.id,      // REQUIRED for DB mode
-    ...modified                     // id, category, amount, description, date, frequencyMode, frequencyNumber, frequencyUnit
-  }),
+      body: JSON.stringify(modified),
     });
 
     if (res.ok) {
@@ -3269,8 +3252,6 @@ const PrepayPage = () => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        source: DATA_SOURCE,
-    user_id: supabaseUser.id,
         id: selectedPrepay.id // 传递要删除的预付款ID aka ID to delete
       })
     })
@@ -3288,6 +3269,74 @@ const PrepayPage = () => {
         alert("删除失败");
       });
   };
+  //   let hasCheckedDue = false;
+  //   const fetchScheduledPrepays = async () => {
+  //   try {
+  //     const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/get-prepay`);
+  //     if (!response.ok) throw new Error("Failed to fetch");
+
+  //     const data = await response.json();
+  //     setScheduledPrepays(data || []);
+  //     return data; // ⬅️ Return data for reuse
+  //   } catch (err) {
+  //     console.error("Error loading scheduled prepays:", err);
+  //     return [];
+  //   }
+  // };
+  // useEffect(() => {
+  //   const checkAndHandleDuePrepays = async () => {
+  //     const data = await fetchScheduledPrepays();
+
+  //     if (hasCheckedDue) return;
+  //     hasCheckedDue = true;
+
+  //     const today = new Date().toISOString().split("T")[0];
+  //     let updated = false;
+
+  //     for (const prepay of data) {
+  //       if (prepay.date <= today) {
+  //         alert(`预付款到期: ${prepay.description} - ${prepay.amount} - ${prepay.date}`);
+
+  //         if (prepay.frequencyMode === "每") {
+  //           const current = new Date(prepay.date);
+  //           let next = new Date(current);
+
+  //           switch (prepay.frequencyUnit) {
+  //             case "天":
+  //               next.setDate(current.getDate() + parseInt(prepay.frequencyNumber));
+  //               break;
+  //             case "周":
+  //               next.setDate(current.getDate() + 7 * parseInt(prepay.frequencyNumber));
+  //               break;
+  //             case "月":
+  //               next.setMonth(current.getMonth() + parseInt(prepay.frequencyNumber));
+  //               break;
+  //             case "年":
+  //               next.setFullYear(current.getFullYear() + parseInt(prepay.frequencyNumber));
+  //               break;
+  //           }
+
+  //           const nextDateStr = next.toISOString().split("T")[0];
+
+  //           const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/update-prepay-date`, {
+  //             method: "POST",
+  //             headers: { "Content-Type": "application/json" },
+  //             body: JSON.stringify({ id: prepay.id, newDate: nextDateStr })
+  //           });
+
+  //           if (res.ok) updated = true;
+  //         }
+  //       }
+  //     }
+
+  //     if (updated) {
+  //       // ⬅️ If any updates happened, reload the table
+  //       await fetchScheduledPrepays();
+  //     }
+  //   };
+
+  //   checkAndHandleDuePrepays();
+  // }, []);
 
 
   const [showButtons, setShowButtons] = useState(true);
@@ -4116,7 +4165,7 @@ const RecordIncomePage = () => {
   const [totalChecking, setTotalChecking] = useState(null);
   const navigate = useNavigate();
 
-  const { data, addIncome,supabaseUser } = useContext(DataContext); // Access global data and updater
+  const { data, addIncome } = useContext(DataContext); // Access global data and updater
 
   let adjustAmount = 0
   let adjustType = "add"
@@ -4143,8 +4192,7 @@ const RecordIncomePage = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ source: DATA_SOURCE,
-    user_id: supabaseUser.id,newTransaction, requestId }),
+      body: JSON.stringify({ newTransaction, requestId }),
     });
     if (last100Response.ok) {
       console.log("金额和交易记录更新成功");
@@ -4152,20 +4200,22 @@ const RecordIncomePage = () => {
       console.log("更新交易记录失败，请稍后再试");
     }
 
+    // const requestId = uuidv4(); // Generate a unique request ID
+    // // Send update request to update total checking
+    // const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/update-total`, {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({ newTotal, requestId }),
+    // });
     setTotalChecking(newTotal);
   };
   // Fetch the total amount from recentTransactions.json
   useEffect(() => {
     const fetchTotalChecking = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/get-total-checking`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            source: DATA_SOURCE,
-            user_id: supabaseUser.id
-          }),
-        });
+        const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/get-total-checking`)
         const data = await response.json();
         setTotalChecking(data.checking || 0);
       } catch (error) {
@@ -4343,7 +4393,7 @@ const RecordIncomePage = () => {
 
 
 const ShowExpensePage = () => {
-  const { data, updateExpense, deleteExpense,supabaseUser } = useContext(DataContext); // Access global data and updater
+  const { data, updateExpense, deleteExpense } = useContext(DataContext); // Access global data and updater
 
 
   // Wait for data to load before rendering
@@ -6056,7 +6106,7 @@ const ShowExpensePage = () => {
 
 
 const ShowIncomePage = () => {
-  const { data, updateIncome, deleteIncome,supabaseUser } = useContext(DataContext); // Access global data and updater
+  const { data, updateIncome, deleteIncome } = useContext(DataContext); // Access global data and updater
 
   // Wait for data to load before rendering
   const [isDataLoaded, setIsDataLoaded] = useState(false);
@@ -7292,12 +7342,7 @@ const ProtectedApp = () => {
       fetch(`${process.env.REACT_APP_BACKEND}/api/update-expenses`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          source: DATA_SOURCE,
-          user_id: supabaseUser.id,   // REQUIRED for DB mode
-          expenses: updatedExpenses,
-          requestId                  // still used for LOCAL dedupe
-        }),
+        body: JSON.stringify({ expenses: updatedExpenses, requestId }), // Include the requestId
       })
         .then((response) => {
           if (!response.ok) throw new Error("Failed to update expenses");
@@ -7331,12 +7376,7 @@ const ProtectedApp = () => {
         fetch(`${process.env.REACT_APP_BACKEND}/api/update-expenses`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            source: DATA_SOURCE,
-            user_id: supabaseUser.id,   // REQUIRED for DB mode
-            expenses: updatedExpenses,
-            requestId                  // still used for LOCAL dedupe
-          }),
+          body: JSON.stringify({ expenses: updatedExpenses, requestId }),
         })
           .then((response) => {
             if (!response.ok) throw new Error("Failed to update expenses");
@@ -7364,8 +7404,7 @@ const ProtectedApp = () => {
       fetch(`${process.env.REACT_APP_BACKEND}/api/update-income`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ source: DATA_SOURCE,
-    user_id: supabaseUser.id,income: updatedIncome, requestId }), // Include the requestId
+        body: JSON.stringify({ income: updatedIncome, requestId }), // Include the requestId
       })
         .then((response) => {
           if (!response.ok) throw new Error("Failed to update income");
@@ -7400,8 +7439,7 @@ const ProtectedApp = () => {
         fetch(`${process.env.REACT_APP_BACKEND}/api/update-income`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ source: DATA_SOURCE,
-    user_id: supabaseUser.id,income: updatedIncome, requestId }),
+          body: JSON.stringify({ income: updatedIncome, requestId }),
         })
           .then((response) => {
             if (!response.ok) throw new Error("Failed to update expenses");
@@ -7429,8 +7467,7 @@ const ProtectedApp = () => {
       fetch(`${process.env.REACT_APP_BACKEND}/api/update-income`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ source: DATA_SOURCE,
-    user_id: supabaseUser.id,income: updatedIncome, requestId }),
+        body: JSON.stringify({ income: updatedIncome, requestId }),
       })
         .then((response) => {
           if (!response.ok) throw new Error("Failed to delete income");
@@ -7454,12 +7491,7 @@ const ProtectedApp = () => {
       fetch(`${process.env.REACT_APP_BACKEND}/api/update-expenses`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          source: DATA_SOURCE,
-          user_id: supabaseUser.id,   // REQUIRED for DB mode
-          expenses: updatedExpenses,
-          requestId                  // still used for LOCAL dedupe
-        }),
+        body: JSON.stringify({ expenses: updatedExpenses, requestId }),
       })
         .then((response) => {
           if (!response.ok) throw new Error("Failed to delete expense");
@@ -7475,14 +7507,7 @@ const ProtectedApp = () => {
   // reload data
   const reloadData = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/get-data`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          source: DATA_SOURCE,
-          user_id: supabaseUser.id,
-        }),
-      });
+      const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/get-data`);
       if (!response.ok) throw new Error("Failed to fetch data");
 
       const jsonData = await response.json();
