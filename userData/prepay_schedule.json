@@ -1,22 +1,3 @@
 [
-  {
-    "id": "20250729_155805594",
-    "category": "Car Related",
-    "amount": "1005.12",
-    "description": "{MONTH} Car Loan",
-    "date": "2025-11-01",
-    "frequencyMode": "每",
-    "frequencyNumber": 1,
-    "frequencyUnit": "月"
-  },
-  {
-    "id": "20250920_130917707",
-    "category": "Other",
-    "amount": "4.62",
-    "description": "{MONTH} Health Insurance",
-    "date": "2025-10-21",
-    "frequencyMode": "每",
-    "frequencyNumber": 1,
-    "frequencyUnit": "月"
-  }
+ 
 ]
