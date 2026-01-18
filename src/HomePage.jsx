@@ -160,7 +160,7 @@ const HomePage = () => {
   }, []);
 
 
-  const { data, addExpense, reloadData, handleLogout,supabaseUser } = useContext(DataContext); // Access global expense data from context
+  const { data, addExpense, reloadData, handleLogout, supabaseUser } = useContext(DataContext); // Access global expense data from context
   const [isModalOpenCategory, setIsModalOpenCategory] = useState(false);
   const [modalContentCategory, setModalContentCategory] = useState("");
   const [isModalOpenOther, setIsModalOpenOther] = useState(false);
@@ -7528,7 +7528,7 @@ const ProtectedApp = () => {
   }
 
   return (
-    <DataContext.Provider value={{ data, addExpense, updateExpense, addIncome, updateIncome, deleteIncome, deleteExpense, reloadData, handleLogout,supabaseUser }}>
+    <DataContext.Provider value={{ data, addExpense, updateExpense, addIncome, updateIncome, deleteIncome, deleteExpense, reloadData, handleLogout, supabaseUser }}>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/recordExpense" element={<RecordExpensePage />} />

@@ -100,7 +100,28 @@ body,
 
 
 
+/* Skeleton loading animation */
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
 
+.skeleton-box {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.loading-skeleton {
+  height: 100vh;
+  width: 100vw;
+  background: var(--bg-color);
+  padding: 20px;
+  box-sizing: border-box;
+}
 
 
 
