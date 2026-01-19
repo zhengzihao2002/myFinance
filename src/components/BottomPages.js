@@ -2,6 +2,150 @@ import React, { useRef, useState, useEffect } from "react";
 import { Chart } from "react-google-charts"; // use react-google-charts for both charts to avoid extra deps
 
 // ExpenseSlide: thin wrapper to render existing pie chart area
+// export function ExpenseSlide({
+//   timeRange,
+//   subOption,
+//   setTimeRange,
+//   setSubOption,
+//   handleAutoSelectBottom,
+//   availableYears,
+//   chartData,
+//   options,
+//   chartError,
+//   setChartError,
+// }) {
+//   return (
+//     <>
+//       <div
+//         className="filter-controls"
+//         style={{
+//           flex: "0 0 30%",
+//           display: "flex",
+//           flexDirection: "row",
+//           gap: "15px",
+//           justifyContent: "flex-start",
+//           alignItems: "center",
+//           overflow: "hidden",
+//           position: "relative",
+//           width: "100%"
+//         }}
+//       >
+//         <div style={{ width: "20%" }}></div>
+//         <div style={{ 
+//           width: "50%",
+//           display: "flex",
+//           flexDirection: "column",
+//           gap: "15px"
+//         }}>
+//           <label className="panel_font_size">
+//           时间段:
+//           <select
+//             className="panel_selector_size"
+//             value={timeRange}
+//             onChange={(e) => {
+//               const newValue = e.target.value;
+//               setTimeRange(newValue);
+//               setSubOption("");
+//               handleAutoSelectBottom(newValue);
+//             }}
+//           >
+//             <option value="全部显示">全部显示</option>
+//             <option value="按月显示">按月显示</option>
+//             <option value="按季度显示">按季度显示</option>
+//             <option value="按年显示">按年显示</option>
+//             <option value="前3个月">前3个月</option>
+//             <option value="前6个月">前6个月</option>
+//           </select>
+//           </label>
+
+//           <label className="panel_font_size">
+//             子选项:
+//             <select
+//               className="panel_selector_size"
+//               value={subOption}
+//               onChange={(e) => setSubOption(e.target.value)}
+//               disabled={["前3个月", "前6个月", "全部显示"].includes(timeRange)}
+//             >
+//               <option value="">请选择</option>
+//               {timeRange === "按月显示" &&
+//                 [...Array(new Date().getMonth() + 1).keys()].map((month) => {
+//                   // const monthName = new Date(0, month).toLocaleString("default", { month: "long" });
+//                   const monthName = new Date(0, month).toLocaleString("zh-CN", { month: "long" });
+//                   return (
+//                     <option key={month} value={monthName}>
+//                       {monthName}
+//                     </option>
+//                   );
+//                 })}
+//               {timeRange === "按季度显示" &&
+//                 (() => {
+//                   const currentQuarter = Math.floor(new Date().getMonth() / 3) + 1;
+//                   return Array.from({ length: currentQuarter }, (_, i) => `Q${i + 1}`).map((quarter) => (
+//                     <option key={quarter} value={quarter}>
+//                       {quarter}
+//                     </option>
+//                   ));
+//                 })()}
+//               {timeRange === "按年显示" &&
+//                 availableYears.map((year) => (
+//                   <option key={year} value={year}>
+//                     {year}
+//                   </option>
+//                 ))}
+//             </select>
+//           </label>
+//         </div>
+//       </div>
+
+//       <div
+//         className="chart-container"
+//         style={{
+//           flex: "0 0 70%",
+//           display: "flex",
+//           justifyContent: "center",
+//           alignItems: "center",
+//           backgroundColor: "transparent",
+//           overflow: "visible",
+//         }}
+//       >
+//         {(!navigator.onLine || chartError) ? (
+//           <div>
+//             NO INTERNET<br />CHART NOT AVAILABLE
+//           </div>
+//         ) : (
+//           <Chart
+//             chartType="PieChart"
+//             data={chartData}
+//             options={{ 
+//               ...options, 
+//               backgroundColor: 'transparent',
+//               chartArea: { 
+//                 left: '10%',
+//                 top: '5%',
+//                 width: '70%',
+//                 height: '90%'
+//               },
+//               tooltip: { trigger: 'selection' }, // ✅ click-to-show tooltip (no flicker)
+//               legend: {
+//                 alignment: 'center',
+//                 position: 'right',
+//                 textStyle: {
+//                   fontSize: 20
+//                 }
+//               },
+//               pieSliceText: 'percentage'  // Remove text from pie slices to reduce clutter
+//             }}
+//             width={"100%"}
+//             height={"100%"}
+//             chartEvents={[{ eventName: "error", callback: () => setChartError(true) }]}
+//             onError={() => setChartError(true)}
+//           />
+//         )}
+//       </div>
+//     </>
+//   );
+// }
+// ExpenseSlide: thin wrapper to render existing pie chart area
 export function ExpenseSlide({
   timeRange,
   subOption,
@@ -9,15 +153,161 @@ export function ExpenseSlide({
   setSubOption,
   handleAutoSelectBottom,
   availableYears,
-  chartData,
+  chartData: freshChartData, // renamed for clarity
   options,
   chartError,
   setChartError,
 }) {
+  // Use localStorage as initial source, fall back to empty
+  const [displayChartData, setDisplayChartData] = useState(() => {
+    const cached = localStorage.getItem("expenseChartDataCache");
+
+    if (cached) {
+      try {
+        const { data, timestamp } = JSON.parse(cached);
+
+        // Check if cache is still fresh (less than 24 hours old)
+        if (Date.now() - timestamp < 24 * 60 * 60 * 1000) {
+          // Valid fresh cache → use it immediately
+          if (Array.isArray(data) && data.length > 1) {
+            return data;
+          }
+        }
+        // If expired or invalid → fall back to empty
+      } catch (e) {
+        console.warn("Invalid expense chart cache, clearing...", e);
+        localStorage.removeItem("expenseChartDataCache");
+      }
+    }
+
+    // No valid cache → start empty
+    return [["Expenses", "Dollars"]];
+  });
+
+  // When fresh data arrives from parent, update display + cache
+  useEffect(() => {
+    if (freshChartData?.length > 1) {
+      setDisplayChartData(freshChartData);
+
+      // Save with timestamp
+      localStorage.setItem(
+        "expenseChartDataCache",
+        JSON.stringify({
+          data: freshChartData,
+          timestamp: Date.now(),
+        })
+      );
+    }
+  }, [freshChartData]);
+
+  // Loading state: only show skeleton on first mount if cache is empty
+  const isLoading = displayChartData.length <= 1 && !chartError;
+
+  if (isLoading) {
+    return (
+      <div
+        style={{
+          flex: "0 0 70%",
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          position: "relative",
+          padding: "20px",
+          boxSizing: "border-box",
+        }}
+      >
+        <div
+          style={{
+            width: "100%",
+            maxWidth: "620px",
+            height: "100%",
+            maxHeight: "420px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            position: "relative",
+          }}
+        >
+          {/* Centered Pie Skeleton */}
+          <div
+            style={{
+              width: "300px",
+              height: "300px",
+              borderRadius: "50%",
+              background:
+                "linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%)",
+              backgroundSize: "200% 100%",
+              animation: "skeletonLoading 1.8s infinite",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+            }}
+          />
+
+          {/* Right-side Legend Skeleton */}
+          <div
+            style={{
+              position: "absolute",
+              right: "20px",
+              top: "50%",
+              transform: "translateY(-50%)",
+              display: "flex",
+              flexDirection: "column",
+              gap: "14px",
+              width: "160px",
+            }}
+          >
+            {[...Array(7)].map((_, i) => (
+              <div
+                key={i}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                }}
+              >
+                <div
+                  style={{
+                    width: "18px",
+                    height: "18px",
+                    borderRadius: "4px",
+                    background:
+                      "linear-gradient(90deg, #e0e0e0 25%, #d8d8d8 50%, #e0e0e0 75%)",
+                    backgroundSize: "200% 100%",
+                    animation: "skeletonLoading 1.8s infinite",
+                  }}
+                />
+                <div
+                  style={{
+                    flex: 1,
+                    height: "16px",
+                    background:
+                      "linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%)",
+                    backgroundSize: "200% 100%",
+                    animation: "skeletonLoading 1.8s infinite",
+                    borderRadius: "4px",
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <style>
+          {`
+            @keyframes skeletonLoading {
+              0%   { background-position: 200% 0; }
+              100% { background-position: -200% 0; }
+            }
+          `}
+        </style>
+      </div>
+    );
+  }
+
+  // Normal render (cached or fresh data)
   return (
     <>
       <div
-        className="filter-controls"
         style={{
           flex: "0 0 30%",
           display: "flex",
@@ -27,41 +317,67 @@ export function ExpenseSlide({
           alignItems: "center",
           overflow: "hidden",
           position: "relative",
-          width: "100%"
+          width: "100%",
         }}
       >
         <div style={{ width: "20%" }}></div>
-        <div style={{ 
-          width: "50%",
-          display: "flex",
-          flexDirection: "column",
-          gap: "15px"
-        }}>
-          <label className="panel_font_size">
-          时间段:
-          <select
-            className="panel_selector_size"
-            value={timeRange}
-            onChange={(e) => {
-              const newValue = e.target.value;
-              setTimeRange(newValue);
-              setSubOption("");
-              handleAutoSelectBottom(newValue);
+        <div
+          style={{
+            width: "50%",
+            display: "flex",
+            flexDirection: "column",
+            gap: "15px",
+          }}
+        >
+          <label
+            style={{
+              fontSize: "16px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "6px",
             }}
           >
-            <option value="全部显示">全部显示</option>
-            <option value="按月显示">按月显示</option>
-            <option value="按季度显示">按季度显示</option>
-            <option value="按年显示">按年显示</option>
-            <option value="前3个月">前3个月</option>
-            <option value="前6个月">前6个月</option>
-          </select>
+            时间段:
+            <select
+              style={{
+                padding: "8px",
+                fontSize: "16px",
+                borderRadius: "6px",
+                border: "1px solid #ccc",
+              }}
+              value={timeRange}
+              onChange={(e) => {
+                const newValue = e.target.value;
+                setTimeRange(newValue);
+                setSubOption("");
+                handleAutoSelectBottom(newValue);
+              }}
+            >
+              <option value="全部显示">全部显示</option>
+              <option value="按月显示">按月显示</option>
+              <option value="按季度显示">按季度显示</option>
+              <option value="按年显示">按年显示</option>
+              <option value="前3个月">前3个月</option>
+              <option value="前6个月">前6个月</option>
+            </select>
           </label>
 
-          <label className="panel_font_size">
+          <label
+            style={{
+              fontSize: "16px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "6px",
+            }}
+          >
             子选项:
             <select
-              className="panel_selector_size"
+              style={{
+                padding: "8px",
+                fontSize: "16px",
+                borderRadius: "6px",
+                border: "1px solid #ccc",
+              }}
               value={subOption}
               onChange={(e) => setSubOption(e.target.value)}
               disabled={["前3个月", "前6个月", "全部显示"].includes(timeRange)}
@@ -69,8 +385,9 @@ export function ExpenseSlide({
               <option value="">请选择</option>
               {timeRange === "按月显示" &&
                 [...Array(new Date().getMonth() + 1).keys()].map((month) => {
-                  // const monthName = new Date(0, month).toLocaleString("default", { month: "long" });
-                  const monthName = new Date(0, month).toLocaleString("zh-CN", { month: "long" });
+                  const monthName = new Date(0, month).toLocaleString("zh-CN", {
+                    month: "long",
+                  });
                   return (
                     <option key={month} value={monthName}>
                       {monthName}
@@ -79,12 +396,15 @@ export function ExpenseSlide({
                 })}
               {timeRange === "按季度显示" &&
                 (() => {
-                  const currentQuarter = Math.floor(new Date().getMonth() / 3) + 1;
-                  return Array.from({ length: currentQuarter }, (_, i) => `Q${i + 1}`).map((quarter) => (
-                    <option key={quarter} value={quarter}>
-                      {quarter}
-                    </option>
-                  ));
+                  const currentQuarter =
+                    Math.floor(new Date().getMonth() / 3) + 1;
+                  return Array.from({ length: currentQuarter }, (_, i) => `Q${i + 1}`).map(
+                    (quarter) => (
+                      <option key={quarter} value={quarter}>
+                        {quarter}
+                      </option>
+                    )
+                  );
                 })()}
               {timeRange === "按年显示" &&
                 availableYears.map((year) => (
@@ -98,7 +418,6 @@ export function ExpenseSlide({
       </div>
 
       <div
-        className="chart-container"
         style={{
           flex: "0 0 70%",
           display: "flex",
@@ -109,36 +428,39 @@ export function ExpenseSlide({
         }}
       >
         {(!navigator.onLine || chartError) ? (
-          <div>
+          <div
+            style={{
+              textAlign: "center",
+              color: "#888",
+              fontSize: "18px",
+            }}
+          >
             NO INTERNET<br />CHART NOT AVAILABLE
           </div>
         ) : (
           <Chart
             chartType="PieChart"
-            data={chartData}
-            options={{ 
-              ...options, 
-              backgroundColor: 'transparent',
-              chartArea: { 
-                left: '10%',
-                top: '5%',
-                width: '70%',
-                height: '90%'
+            data={displayChartData} // ← use cached/fresh data
+            options={{
+              ...options,
+              backgroundColor: "transparent",
+              chartArea: {
+                left: "10%",
+                top: "5%",
+                width: "70%",
+                height: "90%",
               },
-              tooltip: { trigger: 'selection' }, // ✅ click-to-show tooltip (no flicker)
+              tooltip: { trigger: "selection" },
               legend: {
-                alignment: 'center',
-                position: 'right',
-                textStyle: {
-                  fontSize: 20
-                }
+                alignment: "center",
+                position: "right",
+                textStyle: { fontSize: 20 },
               },
-              pieSliceText: 'percentage'  // Remove text from pie slices to reduce clutter
+              pieSliceText: "percentage",
             }}
-            width={"100%"}
-            height={"100%"}
+            width="100%"
+            height="100%"
             chartEvents={[{ eventName: "error", callback: () => setChartError(true) }]}
-            onError={() => setChartError(true)}
           />
         )}
       </div>

@@ -1,5 +1,4 @@
 import React, { useState, useEffect, createContext, useContext, useRef, useMemo } from "react"; // Import useState
-import { Chart } from "react-google-charts";
 import BottomPages, { ExpenseSlide, IncomeSlide, IncomeExpenseCompare } from "./components/BottomPages";
 import { parse, v4 as uuidv4 } from "uuid"; // Import UUID library
 import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from "react-router-dom";
@@ -550,8 +549,6 @@ const HomePage = () => {
       ? `支出概览 - ${timeRange} ${subOption}`
       : `支出概览 - ${timeRange}`;
     setChartTitle(newTitle);
-    console.log(newTitle);
-
   };
 
 
@@ -7323,6 +7320,51 @@ const ProtectedApp = () => {
       })
       .catch((err) => console.error("Error fetching or parsing data:", err));
   }, [supabaseUser]); // re-run when user is available
+
+//   useEffect(() => {
+//   // Completely hardcoded for testing — no env, no supabaseUser dependency, little faster than above
+//   const HARDCODE_USER_ID = "";
+//   const HARDCODE_BACKEND_URL = "http://localhost:5001";  // ← force localhost:5001
+
+//   console.log("TEST: Using hardcoded user:", HARDCODE_USER_ID);
+//   console.log("TEST: Using hardcoded URL:", HARDCODE_BACKEND_URL);
+
+//   fetch(`${HARDCODE_BACKEND_URL}/api/get-data`, {
+//     method: "POST",
+//     headers: { "Content-Type": "application/json" },
+//     body: JSON.stringify({
+//       source: "local",  // or "db" — whatever you normally use in dev
+//       user_id: HARDCODE_USER_ID,
+//     }),
+//   })
+//     .then((res) => {
+//       console.log("TEST: Response status:", res.status);
+//       if (!res.ok) throw new Error(`HTTP ${res.status}`);
+//       return res.json();
+//     })
+//     .then((jsonData) => {
+//       console.log("TEST: Raw data received:", jsonData);
+//       const sortedData = {
+//         ...jsonData,
+//         expenses: (jsonData.expenses || []).sort(
+//           (a, b) => new Date(a.date) - new Date(b.date)
+//         ),
+//         income: (jsonData.income || []).sort(
+//           (a, b) => new Date(a.date) - new Date(b.date)
+//         ),
+//       };
+//       console.log("TEST: Sorted data set to state");
+//       setData(sortedData);
+//     })
+//     .catch((err) => {
+//       console.error("TEST: Fetch failed:", err);
+//       // For debugging: show something even on failure
+//       setData({
+//         expenses: [{ date: "2025-01-01", amount: "999", category: "TEST", description: "Fetch failed" }],
+//         income: [],
+//       });
+//     });
+// }, []); // ← empty dependency = runs only once on mount
 
 
 
