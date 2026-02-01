@@ -1236,7 +1236,7 @@ const HomePage = () => {
 
   // Prepay Execution:
   const [scheduledPrepays, setScheduledPrepays] = useState([]);
-  let hasCheckedDue = false; // Prevent multiple executions
+  const hasCheckedDue = useRef(false); // Persist flag across renders
   // 🔁 Fetch all scheduled prepays from backend
   const fetchScheduledPrepays = async () => {
     try {
@@ -1252,92 +1252,92 @@ const HomePage = () => {
   };
   // On page load: check for due prepays and update if repeating
   useEffect(() => {
-    if (totalChecking !== null) {
-      const checkAndHandleDuePrepays = async () => {
-        if (hasCheckedDue) return;
-        hasCheckedDue = true;
+    // Wait until global data is loaded and totalChecking is known
+    if (!data || !data.isSet) return;
+    if (totalChecking === null) return;
 
-        const data = await fetchScheduledPrepays();
-        if (!Array.isArray(data) || data.length === 0) return; // ✅ Prevents looping over null or empty
-        const today = new Date().toISOString().split("T")[0];
-        let updated = false;
+    const checkAndHandleDuePrepays = async () => {
+      if (hasCheckedDue.current) return;
+      hasCheckedDue.current = true;
 
-        for (const prepay of data) {
-          if (prepay.date <= today) {
-            // Step 1: Convert to real expense
-            const formattedAmount = parseFloat(prepay.amount).toFixed(2);
-            const id = createId(prepay.date);
-            addExpense({
-              category: prepay.category,
-              amount: formattedAmount,
-              description: prepay.description.replace('{MONTH}', new Date().toLocaleString('en-US', { month: 'long' })) + " (Recurring)",
-              date: prepay.date,
-              id: id
+      const dataArr = await fetchScheduledPrepays();
+      if (!Array.isArray(dataArr) || dataArr.length === 0) return; // Prevents looping over null or empty
+      const today = new Date().toISOString().split("T")[0];
+      let updated = false;
+
+      for (const prepay of dataArr) {
+        if (prepay.date <= today) {
+          // Step 1: Convert to real expense
+          const formattedAmount = parseFloat(prepay.amount).toFixed(2);
+          const id = createId(prepay.date);
+          addExpense({
+            category: prepay.category,
+            amount: formattedAmount,
+            description: prepay.description.replace('{MONTH}', new Date().toLocaleString('en-US', { month: 'long' })) + " (Recurring)",
+            date: prepay.date,
+            id: id
+          });
+
+          handleAdjustAmountNonManual(id, "subtract", formattedAmount);
+
+          // Step 2: Recurring vs Single-Time
+          if (prepay.frequencyMode === "每") {
+            // Parse as local time
+            const [year, month, day] = prepay.date.split('-').map(Number);
+            const current = new Date(year, month - 1, day);
+            const next = new Date(current);
+
+            switch (prepay.frequencyUnit) {
+              case "天":
+                next.setDate(current.getDate() + parseInt(prepay.frequencyNumber));
+                break;
+              case "周":
+                next.setDate(current.getDate() + 7 * parseInt(prepay.frequencyNumber));
+                break;
+              case "月":
+                next.setMonth(current.getMonth() + parseInt(prepay.frequencyNumber));
+                break;
+              case "年":
+                next.setFullYear(current.getFullYear() + parseInt(prepay.frequencyNumber));
+                break;
+            }
+
+            const yearStr = next.getFullYear();
+            const monthStr = String(next.getMonth() + 1).padStart(2, '0');
+            const dayStr = String(next.getDate()).padStart(2, '0');
+            const nextDateStr = `${yearStr}-${monthStr}-${dayStr}`;
+
+            const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/update-prepay-date`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ id: prepay.id, newDate: nextDateStr }),
             });
 
+            if (res.ok) updated = true;
+          } else if (prepay.frequencyMode === "单次") {
+            // Step 3: DELETE this prepay since it's a one-time
+            const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/delete-prepay`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ id: prepay.id })
+            });
 
-            handleAdjustAmountNonManual(id, "subtract", formattedAmount);
-
-            // Step 2: Recurring vs Single-Time
-            if (prepay.frequencyMode === "每") {
-              // Parse as local time
-              const [year, month, day] = prepay.date.split('-').map(Number);
-              const current = new Date(year, month - 1, day);
-              const next = new Date(current);
-
-              switch (prepay.frequencyUnit) {
-                case "天":
-                  next.setDate(current.getDate() + parseInt(prepay.frequencyNumber));
-                  break;
-                case "周":
-                  next.setDate(current.getDate() + 7 * parseInt(prepay.frequencyNumber));
-                  break;
-                case "月":
-                  next.setMonth(current.getMonth() + parseInt(prepay.frequencyNumber));
-                  break;
-                case "年":
-                  next.setFullYear(current.getFullYear() + parseInt(prepay.frequencyNumber));
-                  break;
-              }
-
-              const yearStr = next.getFullYear();
-              const monthStr = String(next.getMonth() + 1).padStart(2, '0');
-              const dayStr = String(next.getDate()).padStart(2, '0');
-              const nextDateStr = `${yearStr}-${monthStr}-${dayStr}`;
-
-              // console.log(666666, prepay, next, nextDateStr);
-              // alert(next);
-              const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/update-prepay-date`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ id: prepay.id, newDate: nextDateStr }),
-              });
-
-              if (res.ok) updated = true;
-            } else if (prepay.frequencyMode === "单次") {
-              // Step 3: DELETE this prepay since it's a one-time
-              const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/delete-prepay`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ id: prepay.id })
-              });
-
-              if (res.ok) updated = true;
-            }
+            if (res.ok) updated = true;
           }
-
         }
+      }
 
-        // Reload the page after updates are made
-        if (updated) {
-          window.location.reload();  // This will reload the page
-        }
+      // Reload the page after updates are made
+      if (updated) {
+        window.location.reload();  // This will reload the page
+      }
+    };
 
-      };
+    checkAndHandleDuePrepays();
+  }, [totalChecking, data?.isSet]); // Run when totalChecking or data.isSet changes
 
-      checkAndHandleDuePrepays();
-    }
-  }, [totalChecking]); // This ensures the function will run when totalChecking is updated
+
+
 
 
   const handleAdjustAmountNonManual = async (id, adjustType, adjustAmount) => {
@@ -7267,7 +7267,7 @@ const ShowIncomePage = () => {
 export const DataContext = createContext();
 
 const ProtectedApp = () => {
-  const [data, setData] = useState({ expenses: [], income: [] }); // Initial state
+  const [data, setData] = useState({ expenses: [], income: [] , isSet: false}); // Initial state
 
   const [supabaseUser, setSupabaseUser] = useState(null);
 
@@ -7316,9 +7316,10 @@ const ProtectedApp = () => {
         };
 
         console.log("Sorted data ready to set:", sortedData);
-        setData(sortedData);
+        setData({ ...sortedData, isSet: true });
       })
       .catch((err) => console.error("Error fetching or parsing data:", err));
+    
   }, [supabaseUser]); // re-run when user is available
 
 //   useEffect(() => {
